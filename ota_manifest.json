@@ -1,27 +1,10 @@
 {
     "version_id": "2026.11.04.003",
-    "updated_at": "04-11-2026 05:36 PM",
+    "updated_at": "04-11-2026 05:42 PM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
     "silent_mode": true,
-    "update_note": "જયમીનભાઈએ આ નવા સુધારા-વધારા કર્યા છે અને તમારું સોફ્ટવેર ઓટોમેટિક અપડેટ થઈ ગયું છે!",
-    "files": {
-        "app.py": "9a82a3aa7d645acf26a2ea98cc37d66c205afa774f567182e5b5f6c1593bd526",
-        "part1_core.py": "609ec95aa13d1a55ee5b8f535dc2d748157f1da67f0ac246ca43eba382117074",
-        "part2_views.py": "33ce3644a863a698a5db379c2a81abf1499d4b50e11e9c3a3676ab2060d26f43",
-        "part2_b_counters.py": "613e37dad5da66c950d522ad1f5f40af77d7aa2faa02efe07ae74ee49846e780",
-        "part2_c_counters_extra.py": "27a4cb0f2f84f9313a756002e0e732f3bddca9261547603955ab9ea7023aa3d0",
-        "part2_d_sheets.py": "f01446e83dca9eb6580dadc0161bdc7551d0a8bcada431d08780f1f24b404e97",
-        "part3_routes.py": "da37cd666723c04fc5634d15f19e3d2d491938fcebb11230901e8d73a4c22353",
-        "part4_ai_import.py": "3f5681e2c514109802e033b92142001b1846d811c7fe417275c0f99e6dbd718e",
-        "part5_saas_control.py": "989ac062cc32629b2d32e8bd2496cd5ba02db8cb82e48d6f19f0286a76e0d84e",
-        "part6_police_vault.py": "ed6b7df42fa733673619f469260f56fe3d5f52862cf05419fd54eabbcb1f3755",
-        "part7_eod_whatsapp.py": "44354f74b3f40048f921ae4a63a0a2de7e3335511c4ac0b88e7678a8468777c5",
-        "part8_pwa_offline_sync.py": "3d6cd793eceedbc8a9499074c680d7dc7178c8ce291fedcc25a712bfd6a90798",
-        "part9_realtime_print_push.py": "a3c5872dc60c2cfbb09d93d6744bc1457133759edb3b997c94d72c52cb1f77a7",
-        "part10_accessories_part2.py": "9d07314f9dd24442757033559186cc9211cbc5e5ce2f5c3c4ad50ec939309bc4",
-        "Document_Vault/Login_Slideshow/1000955703.png": "fd0d047851e6c55bf9ce3c133c56e1f3741912c4884f2ee376de192874614d89",
-        "Document_Vault/jaymin_upi_qr.png": "d035783f2e945fdbc282f17d1b1cd203b27531c09dddc746d37d91db6d2633d5"
-    }
+    "update_note": "જયમીનભાઈએ કરેલા નવા સુધારા ઓટોમેટિક અપડેટ થઈ ગયા છે!",
+    "files": {}
 }
