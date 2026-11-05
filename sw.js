@@ -1,0 +1,1 @@
+self.addEventListener('fetch', function(e) { /* Passthrough service worker for PWA WebAPK */ });
