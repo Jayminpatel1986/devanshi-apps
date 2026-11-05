@@ -1,0 +1,21 @@
+{
+  "name": "દેવાંશી મનસ્વી માસ્ટર ERP",
+  "short_name": "દેવાંશી ERP",
+  "description": "3-in-1 Official Mobile & Cloud ERP",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#091224",
+  "theme_color": "#091224",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
