@@ -1,6 +1,6 @@
 {
-    "version_id": "2026.11.05.007",
-    "updated_at": "05-11-2026 07:31 PM",
+    "version_id": "2026.11.05.008",
+    "updated_at": "05-11-2026 08:47 PM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
@@ -8,19 +8,19 @@
     "update_note": "જયમીનભાઈએ આ નવા સુધારા-વધારા કર્યા છે અને તમારું સોફ્ટવેર ઓટોમેટિક અપડેટ થઈ ગયું છે!",
     "files": {
         "app.py": "7ea4cf249d0993764b2f0b6ba73da42028cd48c91e0642608ca4b03efb95f9d3",
-        "part1_core.py": "a6fe4d5ce6c9b5ec2eed4985e16ccfcbf8e4325f25c3774de9ca1dc126485de8",
-        "part2_views.py": "91bc38a638dc08724f829d0101d3259a37dd6bdac85439c0ad39d87b428d568c",
+        "part1_core.py": "c8d890b2074d08a7e6db2c52b6e9af3d226794d7bf2b0ca97b2f2ad9c12c1e17",
+        "part2_views.py": "34ebf1af631cd29f47fecc66c85ea09e0252b03897dd219de099943679920663",
         "part2_b_counters.py": "0366cb077801eebe1dbbca5d12afaf53f6fdc94ef6dd3d170d12d245ac10ea7c",
         "part2_c_counters_extra.py": "1233d49456a95a294cec8a02cff9dd8b80b51f7366e6abacdca7556ba683b6eb",
         "part2_d_sheets.py": "5b7fb0b2c59e572ca0f52629b122b97cf72d0025639bf0286dffde7303eb547f",
-        "part3_routes.py": "b3dbaae5c622ebc1e5628f7991f1eb484c78d39368c69ea86bbfcf6295a24cbc",
-        "part4_ai_import.py": "330d923aa9ad24c9a858610ea9f1af730e9533bf584008a97ed379531059edef",
+        "part3_routes.py": "c742b390d9c1a1f70b2e0eb0f59ad35318e520b81f865e479d8eb78de423a085",
+        "part4_ai_import.py": "912c121ef134e1aeae35a9ee1669ad86e8e0f061f82e6a12a57411fc7701f730",
         "part5_saas_control.py": "72d293af86f57d8314a5003c308fbccac1b642f16e222a650493439e9fda4086",
         "part6_police_vault.py": "ed6b7df42fa733673619f469260f56fe3d5f52862cf05419fd54eabbcb1f3755",
         "part7_eod_whatsapp.py": "44354f74b3f40048f921ae4a63a0a2de7e3335511c4ac0b88e7678a8468777c5",
         "part8_pwa_offline_sync.py": "3d6cd793eceedbc8a9499074c680d7dc7178c8ce291fedcc25a712bfd6a90798",
         "part9_realtime_print_push.py": "a3c5872dc60c2cfbb09d93d6744bc1457133759edb3b997c94d72c52cb1f77a7",
-        "part10_accessories_part2.py": "d11f2e0c07fc40d498816e82d1b6feaefbeae9d92dbbec78f0bb39a80c4ba9b1",
+        "part10_accessories_part2.py": "20c6dd68db7dc635df0b67a162314fce9d0e43c06b581841094f01ce76c91773",
         "Document_Vault/Login_Slideshow/1000955703.png": "fd0d047851e6c55bf9ce3c133c56e1f3741912c4884f2ee376de192874614d89",
         "Document_Vault/jaymin_upi_qr.png": "d035783f2e945fdbc282f17d1b1cd203b27531c09dddc746d37d91db6d2633d5"
     }
