@@ -1,10 +1,27 @@
 {
     "version_id": "2026.11.05.003",
-    "updated_at": "05-11-2026 10:55 AM",
+    "updated_at": "05-11-2026 11:33 AM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
     "silent_mode": true,
-    "update_note": "જયમીનભાઈએ કરેલા નવા સુધારા ઓટોમેટિક અપડેટ થઈ ગયા છે!",
-    "files": {}
+    "update_note": "જયમીનભાઈએ આ નવા સુધારા-વધારા કર્યા છે અને તમારું સોફ્ટવેર ઓટોમેટિક અપડેટ થઈ ગયું છે!",
+    "files": {
+        "app.py": "86f47c98e7c2ecc3bc74ab821187128499373aed9f56df47871c09467f05570b",
+        "part1_core.py": "d927fc4fa09a4dcef9c76b56d5226d5ed33234697c4e0eae302480816e1a6d0f",
+        "part2_views.py": "91adf6359d4be32fc7cedf4158dbf0378a954205ef6429805d67e04635222b49",
+        "part2_b_counters.py": "016b651fdab88391c52e1a0685e0476ad0627edc40f130da136fbb8579ad5740",
+        "part2_c_counters_extra.py": "1233d49456a95a294cec8a02cff9dd8b80b51f7366e6abacdca7556ba683b6eb",
+        "part2_d_sheets.py": "1e3603243ac5480b329e8d7c9b2656c1e413b896790d3919eaf34a056584d149",
+        "part3_routes.py": "9f95ba11ebf84a2a663e2336da640eefa91ab79de1d3f339a54f96e2174f883a",
+        "part4_ai_import.py": "6c33bb54dd41d18e495f706d9b242342b6429feca208d1a1fcd7934ef2d1b9ed",
+        "part5_saas_control.py": "4d395b83d5c93df67bbbfbc99a17cdd6633dafb23ef63e101d6a0c0e5fc1f262",
+        "part6_police_vault.py": "ed6b7df42fa733673619f469260f56fe3d5f52862cf05419fd54eabbcb1f3755",
+        "part7_eod_whatsapp.py": "44354f74b3f40048f921ae4a63a0a2de7e3335511c4ac0b88e7678a8468777c5",
+        "part8_pwa_offline_sync.py": "3d6cd793eceedbc8a9499074c680d7dc7178c8ce291fedcc25a712bfd6a90798",
+        "part9_realtime_print_push.py": "a3c5872dc60c2cfbb09d93d6744bc1457133759edb3b997c94d72c52cb1f77a7",
+        "part10_accessories_part2.py": "99cea4af18a6acfbc274ec28eaade19fed2171c98c1e497935e7c667859f7c91",
+        "Document_Vault/Login_Slideshow/1000955703.png": "fd0d047851e6c55bf9ce3c133c56e1f3741912c4884f2ee376de192874614d89",
+        "Document_Vault/jaymin_upi_qr.png": "d035783f2e945fdbc282f17d1b1cd203b27531c09dddc746d37d91db6d2633d5"
+    }
 }
