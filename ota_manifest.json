@@ -1,11 +1,11 @@
 {
-    "version_id": "2026.11.05.009",
-    "updated_at": "05-11-2026 10:24 PM",
+    "version_id": "2026.11.06.002",
+    "updated_at": "06-11-2026 06:26 AM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
     "silent_mode": true,
-    "update_note": "જયમીનભાઈએ આ નવા સુધારા-વધારા કર્યા છે અને તમારું સોફ્ટવેર ઓટોમેટિક અપડેટ થઈ ગયું છે!",
+    "update_note": "જયમીનભાઈએ કરેલા નવા સુધારા ઓટોમેટિક અપડેટ થઈ ગયા છે!",
     "files": {
         "app.py": "6fb354c259cc29d9d6d1dfa1b16b9445a3524d6f12f299c51c1ae735e35b8fee",
         "part1_core.py": "318d99f155bad92327c6cd534f4913ead32aa590401aadc9e8c342d3c3ad4e86",
