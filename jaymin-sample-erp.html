@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#0f2043">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="દેવાંશી-મનસ્વી ERP">
+<title>👑 દેવાંશી & મનસ્વી માસ્ટર ERP (શોરૂમ ડેમો એપ) - જયમીનભાઈ પટેલ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    * { box-sizing:border-box; }
+    body { font-family:'Noto Sans Gujarati','Segoe UI',sans-serif; background:#0f172a; margin:0; padding:8px; color:#f8fafc; font-size:13px; }
+    .top-bar { background:linear-gradient(135deg, #091224, #1e3a8a); border:2px solid #fde047; border-radius:10px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
+    .store-switcher { display:flex; gap:6px; width:100%; margin-top:6px; }
+    .st-btn { flex:1; padding:9px 6px; border-radius:6px; font-weight:900; font-size:12.5px; cursor:pointer; text-align:center; border:2px solid transparent; transition:all 0.2s; }
+    .st-btn.active { border-color:#fde047; box-shadow:0 0 10px rgba(253,224,71,0.5); }
+    .st-dev { background:#1e3a8a; color:#fde047; }
+    .st-mns { background:#78350f; color:#fef08a; }
+    .nav-tabs { display:flex; gap:4px; overflow-x:auto; padding-bottom:4px; margin-bottom:8px; }
+    .nav-btn { background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:6px 12px; border-radius:5px; font-weight:bold; font-size:11.5px; white-space:nowrap; cursor:pointer; text-decoration:none; }
+    .nav-btn.active { background:#0284c7; color:white; border-color:#38bdf8; }
+    .card { background:#1e293b; border:1px solid #334155; border-radius:8px; padding:12px; margin-bottom:10px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; }
+    .stat-box { background:#0f172a; border:1px solid #38bdf8; border-radius:6px; padding:8px; text-align:center; }
+    .stat-val { font-size:16px; font-weight:900; color:#38bdf8; }
+    .stat-lbl { font-size:11px; color:#94a3b8; }
+    table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+    th { background:#0f2043; color:#fde047; padding:7px; border:1px solid #334155; font-weight:800; }
+    td { padding:6px; border:1px solid #334155; text-align:center; background:#1e293b; color:#f8fafc; }
+    .badge { display:inline-block; padding:2px 6px; border-radius:3px; font-size:10px; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div>
+        <div style="font-size:16px; font-weight:900; color:#fde047;">👑 દેવાંશી & મનસ્વી માસ્ટર ERP (શોરૂમ ડેમો)</div>
+        <div style="font-size:11px; color:#38bdf8;">માલિક: જયમીનભાઈ પટેલ (9725721215) | સત્તાવાર ક્લાઉડ પોર્ટલ v2026.11.06.005</div>
+    </div>
+    <span class="badge" style="background:#15803d; color:white;">🟢 લાઈવ સેમ્પલ સક્રિય</span>
+    
+    <div class="store-switcher">
+        <button type="button" class="st-btn st-dev active" id="btn_mode_dev" onclick="switchDemoStore('DEVANSHI')">👑 ૧. દેવાંશી સ્ટોર (ફ્રેન્ચાઇઝી મોડ સેમ્પલ)</button>
+        <button type="button" class="st-btn st-mns" id="btn_mode_mns" onclick="switchDemoStore('MANSHVI')">🏪 ૨. મનસ્વી સ્ટોર (રિટેલ સ્ટોર મોડ સેમ્પલ)</button>
+    </div>
+</div>
+
+<div class="nav-tabs" id="counter_tabs">
+    <button class="nav-btn active" onclick="switchDemoCounter('F2')">F2: વેચાણ બિલ</button>
+    <button class="nav-btn" onclick="switchDemoCounter('F1')">F1: ખરીદી ડેસ્ક</button>
+    <button class="nav-btn" onclick="switchDemoCounter('F3')">F3: લેજર & વકરો</button>
+    <button class="nav-btn" onclick="switchDemoCounter('F4')">F4: બેંક ડિપોઝિટ</button>
+    <button class="nav-btn" onclick="switchDemoCounter('F5')">F5: જૂના બાય-બેક ફોન</button>
+    <button class="nav-btn" onclick="switchDemoCounter('F6')">F6: ગલ્લા ટ્રાન્સફર</button>
+    <button class="nav-btn" onclick="switchDemoCounter('F8')">F8: ગલ્લા ઓડિટ</button>
+</div>
+
+<!-- ૪ ગલ્લા લાઈવ સિલક સમરી -->
+<div class="grid-4" style="margin-bottom:8px;">
+    <div class="stat-box" style="border-color:#38bdf8;"><div class="stat-lbl">૧. બેંક કેશ ગલ્લો</div><div class="stat-val" id="disp_galla1">₹42,500</div></div>
+    <div class="stat-box" style="border-color:#86efac;"><div class="stat-lbl">૨. એસેસરીઝ ગલ્લો</div><div class="stat-val" style="color:#86efac;" id="disp_galla2">₹8,450</div></div>
+    <div class="stat-box" style="border-color:#fde047;"><div class="stat-lbl">૩. રિચાર્જ ગલ્લો</div><div class="stat-val" style="color:#fde047;" id="disp_galla3">₹3,200</div></div>
+    <div class="stat-box" style="border-color:#c084fc;"><div class="stat-lbl">૪. એક્સ્ટ્રા તિજોરી</div><div class="stat-val" style="color:#c084fc;" id="disp_galla4">₹15,000</div></div>
+</div>
+
+<!-- મુખ્ય ડેમો કન્ટેન્ટ બોક્સ -->
+<div class="card" id="demo_main_view">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:6px; margin-bottom:8px;">
+        <b style="color:#fde047; font-size:14px;" id="demo_title">👑 દેવાંશી મોબાઈલ - સ્માર્ટ વેચાણ કાઉન્ટર (F2)</b>
+        <span class="badge" style="background:#0284c7; color:white;" id="demo_mode_badge">ફ્રેન્ચાઇઝી મોડ</span>
+    </div>
+    
+    <div id="demo_body">
+        <table>
+            <tr><th>તારીખ</th><th>બિલ નં.</th><th>ગ્રાહકનું નામ</th><th>મોડેલ / આઈટમ</th><th>રકમ</th><th>ચુકવણી</th><th>સ્ટેટસ</th></tr>
+            <tr><td>2026-11-06</td><td>INV/2026/0482</td><td>પટેલ રાહુલભાઈ</td><td>Vivo V40 (8/256) Blue</td><td>₹34,999</td><td><span class="badge" style="background:#15803d; color:white;">BAJAJ FINANCE</span></td><td>✅ પૂર્ણ</td></tr>
+            <tr><td>2026-11-06</td><td>INV/2026/0481</td><td>સોલંકી કિશોરભાઈ</td><td>Samsung A55 5G</td><td>₹39,999</td><td><span class="badge" style="background:#0284c7; color:white;">UPI + CASH</span></td><td>✅ પૂર્ણ</td></tr>
+            <tr><td>2026-11-06</td><td>INV/2026/0480</td><td>ઝાલા હરપાલસિંહ</td><td>iPhone 15 Black 128GB</td><td>₹69,900</td><td><span class="badge" style="background:#7c3aed; color:white;">HDFC CC EMI</span></td><td>✅ પૂર્ણ</td></tr>
+            <tr><td>2026-11-06</td><td>INV/2026/0479</td><td>દરજી મહેશભાઈ</td><td>Oppo Reno 12 Pro</td><td>₹36,999</td><td><span class="badge" style="background:#ca8a04; color:white;">ટીવીએસ ફાઇનાન્સ</span></td><td>✅ પૂર્ણ</td></tr>
+        </table>
+    </div>
+</div>
+
+<div style="text-align:center; padding:10px; font-size:11.5px; color:#64748b;">
+    🔒 દેવાંશી-મનસ્વી સત્તાવાર શોરૂમ ડેમો પોર્ટલ | માત્ર જયમીનભાઈ પટેલના Samsung S23 Ultra ડિવાઇસ માટે
+</div>
+
+<script>
+var currentStore = 'DEVANSHI';
+var currentCounter = 'F2';
+
+function switchDemoStore(st) {
+    currentStore = st;
+    document.getElementById('btn_mode_dev').classList.toggle('active', st === 'DEVANSHI');
+    document.getElementById('btn_mode_mns').classList.toggle('active', st === 'MANSHVI');
+    
+    if (st === 'DEVANSHI') {
+        document.getElementById('demo_title').innerText = '👑 દેવાંશી મોબાઈલ - સ્માર્ટ વેચાણ કાઉન્ટર (F2)';
+        document.getElementById('demo_mode_badge').innerText = 'ફ્રેન્ચાઇઝી મોડ';
+        document.getElementById('demo_mode_badge').style.background = '#0284c7';
+        document.getElementById('disp_galla1').innerText = '₹68,200';
+        document.getElementById('disp_galla2').innerText = '₹12,400';
+    } else {
+        document.getElementById('demo_title').innerText = '🏪 મનસ્વી સોફ્ટવેર - પર્સનલ રિટેલ સ્ટોર મોડ (F2)';
+        document.getElementById('demo_mode_badge').innerText = 'રિટેલ સ્ટોર મોડ';
+        document.getElementById('demo_mode_badge').style.background = '#78350f';
+        document.getElementById('disp_galla1').innerText = '₹35,800';
+        document.getElementById('disp_galla2').innerText = '₹7,150';
+    }
+}
+
+function switchDemoCounter(cnt) {
+    currentCounter = cnt;
+    document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
+    event.target.classList.add('active');
+    
+    var titleMap = {
+        'F1': 'ખરીદી ડેસ્ક (Purchase Desk & IMEI Barcode)',
+        'F2': 'વેચાણ બિલ કાઉન્ટર (Cash, Credit, Finance DO)',
+        'F3': 'ઓલ-ઇન-વન ખાતાવહી & દૈનિક વકરો',
+        'F4': 'બેંક કેશ ડિપોઝિટ & વિડ્રોલ',
+        'F5': 'જૂના બાય-બેક ફોન (સેકન્ડ હેન્ડ સ્ટોક & વેચાણ)',
+        'F6': 'આંતરિક ૪-ગલ્લા ટ્રાન્સફર',
+        'F8': 'દૈનિક ૪-ગલ્લા ઓડિટ લોગ'
+    };
+    var prefix = (currentStore === 'DEVANSHI') ? '👑 દેવાંશી (ફ્રેન્ચાઇઝી): ' : '🏪 મનસ્વી (રિટેલ): ';
+    document.getElementById('demo_title').innerText = prefix + (titleMap[cnt] || cnt);
+}
+</script>
+</body>
+</html>
