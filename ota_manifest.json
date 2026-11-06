@@ -5,7 +5,7 @@
     "target_mode": "ALL",
     "target_shops": "ALL",
     "silent_mode": true,
-    "update_note": "જયમીનભાઈએ કરેલા નવા સુધારા ઓટોમેટિક અપડેટ થઈ ગયા છે!",
+    "update_note": "જયમીનભાઈએ આ નવા સુધારા-વધારા કર્યા છે અને તમારું સોફ્ટવેર ઓટોમેટિક અપડેટ થઈ ગયું છે!",
     "files": {
         "app.py": "6998f1fd42d1df8d72b05ff994b7366b885bea5a27c84dc5a04c9d5a63241e86",
         "part1_core.py": "9aa54edb7be34012e21bcecc28d71c4aa19fc93922971fe24efd9143a8783bf6",
