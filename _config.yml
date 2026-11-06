@@ -1,0 +1,6 @@
+markdown: kramdown
+exclude:
+  - "*.apk"
+  - "*.exe"
+  - "*.mobileconfig"
+  - "download"
