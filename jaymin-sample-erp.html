@@ -150,22 +150,22 @@
 </head>
 <body>
 
-<div id="jaymin_showroom_toggle_bar" style="position:sticky; top:0; z-index:999999; background:linear-gradient(135deg, #091224, #1e293b); border-bottom:3px solid #f59e0b; padding:8px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; box-shadow:0 6px 20px rgba(0,0,0,0.7); width:100%; box-sizing:border-box;">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <span style="font-size:22px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));">👑</span>
+<div id="jaymin_showroom_toggle_bar" style="position:sticky; top:0; z-index:999999; background:linear-gradient(135deg, #091224, #1e293b); border-bottom:3px solid #f59e0b; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; box-shadow:0 6px 20px rgba(0,0,0,0.7); width:100%; box-sizing:border-box;">
+    <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">👑</span>
         <div>
-            <div style="font-weight:900; color:#fde047; font-size:13.5px; letter-spacing:0.3px;">જયમીનભાઈ પટેલ - પર્સનલ શોરૂમ સેમ્પલ ERP</div>
-            <div style="color:#94a3b8; font-size:10.5px;">દુકાનદારને લાઈવ ડેમો બતાવવા ૧-ક્લિકમાં સ્ટોર મોડ બદલો</div>
+            <div style="font-weight:900; color:#fde047; font-size:13px; letter-spacing:0.3px;">જયમીનભાઈ પટેલ - પર્સનલ શોરૂમ સેમ્પલ ERP</div>
+            <div style="color:#94a3b8; font-size:10.5px;">૧-ક્લિકમાં સ્ટોર મોડ બદલીને ગ્રાહકને લાઈવ ડેમો બતાવો</div>
         </div>
     </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-        <button type="button" id="btn_toggle_devanshi" onclick="switchDemoStore('DEVANSHI')" style="background:#1e3a8a; color:#fde047; border:2px solid #fde047; padding:6px 14px; border-radius:6px; font-weight:900; font-size:12px; cursor:pointer; box-shadow:0 0 10px rgba(253,224,71,0.4); transition:all 0.2s;">
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+        <button type="button" id="btn_toggle_devanshi" onclick="switchDemoStore('DEVANSHI')" style="background:#1e3a8a; color:#fde047; border:2px solid #fde047; padding:6px 12px; border-radius:6px; font-weight:900; font-size:11.5px; cursor:pointer; box-shadow:0 0 10px rgba(253,224,71,0.4); transition:all 0.2s;">
             👑 ૧. દેવાંશી મોબાઈલ (ફ્રેન્ચાઇઝી મોડ)
         </button>
-        <button type="button" id="btn_toggle_manshvi" onclick="switchDemoStore('MANSHVI')" style="background:#334155; color:#cbd5e1; border:1px solid #475569; padding:6px 14px; border-radius:6px; font-weight:900; font-size:12px; cursor:pointer; transition:all 0.2s;">
+        <button type="button" id="btn_toggle_manshvi" onclick="switchDemoStore('MANSHVI')" style="background:#334155; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:6px; font-weight:900; font-size:11.5px; cursor:pointer; transition:all 0.2s;">
             🏪 ૨. મનસ્વી મોબાઈલ (રિટેલ મોડ)
         </button>
-        <a href="jaymin-super-admin.html?pin=1986" style="background:#0f766e; color:white; border:1.5px solid #14b8a6; padding:6px 12px; border-radius:6px; font-weight:900; font-size:12px; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+        <a href="jaymin-super-admin.html?pin=1986" style="background:#0f766e; color:white; border:1.5px solid #14b8a6; padding:6px 12px; border-radius:6px; font-weight:900; font-size:11.5px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
             ⚡ સુપર એડમિન હબ
         </a>
     </div>
@@ -2503,7 +2503,9 @@ function showSpaBannerMsg(msgText) {
 function navigateSpa(urlStr, optMsg) {
     if (!urlStr) return;
     // Check if running on a live FastAPI HTTP server (not file:// or data: or android_asset)
-    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+    var host = (window.location.hostname || '').toLowerCase();
+    var isStaticHosted = (host.indexOf('github.io') !== -1 || window.location.protocol === 'file:' || !!window.__IS_STANDALONE_WEB__ || !!window.__IS_JAYMIN_PERSONAL_SAMPLE__);
+    if (!isStaticHosted && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
         if (window.location.pathname !== '/mobile-standalone') {
             window.location.href = urlStr;
             return;
@@ -2603,7 +2605,16 @@ function navigateSpa(urlStr, optMsg) {
     document.getElementById('spa_erp_view').style.display = 'block';
 
     var isMns = (window.__ACTIVE_SHOP_ID__ === 'MANSHVI');
-    var topHtml = isMns ? window.__AUTHENTIC_VIEWS__.TOP_INNER_MANSHVI : window.__AUTHENTIC_VIEWS__.TOP_INNER_DEVANSHI;
+    
+    var isMns = (window.__ACTIVE_SHOP_ID__ === 'MANSHVI');
+    var isDev = (window.__ACTIVE_SHOP_ID__ === 'DEVANSHI');
+    var topHtml = isMns ? window.__AUTHENTIC_VIEWS__.TOP_INNER_MANSHVI : (isDev ? window.__AUTHENTIC_VIEWS__.TOP_INNER_DEVANSHI : window.__AUTHENTIC_VIEWS__.TOP_INNER_MANSHVI);
+    // Dynamically replace store name if custom shop
+    if (!isMns && !isDev) {
+        var mySName = localStorage.getItem('dm_custom_sname_' + window.__ACTIVE_SHOP_ID__) || window.__ACTIVE_SHOP_ID__;
+        topHtml = topHtml.replace(/મનસ્વી સોફ્ટવેર/g, mySName).replace(/MANSHVI/g, window.__ACTIVE_SHOP_ID__);
+    }
+
     document.getElementById('spa_erp_top_inner').innerHTML = topHtml;
 
     // Highlight active sheet tab in sheets-bar-grid
@@ -2696,7 +2707,9 @@ document.addEventListener('submit', async function(e) {
     var form = e.target;
     if (!form || form.tagName !== 'FORM') return;
     var act = form.getAttribute('action') || '';
-    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+    var host = (window.location.hostname || '').toLowerCase();
+    var isStaticHosted = (host.indexOf('github.io') !== -1 || window.location.protocol === 'file:' || !!window.__IS_STANDALONE_WEB__ || !!window.__IS_JAYMIN_PERSONAL_SAMPLE__);
+    if (!isStaticHosted && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
         if (window.location.pathname !== '/mobile-standalone') {
             return; // Let FastAPI server handle directly
         }
@@ -2799,7 +2812,12 @@ document.addEventListener('submit', async function(e) {
                 body: JSON.stringify({ message: `Live 3-in-1 Signup: ${sName} (${newSid})`, content: contentB64 })
             });
         } catch (err) {}
-        window.__ACTIVE_SHOP_ID__ = (sType === 'RETAIL_STANDALONE') ? 'MANSHVI' : 'DEVANSHI';
+        
+        // Clean tenant isolation: newly registered client opens their OWN blank store
+        window.__ACTIVE_SHOP_ID__ = newSid;
+        window.__ACTIVE_STORE_NAME__ = sName;
+        window.__ACTIVE_STORE_MODE__ = sType;
+
         window.__ACTIVE_USER_ID__ = oUid;
         localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
         localStorage.setItem('devanshi_logged_in_standalone', '1');
@@ -2852,6 +2870,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 <script id="jaymin_sample_controller">
 window.__IS_JAYMIN_PERSONAL_SAMPLE__ = true;
+window.__IS_STANDALONE_WEB__ = true;
 
 function switchDemoStore(shopId) {
     window.__ACTIVE_SHOP_ID__ = shopId;
@@ -2882,11 +2901,13 @@ function switchDemoStore(shopId) {
     navigateSpa('/?sheet=SMART_TERMINAL&mode=F2', '🏪 સ્ટોર સફળતાપૂર્વક બદલાઈ ગયો: ' + (shopId === 'DEVANSHI' ? 'દેવાંશી સ્ટોર (ફ્રેન્ચાઇઝી મોડ)' : 'મનસ્વી સ્ટોર (રિટેલ મોડ)'));
 }
 
-// Override initial load: Bypass login screen and open ERP immediately
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('devanshi_logged_in_standalone', '1');
-    var activeShop = localStorage.getItem('dm_active_shop_id') || 'DEVANSHI';
+    var u = new URLSearchParams(window.location.search);
+    var shopParam = (u.get('shop') || '').toUpperCase();
+    var activeShop = (shopParam === 'MANSHVI' || shopParam === 'DEVANSHI') ? shopParam : (localStorage.getItem('dm_active_shop_id') || 'DEVANSHI');
     window.__ACTIVE_SHOP_ID__ = activeShop;
+    
     var bDev = document.getElementById('btn_toggle_devanshi');
     var bMns = document.getElementById('btn_toggle_manshvi');
     if (bDev && bMns) {
@@ -2906,8 +2927,10 @@ window.addEventListener('load', function() {
             bMns.style.border = '1px solid #475569';
         }
     }
-    // Instant launch ERP directly
-    navigateSpa('/?sheet=SMART_TERMINAL&mode=F2');
+    
+    setTimeout(function() {
+        navigateSpa('/?sheet=SMART_TERMINAL&mode=F2');
+    }, 10);
 });
 </script>
 
