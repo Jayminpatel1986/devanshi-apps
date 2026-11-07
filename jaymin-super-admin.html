@@ -408,7 +408,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     <input type="hidden" name="active_subparts" id="gf_active_subparts" value="F1_1,F1_2,F1_3,F1_5,F2_1,F2_2,F2_3,F3_1,F3_1_CUST_DUE,F3_1_ACC,F3_1_RECH,F3_2,F3_3,F3_4,F3_5,F3_6,F4_1,F4_2,F5_1,F5_2,F5_3,F5_4,F6_1,F7_1,F7_2,F7_3,F8_1,F8_2,F8_3">
 
                     <!-- Collapsible Granular Checkbox Matrix -->
-                    <div id="granular_customizer_drawer" style="display:none; background:white; border:2px solid #0284c7; border-radius:6px; padding:10px; margin-top:6px; font-size:11px; color:#0f172a;">
+                    <div id="granular_customizer_drawer" style="display:block; background:white; border:2px solid #0284c7; border-radius:6px; padding:10px; margin-top:6px; font-size:11px; color:#0f172a;">
                         <div style="font-weight:900; color:#0369a1; margin-bottom:4px; border-bottom:1px solid #cbd5e1; padding-bottom:3px;">🔹 ભાગ (ક): કાઉન્ટરના છૂટક પેટા-ઓપ્શન (Sub-Options — જે ટીક કરશો તે જ દુકાનદારને દેખાશે):</div>
                         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; margin-bottom:8px;">
                             <label><input type="checkbox" class="gf-sub-chk" value="F1_1" data-parent="F1" checked onchange="syncGranularHiddenInputs()"> <b>F1(1):</b> નવો મોબાઈલ ખરીદી (IMEI)</label>
@@ -858,6 +858,10 @@ window.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
+            if (tabId === 'tab_features') {
+                var gd = document.getElementById('granular_customizer_drawer');
+                if (gd) gd.style.display = 'block';
+            }
             var btnAll = document.getElementById('btn_tab_all');
             if (btnAll) btnAll.classList.remove('active-tab');
         }
