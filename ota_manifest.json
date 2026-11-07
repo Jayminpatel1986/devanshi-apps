@@ -1,11 +1,11 @@
 {
     "version_id": "2026.11.06.005",
-    "updated_at": "06-11-2026 09:25 PM",
+    "updated_at": "07-11-2026 07:00 AM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
     "silent_mode": true,
-    "update_note": "જયમીનભાઈએ આ નવા સુધારા-વધારા કર્યા છે અને તમારું સોફ્ટવેર ઓટોમેટિક અપડેટ થઈ ગયું છે!",
+    "update_note": "જયમીનભાઈએ કરેલા નવા સુધારા ઓટોમેટિક અપડેટ થઈ ગયા છે!",
     "files": {
         "app.py": "6998f1fd42d1df8d72b05ff994b7366b885bea5a27c84dc5a04c9d5a63241e86",
         "part1_core.py": "9aa54edb7be34012e21bcecc28d71c4aa19fc93922971fe24efd9143a8783bf6",
@@ -15,7 +15,7 @@
         "part2_d_sheets.py": "39e85ddeb79ce7c19795d2e42f407527882cdb3d194a88d5dd681e198cb5cf75",
         "part3_routes.py": "1c9d6060cf293f1f9f9f4ac14a18ade070800fcbdd572a05c294d5b7c1e26ea6",
         "part4_ai_import.py": "bb7d4d36a1ddff105c750d1b10794de3c382dcdae27670e0e952a3b1b5f26d09",
-        "part5_saas_control.py": "377afa44d7baddbccbe0b57506dbfc1e26b732da652e12e94896d1a34978517b",
+        "part5_saas_control.py": "a5f8a8a16904e009c1da1936d0483fe14cb7e5c64e36ebd5f9942eb842bc28b2",
         "part6_police_vault.py": "ed6b7df42fa733673619f469260f56fe3d5f52862cf05419fd54eabbcb1f3755",
         "part7_eod_whatsapp.py": "44354f74b3f40048f921ae4a63a0a2de7e3335511c4ac0b88e7678a8468777c5",
         "part8_pwa_offline_sync.py": "3d6cd793eceedbc8a9499074c680d7dc7178c8ce291fedcc25a712bfd6a90798",
