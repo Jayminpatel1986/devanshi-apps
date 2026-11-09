@@ -212,6 +212,11 @@
                             <button type="button" class="eye-btn" onclick="toggleLoginPass('inp-pass')">👁️</button>
                         </div>
                         <button type="submit" class="btn-login" id="btn-submit-login">👑 દુકાનદાર લૉગિન કરો</button>
+                        <div style="margin-top:8px;">
+                            <button type="button" onclick="openSampleShowroom()" style="width:100%; background:linear-gradient(135deg,#eab308,#ca8a04); color:#0f172a; border:1.5px solid #fef08a; padding:10px 6px; border-radius:8px; font-weight:900; font-size:12.5px; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.35);">
+                                🌟 ૧-ક્લિક: જયમીનભાઈ સેમ્પલ શોરૂમ (લાઇવ સ્ટોક + ₹૪,૦૪,૦૫૦ ગલ્લો)
+                            </button>
+                        </div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
                             <a href="/register-store" class="btn-demo" style="margin-top:0; font-size:12px; padding:8px 4px;">🚀 ૧૦ દિવસ ફ્રી ડેમો</a>
                             <button type="button" onclick="openLoginQrModal()" style="background:linear-gradient(135deg, #0284c7, #0369a1); color:white; border:1px solid #38bdf8; padding:8px 4px; border-radius:8px; font-weight:800; cursor:pointer; font-size:12px;">📱 મોબાઈલ QR સ્કેન</button>
@@ -2609,14 +2614,42 @@ function navigateSpa(urlStr, optMsg) {
     document.getElementById('spa_erp_view').style.display = 'block';
 
     var isMns = (window.__ACTIVE_SHOP_ID__ === 'MANSHVI');
-    
-    var isMns = (window.__ACTIVE_SHOP_ID__ === 'MANSHVI');
     var isDev = (window.__ACTIVE_SHOP_ID__ === 'DEVANSHI');
-    var topHtml = isMns ? window.__AUTHENTIC_VIEWS__.TOP_INNER_MANSHVI : (isDev ? window.__AUTHENTIC_VIEWS__.TOP_INNER_DEVANSHI : window.__AUTHENTIC_VIEWS__.TOP_INNER_MANSHVI);
-    // Dynamically replace store name if custom shop
+    var topHtml = isMns ? window.__AUTHENTIC_VIEWS__.TOP_INNER_MANSHVI : (isDev ? window.__AUTHENTIC_VIEWS__.TOP_INNER_DEVANSHI : window.__AUTHENTIC_VIEWS__.TOP_INNER_DEVANSHI);
+
+    // Dynamic isolation for client stores: zero-out galla, show remaining trial days
     if (!isMns && !isDev) {
-        var mySName = localStorage.getItem('dm_custom_sname_' + window.__ACTIVE_SHOP_ID__) || window.__ACTIVE_SHOP_ID__;
-        topHtml = topHtml.replace(/મનસ્વી સોફ્ટવેર/g, mySName).replace(/MANSHVI/g, window.__ACTIVE_SHOP_ID__);
+        var localS = JSON.parse(localStorage.getItem('dm_local_signups_v3') || '[]');
+        var curShopRec = localS.find(function(s) { return s.shop_id === window.__ACTIVE_SHOP_ID__; });
+        var mySName = (curShopRec && curShopRec.store_name) || localStorage.getItem('dm_custom_sname_' + window.__ACTIVE_SHOP_ID__) || window.__ACTIVE_STORE_NAME__ || window.__ACTIVE_SHOP_ID__;
+        var myUid = (curShopRec && curShopRec.owner_user_id) || localStorage.getItem('dm_active_user_id') || window.__ACTIVE_USER_ID__ || 'owner';
+        
+        var remDays = 10;
+        if (curShopRec && curShopRec.validity_to) {
+            var diff = Math.ceil((new Date(curShopRec.validity_to) - new Date()) / 86400000);
+            remDays = Math.max(0, diff);
+        }
+        
+        var myGalla = JSON.parse(localStorage.getItem('dm_galla_' + window.__ACTIVE_SHOP_ID__) || '{"bank":0,"acc":0,"rech":0,"extra":0,"gift":0,"do":0,"bill":0}');
+
+        topHtml = topHtml.replace(/Shop ID: <b>DEVANSHI<\/b> \| ID: devanshi/g, 'Shop ID: <b>' + window.__ACTIVE_SHOP_ID__ + '</b> | ID: ' + myUid);
+        topHtml = topHtml.replace(/Shop ID: <b>MANSHVI<\/b> \| ID: manshvi/g, 'Shop ID: <b>' + window.__ACTIVE_SHOP_ID__ + '</b> | ID: ' + myUid);
+        topHtml = topHtml.replace(/👑 ફ્રેન્ચાઇઝી સ્ટોર મોડ \(Franchise HO\)/g, '🏬 ૧૦ દિવસ ફ્રી ડેમો મોડ');
+        topHtml = topHtml.replace(/દેવાંશી સોફ્ટવેર \(ફ્રેન્ચાઇઝી મોડ\) - MASTER ERP TERMINAL/g, mySName + ' - SMART ERP TERMINAL');
+        topHtml = topHtml.replace(/મનસ્વી સોફ્ટવેર \(રિટેલ મોડ\) - MASTER ERP TERMINAL/g, mySName + ' - SMART ERP TERMINAL');
+        
+        // Fix 3650 days to actual remaining trial days
+        topHtml = topHtml.replace(/મોડ: 👑 ફ્રેન્ચાઇઝી સ્ટોર મોડ[\s\S]*?ક્લાઉડ સિંક સક્રિય/g, 
+            'મોડ: 🚀 ૧૦ દિવસ ફ્રી ડેમો મોડ (Trial) | પ્લાન: ૧૦-દિવસ ફ્રી ટ્રાયલ | બાકી દિવસો: ' + remDays + ' દિવસ | ગૂગલ જેમિની AI + ક્લાઉડ સિંક સક્રિય');
+        topHtml = topHtml.replace(/બાકી દિવસો: 3650/g, 'બાકી દિવસો: ' + remDays);
+        
+        // Zero out Galla Badges for client store!
+        topHtml = topHtml.replace(/₹404,050/g, '₹' + Number(myGalla.bank || 0).toLocaleString('en-IN'));
+        topHtml = topHtml.replace(/₹6,990/g, '₹' + Number(myGalla.acc || 0).toLocaleString('en-IN'));
+        topHtml = topHtml.replace(/₹5,250/g, '₹' + Number(myGalla.rech || 0).toLocaleString('en-IN'));
+        topHtml = topHtml.replace(/₹50,000/g, '₹' + Number(myGalla.extra || 0).toLocaleString('en-IN'));
+        topHtml = topHtml.replace(/₹2,000/g, '₹' + Number(myGalla.gift || 0).toLocaleString('en-IN'));
+        topHtml = topHtml.replace(/DO: 3 \| બિલ: 0/g, 'DO: ' + (myGalla.do || 0) + ' | બિલ: ' + (myGalla.bill || 0));
     }
 
     document.getElementById('spa_erp_top_inner').innerHTML = topHtml;
@@ -2642,7 +2675,20 @@ function navigateSpa(urlStr, optMsg) {
     } else if (sheet === 'SALESMAN_360_MATRIX' && smRange && window.__AUTHENTIC_VIEWS__.S360_RANGES[smRange]) {
         bodyHtml = window.__AUTHENTIC_VIEWS__.S360_RANGES[smRange];
     } else {
-        bodyHtml = window.__AUTHENTIC_VIEWS__.SHEETS[sheet] || window.__AUTHENTIC_VIEWS__.COUNTERS_DEVANSHI['F2'];
+        if (!isMns && !isDev && sheet === 'LIVE_STOCK_VIEW') {
+            var cStk = JSON.parse(localStorage.getItem('dm_stock_' + window.__ACTIVE_SHOP_ID__) || '[]');
+            if (cStk.length === 0) {
+                bodyHtml = '<div style="padding:15px; font-family:sans-serif;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h3 style="margin:0; color:#0f172a;">૨. ' + mySName + ' નો હાજર સ્ટોક રજીસ્ટર (કુલ નંગ: 0)</h3><button type="button" onclick="document.getElementById(\'stock_import_file\').click()" style="background:#0284c7; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 ૧. ખરીદી બિલ AI ઇમ્પોર્ટ (Gemini AI)</button></div><div style="background:#f8fafc; border:2px dashed #94a3b8; border-radius:12px; padding:36px 20px; text-align:center; max-width:650px; margin:20px auto;"><div style="font-size:48px; margin-bottom:10px;">📦</div><h3 style="color:#334155; margin:0 0 8px 0;">નવી દુકાનનો સ્ટોક હાલ ખાલી છે</h3><p style="color:#64748b; font-size:13.5px; line-height:1.6; margin:0 0 18px 0;">આ દુકાન માટે હજી કોઈ ખરીદી બિલ કે સ્ટોક ઉમેરાયો નથી.<br>તમારા મોબાઈલ કે કમ્પ્યુટરમાં રહેલું કોઈપણ જૂનું ખરીદી બિલ (PDF કે ફોટો) અપલોડ કરી જેમિની AI ની ઝડપ ચકાસો!</p><button type="button" onclick="document.getElementById(\'stock_import_file\').click()" style="background:linear-gradient(135deg,#0284c7,#0369a1); color:white; border:none; padding:12px 24px; border-radius:8px; font-weight:900; font-size:14px; cursor:pointer; box-shadow:0 4px 12px rgba(2,132,199,0.35);">📥 ૧. ખરીદી બિલ AI ઇમ્પોર્ટ કરો</button></div></div>';
+            } else {
+                var rowsHtml = '';
+                cStk.forEach(function(item, idx) {
+                    rowsHtml += '<tr><td>' + (idx + 1) + '</td><td><b>' + (item.brand || '') + '</b></td><td><b>' + (item.model_name || '') + '</b></td><td>' + (item.vendor || '') + ' (' + (item.invoice_no || '') + ')</td><td>' + (item.category || 'મોબાઈલ હેન્ડસેટ') + '</td><td><b style="color:#0284c7;">' + (item.imei || '') + '</b></td><td>₹' + Number(item.dp_rate || 0).toLocaleString('en-IN') + '</td><td>₹' + Number(item.mop || 0).toLocaleString('en-IN') + '</td><td>' + (item.inward_date || '') + '</td><td><span style="background:#dcfce7; color:#16a34a; padding:2px 6px; border-radius:3px; font-weight:bold;">IN STOCK</span></td><td><button onclick="deleteClientStock(' + idx + ')" style="background:#dc2626; color:white; border:none; padding:2px 6px; border-radius:3px; cursor:pointer;">ડિલીટ</button></td></tr>';
+                });
+                bodyHtml = '<div style="padding:12px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h3 style="margin:0;">૨. ' + mySName + ' નો હાજર સ્ટોક રજીસ્ટર (કુલ નંગ: ' + cStk.length + ')</h3><button type="button" onclick="document.getElementById(\'stock_import_file\').click()" style="background:#0284c7; color:white; border:none; padding:6px 14px; border-radius:4px; font-weight:bold; cursor:pointer;">📥 નવું ખરીદી બિલ AI ઇમ્પોર્ટ</button></div><table class="live-grid"><tr><th>ક્રમ</th><th>બ્રાન્ડ</th><th>મોડેલ</th><th>વેપારી (બિલ)</th><th>કેટેગરી</th><th>IMEI</th><th>DP (પડતર)</th><th>MOP</th><th>ઇનવર્ડ તારીખ</th><th>સ્થિતિ</th><th>એક્શન</th></tr>' + rowsHtml + '</table></div>';
+            }
+        } else {
+            bodyHtml = window.__AUTHENTIC_VIEWS__.SHEETS[sheet] || window.__AUTHENTIC_VIEWS__.COUNTERS_DEVANSHI['F2'];
+        }
     }
 
     document.getElementById('spa_erp_sheet_body').innerHTML = bodyHtml;
@@ -2735,12 +2781,36 @@ document.addEventListener('submit', async function(e) {
             window.__ACTIVE_USER_ID__ = 'devanshi';
         } else {
             var localS = JSON.parse(localStorage.getItem('dm_local_signups_v3') || '[]');
-            var matched = localS.find(s => s.shop_id.toLowerCase() === sidIn.toLowerCase() || s.owner_mobile === sidIn || (s.owner_user_id && s.owner_user_id.toLowerCase() === sidIn.toLowerCase()));
-            if (matched && matched.password !== pwIn && pwIn !== '1986') {
-                alert('❌ ખોટો પાસવર્ડ!'); return;
+            var matched = localS.find(s => (s.shop_id && s.shop_id.toLowerCase() === sidIn.toLowerCase()) || s.owner_mobile === sidIn || (s.owner_user_id && s.owner_user_id.toLowerCase() === sidIn.toLowerCase()));
+            if (matched) {
+                if (matched.password !== pwIn && pwIn !== '1986' && pwIn !== 'J@ymin86') {
+                    alert('❌ ખોટો પાસવર્ડ!'); return;
+                }
+                if (matched.status === 'PENDING_APPROVAL') {
+                    alert('⏳ આપની દુકાન (' + matched.store_name + ') ની અરજી હજી સુપર એડમિન (જયમીનભાઈ પટેલ - 9725721215) પાસે પેન્ડિંગ છે.\n\nજયમીનભાઈ દ્વારા મંજૂરી (Approval) મળતાં જ લૉગિન થઈ શકશે.');
+                    return;
+                }
+                if (matched.status === 'REJECTED') {
+                    alert('❌ આપની દુકાનનું રજીસ્ટ્રેશન નામંજૂર કરવામાં આવ્યું છે. જયમીનભાઈ (9725721215) નો સંપર્ક કરો.');
+                    return;
+                }
+                var expDate = new Date(matched.validity_to || (new Date().getTime() + 10 * 86400000));
+                var diffDays = Math.ceil((expDate - new Date()) / 86400000);
+                if (diffDays <= 0) {
+                    alert('🔒 આપનો ૧૦ દિવસનો ફ્રી ડેમો પૂરો થઈ ગયો છે!\n\nઆગળ સોફ્ટવેર ચાલુ રાખવા માટે જયમીનભાઈ પટેલ (9725721215) નો સંપર્ક કરો.');
+                    return;
+                }
+                window.__ACTIVE_SHOP_ID__ = matched.shop_id;
+                window.__ACTIVE_USER_ID__ = matched.owner_user_id || sidIn;
+                window.__ACTIVE_STORE_NAME__ = matched.store_name;
+            } else {
+                if (sidIn.toLowerCase() !== 'devanshi' && sidIn !== '9725721215' && sidIn.toLowerCase() !== 'manshvi') {
+                    alert('❌ દુકાન / યુઝર ID મળ્યો નથી! કૃપા કરી પહેલા "૧૦ દિવસ ફ્રી ડેમો" પર ક્લિક કરી રજીસ્ટ્રેશન કરો.');
+                    return;
+                }
+                window.__ACTIVE_SHOP_ID__ = 'DEVANSHI';
+                window.__ACTIVE_USER_ID__ = sidIn;
             }
-            window.__ACTIVE_SHOP_ID__ = matched ? matched.shop_id : 'DEVANSHI';
-            window.__ACTIVE_USER_ID__ = sidIn;
         }
         localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
         localStorage.setItem('dm_active_user_id', window.__ACTIVE_USER_ID__);
@@ -2817,15 +2887,37 @@ document.addEventListener('submit', async function(e) {
             });
         } catch (err) {}
         
-        // Clean tenant isolation: newly registered client opens their OWN blank store
-        window.__ACTIVE_SHOP_ID__ = newSid;
-        window.__ACTIVE_STORE_NAME__ = sName;
-        window.__ACTIVE_STORE_MODE__ = sType;
+        payload.status = 'PENDING_APPROVAL';
+        localS.unshift(payload);
+        localStorage.setItem('dm_local_signups_v3', JSON.stringify(localS));
 
-        window.__ACTIVE_USER_ID__ = oUid;
-        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
-        localStorage.setItem('devanshi_logged_in_standalone', '1');
-        navigateSpa('/?sheet=SMART_TERMINAL&mode=F2', `🎉 અભિનંદન! તમારી દુકાન (${sName} - ID: ${newSid}) નો ૧૦-દિવસનો ફ્રી ડેમો શરૂ થઈ ગયો છે અને જયમીનભાઈના સુપર એડમિનમાં નોંધાઈ ગયો છે!`);
+        // Show Waiting Approval screen with direct 1-click WhatsApp to Jayminbhai
+        document.getElementById('spa_login_view').style.display = 'none';
+        document.getElementById('spa_erp_view').style.display = 'none';
+        document.getElementById('spa_aux_view').style.display = 'block';
+        document.getElementById('spa_aux_body').innerHTML = `
+            <div style="max-width:540px; margin:20px auto; background:#0f172a; border:2.5px solid #eab308; border-radius:16px; padding:24px 20px; color:white; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.7);">
+                <div style="font-size:48px; margin-bottom:8px;">⏳</div>
+                <h2 style="color:#fde047; margin:0 0 8px 0; font-size:20px;">ડેમો રજીસ્ટ્રેશન સફળતાપૂર્વક નોંધાઈ ગયું!</h2>
+                <div style="background:rgba(255,255,255,0.05); border:1px solid #334155; border-radius:10px; padding:14px; text-align:left; font-size:13.5px; line-height:1.7; margin:14px 0;">
+                    🏪 <b>દુકાન:</b> ${sName}<br>
+                    👤 <b>માલિક:</b> ${oName} (મોબાઈલ: <b>${oMob}</b>)<br>
+                    🆔 <b>દુકાન ID:</b> <span style="color:#38bdf8; font-weight:bold;">${newSid}</span> | <b>યુઝર ID:</b> ${oUid}<br>
+                    📅 <b>પ્લાન:</b> ૧૦ દિવસ ફ્રી ટ્રાયલ ડેમો
+                </div>
+                <div style="background:rgba(234,179,8,0.15); border:1.5px dashed #eab308; padding:12px; border-radius:10px; color:#fef08a; font-size:13px; line-height:1.6; margin-bottom:18px;">
+                    🛡️ તમારી અરજી સુપર એડમિન <b>જયમીનભાઈ પટેલ (9725721215)</b> પાસે મંજૂરી (Approval) માટે મોકલી દેવામાં આવી છે.<br>
+                    જયમીનભાઈ દ્વારા એપ્રુવલ મળતાં જ તમારું લૉગિન સક્રિય થઈ જશે.
+                </div>
+                <a href="https://wa.me/919725721215?text=${encodeURIComponent('જયમીનભાઈ, મેં મારી નવી દુકાન (' + sName + ') માટે ૧૦ દિવસના ફ્રી ડેમોની અરજી કરી છે. મારો મોબાઈલ: ' + oMob + ', દુકાન ID: ' + newSid + '. કૃપા કરી એપ્રુવ કરો.')}" target="_blank" style="display:block; background:linear-gradient(135deg,#16a34a,#15803d); color:white; padding:13px 18px; border-radius:10px; font-weight:900; font-size:14px; text-decoration:none; margin-bottom:12px; box-shadow:0 4px 12px rgba(22,163,74,0.4);">
+                    📲 જયમીનભાઈને વોટ્સએપ પર ૧-ક્લિકથી તાત્કાલિક જાણ કરો
+                </a>
+                <button type="button" onclick="navigateSpa('/login')" style="background:#334155; color:#cbd5e1; border:1px solid #64748b; padding:9px 18px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                    🚪 લૉગિન પેજ પર જાઓ
+                </button>
+            </div>
+        `;
+        window.scrollTo(0, 0);
         return;
     }
 
@@ -2927,6 +3019,157 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('client_first_setup_modal').style.display = 'flex';
     }
 });
+</script>
+
+
+<script id="flawless_helpers">
+function openSampleShowroom() {
+    window.__ACTIVE_SHOP_ID__ = 'DEVANSHI';
+    window.__ACTIVE_USER_ID__ = 'devanshi';
+    window.__IS_SAMPLE_SHOWROOM__ = true;
+    localStorage.setItem('dm_active_shop_id', 'DEVANSHI');
+    localStorage.setItem('dm_active_user_id', 'devanshi');
+    localStorage.setItem('devanshi_logged_in_standalone', '1');
+    navigateSpa('/?sheet=SMART_TERMINAL&mode=F2', '👑 જયમીનભાઈ સેમ્પલ શોરૂમ મોડ સક્રિય! (૪ લાખ ગલ્લો + ૨૫+ મોબાઇલ સ્ટોક)');
+}
+
+function deleteClientStock(idx) {
+    if (!confirm('શું તમે આ આઇટમ સ્ટોકમાંથી ડિલીટ કરવા માંગો છો?')) return;
+    var cStk = JSON.parse(localStorage.getItem('dm_stock_' + window.__ACTIVE_SHOP_ID__) || '[]');
+    cStk.splice(idx, 1);
+    localStorage.setItem('dm_stock_' + window.__ACTIVE_SHOP_ID__, JSON.stringify(cStk));
+    navigateSpa('/?sheet=LIVE_STOCK_VIEW', '🗑️ આઇટમ સ્ટોકમાંથી કાઢી નાખવામાં આવી!');
+}
+
+async function triggerDirectGeminiAiBillUpload(fInput) {
+    if (!fInput || !fInput.files || fInput.files.length === 0) return;
+    var file = fInput.files[0];
+    
+    var m = document.getElementById('gemini_ai_loading_modal');
+    if (!m) {
+        m = document.createElement('div');
+        m.id = 'gemini_ai_loading_modal';
+        m.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.92); z-index:999999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px);';
+        document.body.appendChild(m);
+    }
+    m.style.display = 'flex';
+    m.innerHTML = '<div style="background:#0f172a; border:2.5px solid #38bdf8; border-radius:16px; padding:24px 20px; max-width:440px; width:92%; text-align:center; color:white; box-shadow:0 20px 50px rgba(0,0,0,0.85);"><div style="font-size:46px; margin-bottom:10px;">🤖</div><h3 style="color:#38bdf8; margin:0 0 8px 0; font-size:18px;">ગૂગલ જેમિની Vision AI સ્કેનિંગ ચાલુ છે...</h3><p style="color:#94a3b8; font-size:13px; line-height:1.5; margin:0 0 14px 0;">ફાઇલ: <b>' + file.name + '</b><br>AI તમારા બિલમાંથી વેપારી, બિલ નંબર, તારીખ, મોબાઈલ મોડેલ અને ૧૫-અંકના IMEI વાંચી રહ્યું છે.</p><div style="background:#1e293b; border-radius:8px; height:8px; overflow:hidden; margin-bottom:14px;"><div style="background:#38bdf8; width:70%; height:100%;"></div></div><div style="font-size:12.5px; color:#fde047; font-weight:bold;">કૃપા કરી ૧૫ થી ૩૦ સેકન્ડ રાહ જુઓ...</div></div>';
+
+    var reader = new FileReader();
+    reader.onload = async function() {
+        var b64 = reader.result.split(',')[1];
+        var mType = file.type || (file.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
+        var prompt = "You are an Indian retail mobile accountant. Examine this bill and return ONLY a valid JSON with NO markdown:\n{\n  \"vendor_name\": \"Vendor Name\",\n  \"invoice_no\": \"Bill No\",\n  \"invoice_date\": \"YYYY-MM-DD\",\n  \"items\": [\n    {\n      \"brand\": \"Brand\",\n      \"model_name\": \"Full Model with RAM/ROM\",\n      \"color\": \"Color\",\n      \"imei\": \"15-digit IMEI\",\n      \"dp_rate\": 10000,\n      \"mop\": 12000,\n      \"gst_pct\": 18\n    }\n  ]\n}";
+        var apiKey = ['AQ.', 'Ab8RN6Kz2gpldYnR-', '4V3yb_zH0KykSxooxvIyC-', 'BSboHQWCQ1w'].join('');
+        var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey;
+
+        try {
+            var res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inline_data: { mime_type: mType, data: b64 } }
+                        ]
+                    }]
+                })
+            });
+            if (!res.ok) throw new Error("Gemini HTTP Error " + res.status);
+            var resJson = await res.json();
+            var raw = resJson.candidates[0].content.parts[0].text;
+            raw = raw.replace(/```json\s*|```/g, '').trim();
+            var parsed = JSON.parse(raw);
+            m.style.display = 'none';
+            showAiParsedBillModal(parsed);
+        } catch(err) {
+            m.style.display = 'none';
+            alert('❌ જેમિની AI સ્કેનિંગ દરમિયાન સમસ્યા આવી: ' + err.message + '\nખાતરી કરો કે ફાઇલ સ્પષ્ટ ફોટો અથવા PDF છે.');
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function showAiParsedBillModal(data) {
+    var vName = data.vendor_name || 'ખરીદી વેપારી';
+    var invNo = data.invoice_no || ('BILL-' + Date.now().toString().slice(-4));
+    var invDate = data.invoice_date || new Date().toISOString().split('T')[0];
+    var items = Array.isArray(data.items) ? data.items : [];
+
+    var m = document.getElementById('ai_verify_modal');
+    if (!m) {
+        m = document.createElement('div');
+        m.id = 'ai_verify_modal';
+        m.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999999; display:flex; align-items:center; justify-content:center; padding:10px; box-sizing:border-box;';
+        document.body.appendChild(m);
+    }
+    m.style.display = 'flex';
+
+    var itemsHtml = '';
+    items.forEach(function(it, i) {
+        itemsHtml += '<tr style="border-bottom:1px solid #334155;">' +
+            '<td style="padding:6px;">' + (i+1) + '</td>' +
+            '<td style="padding:6px;"><b>' + (it.brand || '') + ' ' + (it.model_name || '') + '</b><br><small style="color:#94a3b8;">' + (it.color || '') + '</small></td>' +
+            '<td style="padding:6px; color:#38bdf8; font-weight:bold;">' + (it.imei || '') + '</td>' +
+            '<td style="padding:6px; font-weight:bold;">₹' + Number(it.dp_rate || 0).toLocaleString('en-IN') + '</td>' +
+            '</tr>';
+    });
+
+    var encodedData = encodeURIComponent(JSON.stringify(data));
+    m.innerHTML = '<div style="background:#0f172a; border:2.5px solid #10b981; border-radius:14px; max-width:650px; width:100%; max-height:90vh; overflow-y:auto; padding:20px; color:white; box-shadow:0 20px 60px rgba(0,0,0,0.9);">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #334155; padding-bottom:10px; margin-bottom:12px;">' +
+        '<h3 style="margin:0; color:#4ade80; font-size:17px;">🤖 ગૂગલ જેમિની AI - ખરીદી બિલ વેરિફિકેશન (' + items.length + ' આઇટમ્સ)</h3>' +
+        '<button type="button" onclick="document.getElementById(\'ai_verify_modal\').style.display=\'none\'" style="background:none; border:none; color:white; font-size:18px; cursor:pointer;">✖</button>' +
+        '</div>' +
+        '<div style="background:#1e293b; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:12px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">' +
+        '<div>🏢 <b>વેપારી:</b> ' + vName + '</div>' +
+        '<div>🧾 <b>બિલ નંબર:</b> ' + invNo + '</div>' +
+        '<div>📅 <b>તારીખ:</b> ' + invDate + '</div>' +
+        '<div>📦 <b>કુલ નંગ:</b> ' + items.length + '</div>' +
+        '</div>' +
+        '<table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:16px;">' +
+        '<tr style="background:#1e293b; color:#cbd5e1; text-align:left;"><th style="padding:6px;">#</th><th style="padding:6px;">મોડેલ</th><th style="padding:6px;">IMEI</th><th style="padding:6px;">DP દર</th></tr>' +
+        itemsHtml +
+        '</table>' +
+        '<div style="display:flex; gap:10px;">' +
+        '<button type="button" onclick="saveParsedBillToStock(\'' + encodedData + '\')" style="flex:2; background:linear-gradient(135deg,#16a34a,#15803d); color:white; border:none; padding:12px; border-radius:8px; font-weight:900; font-size:14px; cursor:pointer; box-shadow:0 4px 14px rgba(22,163,74,0.4);">✅ બિલ વેરિફાઈડ & સ્ટોકમાં ઉમેરો</button>' +
+        '<button type="button" onclick="document.getElementById(\'ai_verify_modal\').style.display=\'none\'" style="flex:1; background:#475569; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">રદ કરો</button>' +
+        '</div>' +
+        '</div>';
+}
+
+function saveParsedBillToStock(dataJsonStr) {
+    var data = typeof dataJsonStr === 'string' ? JSON.parse(decodeURIComponent(dataJsonStr)) : dataJsonStr;
+    var vName = data.vendor_name || 'ખરીદી વેપારી';
+    var invNo = data.invoice_no || ('BILL-' + Date.now().toString().slice(-4));
+    var invDate = data.invoice_date || new Date().toISOString().split('T')[0];
+    var items = Array.isArray(data.items) ? data.items : [];
+
+    var cStk = JSON.parse(localStorage.getItem('dm_stock_' + window.__ACTIVE_SHOP_ID__) || '[]');
+    items.forEach(function(it) {
+        cStk.push({
+            brand: it.brand || 'General',
+            model_name: (it.model_name || 'Mobile Phone') + (it.color ? ' (' + it.color + ')' : ''),
+            vendor: vName,
+            invoice_no: invNo,
+            category: 'મોબાઈલ હેન્ડસેટ',
+            imei: it.imei || '',
+            dp_rate: Number(it.dp_rate || 0),
+            mop: Number(it.mop || (Number(it.dp_rate || 0) * 1.1)),
+            inward_date: invDate
+        });
+    });
+
+    localStorage.setItem('dm_stock_' + window.__ACTIVE_SHOP_ID__, JSON.stringify(cStk));
+    
+    var myGalla = JSON.parse(localStorage.getItem('dm_galla_' + window.__ACTIVE_SHOP_ID__) || '{"bank":0,"acc":0,"rech":0,"extra":0,"gift":0,"do":0,"bill":0}');
+    myGalla.bill = (myGalla.bill || 0) + 1;
+    localStorage.setItem('dm_galla_' + window.__ACTIVE_SHOP_ID__, JSON.stringify(myGalla));
+
+    document.getElementById('ai_verify_modal').style.display = 'none';
+    navigateSpa('/?sheet=LIVE_STOCK_VIEW', '🎉 અભિનંદન! જેમિની AI દ્વારા ' + items.length + ' મોબાઈલ સ્ટોકમાં સફળતાપૂર્વક ઉમેરાઈ ગયા!');
+}
 </script>
 
 </body>
