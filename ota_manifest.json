@@ -1,6 +1,6 @@
 {
     "version_id": "2026.11.09.001",
-    "updated_at": "09-11-2026 10:02 AM",
+    "updated_at": "09-11-2026 04:33 AM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
@@ -8,7 +8,7 @@
     "update_note": "જયમીનભાઈએ કરેલા નવા સુધારા ઓટોમેટિક અપડેટ થઈ ગયા છે!",
     "files": {
         "app.py": "a029b2aa7a8eaa9d5ec8851a1d4402663ca05dda869cd579fce2c8fd4df8c543",
-        "part1_core.py": "e21ea001fe964274e68d87c8ee096461772f77697b2ff1cc062842bffc164eaf",
+        "part1_core.py": "9265ceb197e5a70e9895ccd2e24c2f77a99e9f3eebfb9936bfba317333e54608",
         "part2_views.py": "6e28137253161c7d0d57889774685008055be5656a07b01152ed1f2d90a9410c",
         "part2_b_counters.py": "4e003ed6c52841f8d2a0e7fc6dccdd144218ba0d1d18b78b3dcefdba749ee11b",
         "part2_c_counters_extra.py": "1233d49456a95a294cec8a02cff9dd8b80b51f7366e6abacdca7556ba683b6eb",
@@ -20,6 +20,8 @@
         "part7_eod_whatsapp.py": "44354f74b3f40048f921ae4a63a0a2de7e3335511c4ac0b88e7678a8468777c5",
         "part8_pwa_offline_sync.py": "3d6cd793eceedbc8a9499074c680d7dc7178c8ce291fedcc25a712bfd6a90798",
         "part9_realtime_print_push.py": "a3c5872dc60c2cfbb09d93d6744bc1457133759edb3b997c94d72c52cb1f77a7",
-        "part10_accessories_part2.py": "20c6dd68db7dc635df0b67a162314fce9d0e43c06b581841094f01ce76c91773"
+        "part10_accessories_part2.py": "20c6dd68db7dc635df0b67a162314fce9d0e43c06b581841094f01ce76c91773",
+        "Document_Vault/Login_Slideshow/1000955703.png": "fd0d047851e6c55bf9ce3c133c56e1f3741912c4884f2ee376de192874614d89",
+        "Document_Vault/jaymin_upi_qr.png": "d035783f2e945fdbc282f17d1b1cd203b27531c09dddc746d37d91db6d2633d5"
     }
 }
