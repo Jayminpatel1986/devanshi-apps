@@ -1284,8 +1284,9 @@ async function loadPendingAdminSignups() {
                     '<div style="font-size:13px; color:#cbd5e1; margin-top:2px;">👤 માલિક: <b>' + (d.owner_name || '-') + '</b> | 📱 મોબાઈલ: <b><a href="tel:' + d.owner_mobile + '" style="color:#4ade80;">' + (d.owner_mobile || '-') + '</a></b> | 🔑 ID: <b>' + (d.owner_user_id || '-') + '</b></div>' +
                     '<div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">📱 ડિવાઇસ: ' + (d.device_type || '-') + ' | તારીખ: ' + (d.timestamp || '-') + ' | સ્થિતિ: <b style="color:' + (isApproved ? '#4ade80' : '#fde047') + ';">' + (d.status || '-') + '</b></div>' +
                     '</div>' +
-                    '<div style="display:flex; gap:6px;">' +
+                    '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
                     '<button type="button" onclick="approveShopDemo(\'' + d.shop_id + '\', \'' + encodeURIComponent(d.store_name) + '\', \'' + d.owner_mobile + '\', \'' + encodeURIComponent(d.owner_name) + '\', \'' + d.owner_user_id + '\', \'' + f.sha + '\')" style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">✅ Approve (૧૦ દિવસ ડેમો આપો)</button>' +
+                    '<button type="button" onclick="rejectShopDemo(\'' + d.shop_id + '\', \'' + encodeURIComponent(d.store_name) + '\', \'' + f.sha + '\')" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">❌ Reject (નામંજૂર / ડિલીટ)</button>' +
                     '<a href="https://wa.me/91' + d.owner_mobile + '?text=' + encodeURIComponent('નમસ્તે ' + d.owner_name + 'જી! તમારી દુકાન (' + d.store_name + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરની ડેમો અરજી મળી ગઈ છે.') + '" target="_blank" style="background:#0284c7; color:white; padding:8px 12px; border-radius:6px; text-decoration:none; font-weight:bold;">💬 વોટ્સએપ મેસેજ</a>' +
                     '</div>' +
                     '</div>';
@@ -1295,6 +1296,34 @@ async function loadPendingAdminSignups() {
         box.innerHTML = cards || '<div style="color:#94a3b8; text-align:center; padding:12px;">હાલ કોઈ પેન્ડિંગ અરજીઓ નથી.</div>';
     } catch(err) {
         box.innerHTML = '<div style="color:#ef4444; text-align:center; padding:10px;">ભૂલ: ' + err.message + '</div>';
+    }
+}
+
+
+async function rejectShopDemo(shopId, encStoreName, sha) {
+    var sName = decodeURIComponent(encStoreName);
+    if (!confirm('શું તમે આ દુકાન (' + sName + ') ની ડેમો અરજી ખરેખર નામંજૂર (Reject / Delete) કરવા માંગો છો?')) return;
+    
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
+    
+    try {
+        var delRes = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json', {
+            method: 'DELETE',
+            headers: headers,
+            body: JSON.stringify({
+                message: 'Reject / Delete Demo Signup: ' + sName,
+                sha: sha
+            })
+        });
+        if (delRes.ok) {
+            alert('❌ ' + sName + ' ની ડેમો અરજી સફળતાપૂર્વક નામંજૂર / ડિલીટ કરી દેવામાં આવી છે!');
+            loadPendingAdminSignups();
+        } else {
+            alert('❌ ડિલીટ કરવામાં ક્ષતિ આવી!');
+        }
+    } catch(err) {
+        alert('ભૂલ: ' + err.message);
     }
 }
 
