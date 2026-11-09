@@ -1,6 +1,6 @@
 {
     "version_id": "2026.11.09.001",
-    "updated_at": "09-11-2026 08:50 AM",
+    "updated_at": "09-11-2026 09:07 AM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
@@ -14,7 +14,7 @@
         "part2_c_counters_extra.py": "1233d49456a95a294cec8a02cff9dd8b80b51f7366e6abacdca7556ba683b6eb",
         "part2_d_sheets.py": "39e85ddeb79ce7c19795d2e42f407527882cdb3d194a88d5dd681e198cb5cf75",
         "part3_routes.py": "0eea21858d354bf4329a5379e3351807f1f7a2c8f87040c5703d739e428bf887",
-        "part4_ai_import.py": "05cf94d59e7a52016f00dd399b07eaa51a784b71f6a91990530fb92300560982",
+        "part4_ai_import.py": "1dab74318e46d20c481c897ef580d14a1ac398ca17f44efe13ff517e65b7bc42",
         "part5_saas_control.py": "5f7f6bcb696a37bf855023d872ff61e570aae131c7c450cb314a90a57326c0e2",
         "part6_police_vault.py": "ed6b7df42fa733673619f469260f56fe3d5f52862cf05419fd54eabbcb1f3755",
         "part7_eod_whatsapp.py": "44354f74b3f40048f921ae4a63a0a2de7e3335511c4ac0b88e7678a8468777c5",
