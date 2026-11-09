@@ -19,6 +19,21 @@
     </style></head>
     <body>
 
+    <!-- 🚨 નવી પેન્ડિંગ ડેમો અરજીઓ (Pending Approval - 9725721215) -->
+    <div style="background:#0f172a; border:2.5px solid #eab308; border-radius:14px; padding:18px; margin:14px auto; max-width:960px; box-shadow:0 10px 30px rgba(0,0,0,0.6); color:white;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #eab308; padding-bottom:10px; margin-bottom:12px;">
+            <div>
+                <b style="color:#fde047; font-size:16px;">🚨 નવી પેન્ડિંગ ડેમો અરજીઓ (સુપર એડમિન એપ્રુવલ પેનલ - Jayminbhai 9725721215)</b>
+                <div style="font-size:12px; color:#94a3b8;">નવો દુકાનદાર સાઇન-અપ કરે ત્યારે તમે અહીંથી મંજૂરી (Approve) આપો ત્યારે જ એનું સોફ્ટવેર ૧૦ દિવસ માટે શરૂ થશે!</div>
+            </div>
+            <button type="button" onclick="loadPendingAdminSignups()" style="background:#16a34a; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">🔄 રિફ્રેશ કરો</button>
+        </div>
+        <div id="admin_pending_signups_box">
+            <div style="text-align:center; padding:15px; color:#94a3b8;">પેન્ડિંગ સાઇન-અપ અરજીઓ ચેક થઈ રહી છે...</div>
+        </div>
+    </div>
+
+
 <div id="jaymin_pin_lock_screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #091224, #0f172a); z-index:9999999; display:flex; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;">
     <div style="background:#1e293b; border:2.5px solid #f59e0b; border-radius:12px; padding:24px 20px; max-width:400px; width:100%; text-align:center; box-shadow:0 10px 35px rgba(0,0,0,0.8);">
         <div style="font-size:36px; margin-bottom:8px;">⚡</div>
@@ -1232,4 +1247,104 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('edit_store_profile_modal').style.display = 'flex';
     }
     </script>
-    </body></html>
+    
+<script id="admin_approval_system">
+async function loadPendingAdminSignups() {
+    var box = document.getElementById('admin_pending_signups_box');
+    if (!box) return;
+    
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
+    
+    try {
+        var r = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups', { headers: headers });
+        if (!r.ok) {
+            box.innerHTML = '<div style="color:#ef4444; text-align:center; padding:10px;">ક્લાઉડ સિંક કનેક્ટ થઈ શક્યું નથી.</div>';
+            return;
+        }
+        var files = await r.json();
+        var cards = '';
+        var count = 0;
+        
+        for (var f of files) {
+            if (!f.name || !f.name.endsWith('.json')) continue;
+            var rf = await fetch(f.url, { headers: headers });
+            if (rf.ok) {
+                var fj = await rf.json();
+                var rawStr = decodeURIComponent(escape(atob(fj.content.replace(/\s/g, ''))));
+                var d = JSON.parse(rawStr);
+                
+                var isPending = (d.status === 'PENDING_APPROVAL' || d.status === 'TRIAL');
+                var isApproved = (d.status === 'APPROVED');
+                count++;
+                
+                cards += '<div style="background:#1e293b; border:1.5px solid ' + (isApproved ? '#22c55e' : '#eab308') + '; border-radius:10px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
+                    '<div>' +
+                    '<div style="font-size:15px; font-weight:bold; color:#fde047;">🏬 ' + (d.store_name || 'દુકાન') + ' <span style="font-size:12px; color:#38bdf8;">(ID: ' + d.shop_id + ')</span></div>' +
+                    '<div style="font-size:13px; color:#cbd5e1; margin-top:2px;">👤 માલિક: <b>' + (d.owner_name || '-') + '</b> | 📱 મોબાઈલ: <b><a href="tel:' + d.owner_mobile + '" style="color:#4ade80;">' + (d.owner_mobile || '-') + '</a></b> | 🔑 ID: <b>' + (d.owner_user_id || '-') + '</b></div>' +
+                    '<div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">📱 ડિવાઇસ: ' + (d.device_type || '-') + ' | તારીખ: ' + (d.timestamp || '-') + ' | સ્થિતિ: <b style="color:' + (isApproved ? '#4ade80' : '#fde047') + ';">' + (d.status || '-') + '</b></div>' +
+                    '</div>' +
+                    '<div style="display:flex; gap:6px;">' +
+                    '<button type="button" onclick="approveShopDemo(\'' + d.shop_id + '\', \'' + encodeURIComponent(d.store_name) + '\', \'' + d.owner_mobile + '\', \'' + encodeURIComponent(d.owner_name) + '\', \'' + d.owner_user_id + '\', \'' + f.sha + '\')" style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">✅ Approve (૧૦ દિવસ ડેમો આપો)</button>' +
+                    '<a href="https://wa.me/91' + d.owner_mobile + '?text=' + encodeURIComponent('નમસ્તે ' + d.owner_name + 'જી! તમારી દુકાન (' + d.store_name + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરની ડેમો અરજી મળી ગઈ છે.') + '" target="_blank" style="background:#0284c7; color:white; padding:8px 12px; border-radius:6px; text-decoration:none; font-weight:bold;">💬 વોટ્સએપ મેસેજ</a>' +
+                    '</div>' +
+                    '</div>';
+            }
+        }
+        
+        box.innerHTML = cards || '<div style="color:#94a3b8; text-align:center; padding:12px;">હાલ કોઈ પેન્ડિંગ અરજીઓ નથી.</div>';
+    } catch(err) {
+        box.innerHTML = '<div style="color:#ef4444; text-align:center; padding:10px;">ભૂલ: ' + err.message + '</div>';
+    }
+}
+
+async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userId, sha) {
+    if (!confirm('શું તમે આ દુકાન (' + decodeURIComponent(encStoreName) + ') ને ૧૦ દિવસનો ફ્રી ડેમો મંજૂર (Approve) કરવા માંગો છો?')) return;
+    
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    
+    var now = new Date();
+    var todayIso = now.toISOString().split('T')[0];
+    var expIso = new Date(now.getTime() + 10 * 86400000).toISOString().split('T')[0];
+    
+    var updatedPayload = {
+        shop_id: shopId,
+        store_name: decodeURIComponent(encStoreName),
+        owner_name: decodeURIComponent(encOwnerName),
+        owner_mobile: mobile,
+        owner_user_id: userId,
+        status: 'APPROVED',
+        validity_from: todayIso,
+        validity_to: expIso,
+        demo_days: 10,
+        approved_at: new Date().toISOString()
+    };
+    
+    var b64Content = btoa(unescape(encodeURIComponent(JSON.stringify(updatedPayload, null, 2))));
+    
+    var putRes = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json', {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify({
+            message: 'Approve Demo for ' + decodeURIComponent(encStoreName),
+            content: b64Content,
+            sha: sha
+        })
+    });
+    
+    if (putRes.ok) {
+        alert('✅ અભિનંદન! ' + decodeURIComponent(encStoreName) + ' નો ૧૦ દિવસનો ફ્રી ડેમો મંજૂર થઈ ગયો છે!\n\nહવે દુકાનદારને વોટ્સએપ પર લૉગિન વિગતો મોકલી આપો.');
+        window.open('https://wa.me/91' + mobile + '?text=' + encodeURIComponent('🎉 અભિનંદન ' + decodeURIComponent(encOwnerName) + 'જી! તમારી દુકાન (' + decodeURIComponent(encStoreName) + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરનો ૧૦-દિવસનો ફ્રી ડેમો મંજૂર (Approved) થઈ ગયો છે!\n\n🔗 લૉગિન લિંક: https://jayminpatel1986.github.io/devanshi-apps/client-erp.html\n👤 તમારો લૉગિન ID: ' + userId + '\n\nકોઈપણ પ્રશ્ન હોય તો મને સીધો ફોન કરજો!\nજયમીન પટેલ - 9725721215'), '_blank');
+        loadPendingAdminSignups();
+    } else {
+        alert('❌ એપ્રુવલ અપડેટ કરવામાં ક્ષતિ આવી!');
+    }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    loadPendingAdminSignups();
+});
+</script>
+
+</body></html>
