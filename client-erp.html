@@ -150,32 +150,6 @@
 </head>
 <body>
 
-<div id="client_first_setup_modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(9,18,36,0.95); z-index:9999999; display:none; justify-content:center; align-items:center; padding:14px; box-sizing:border-box;">
-    <div style="background:#0f172a; border:2.5px solid #38bdf8; border-radius:14px; padding:22px 18px; max-width:440px; width:100%; box-shadow:0 15px 40px rgba(0,0,0,0.85); text-align:center;">
-        <div style="font-size:36px; margin-bottom:6px;">🏪</div>
-        <h3 style="color:#fde047; margin:0 0 4px; font-size:18px;">તમારો ૧૦-દિવસનો ફ્રી ડેમો શરૂ કરો</h3>
-        <p style="color:#94a3b8; font-size:12px; margin:0 0 16px;">તમારી દુકાનની વિગતો દાખલ કરતાં જ સંપૂર્ણ ERP ચાલુ થઈ જશે</p>
-        <form id="client_quick_signup_form" onsubmit="handleClientQuickSignup(event)" style="text-align:left;">
-            <div style="margin-bottom:12px;">
-                <label style="display:block; color:#cbd5e1; font-size:12px; font-weight:bold; margin-bottom:4px;">🏪 દુકાનનું નામ (Shop Name):</label>
-                <input type="text" id="cq_shop_name" placeholder="દા.ત. શ્રી ગણેશ મોબાઈલ" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #475569; background:#1e293b; color:white; font-size:13px; box-sizing:border-box;">
-            </div>
-            <div style="margin-bottom:12px;">
-                <label style="display:block; color:#cbd5e1; font-size:12px; font-weight:bold; margin-bottom:4px;">👑 માલિકનું નામ (Owner Name):</label>
-                <input type="text" id="cq_owner_name" placeholder="આપનું પૂરું નામ" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #475569; background:#1e293b; color:white; font-size:13px; box-sizing:border-box;">
-            </div>
-            <div style="margin-bottom:14px;">
-                <label style="display:block; color:#cbd5e1; font-size:12px; font-weight:bold; margin-bottom:4px;">📱 મોબાઈલ નંબર (Mobile No):</label>
-                <input type="tel" id="cq_mobile" placeholder="૧૦ આંકડાનો મોબાઈલ નંબર" maxlength="10" required pattern="[0-9]{10}" style="width:100%; padding:10px; border-radius:6px; border:1px solid #475569; background:#1e293b; color:white; font-size:13px; box-sizing:border-box;">
-            </div>
-            <button type="submit" style="width:100%; padding:12px; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:none; border-radius:8px; font-weight:900; font-size:15px; cursor:pointer; box-shadow:0 4px 15px rgba(22,163,74,0.4);">
-                🚀 સોફ્ટવેર ચાલુ કરો (Start ERP)
-            </button>
-        </form>
-    </div>
-</div>
-
-
 <!-- ૧. અસલ લૉગિન પેજ (Original Divine Login Screen with 1000955703.png & 4 Role Buttons) -->
 <div id="spa_login_view" style="display:block;">
 
@@ -2982,7 +2956,7 @@ function handleClientQuickSignup(e) {
     localStorage.setItem('devanshi_logged_in_standalone', '1');
     
     window.__ACTIVE_SHOP_ID__ = shopId;
-    document.getElementById('client_first_setup_modal').style.display = 'none';
+    
     
     // Send live telemetry to cloud
     try {
@@ -3016,7 +2990,7 @@ window.addEventListener('DOMContentLoaded', function() {
             navigateSpa('/?sheet=SMART_TERMINAL&mode=F2');
         }, 10);
     } else {
-        document.getElementById('client_first_setup_modal').style.display = 'flex';
+        // client_first_setup_modal removed - show main sign-in page
     }
 });
 </script>
