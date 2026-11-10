@@ -1278,11 +1278,22 @@ async function loadPendingAdminSignups() {
                 var isApproved = (d.status === 'APPROVED');
                 count++;
                 
+                var rawDev = (d.machine_name || d.device_type || '').toString();
+                var devBadge = '📱 Android સ્માર્ટફોન';
+                if (rawDev.indexOf('V2222') !== -1 || rawDev.toLowerCase().indexOf('vivo') !== -1) devBadge = '📱 Vivo સ્માર્ટફોન (V2222)';
+                else if (rawDev.indexOf('SM-') !== -1 || rawDev.toLowerCase().indexOf('samsung') !== -1) devBadge = '📱 Samsung Galaxy';
+                else if (rawDev.indexOf('CPH') !== -1 || rawDev.toLowerCase().indexOf('oppo') !== -1) devBadge = '📱 Oppo સ્માર્ટફોન';
+                else if (rawDev.indexOf('RMX') !== -1 || rawDev.toLowerCase().indexOf('realme') !== -1) devBadge = '📱 Realme સ્માર્ટફોન';
+                else if (rawDev.toLowerCase().indexOf('iphone') !== -1) devBadge = '🍎 Apple iPhone';
+                else if (rawDev.toLowerCase().indexOf('windows') !== -1) devBadge = '💻 Windows PC / લેપટોપ';
+                if (rawDev.indexOf('Android 15') !== -1) devBadge += ' [Android 15]';
+                else if (rawDev.indexOf('Android 14') !== -1) devBadge += ' [Android 14]';
+
                 cards += '<div style="background:#1e293b; border:1.5px solid ' + (isApproved ? '#22c55e' : '#eab308') + '; border-radius:10px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
                     '<div>' +
                     '<div style="font-size:15px; font-weight:bold; color:#fde047;">🏬 ' + (d.store_name || 'દુકાન') + ' <span style="font-size:12px; color:#38bdf8;">(ID: ' + d.shop_id + ')</span></div>' +
                     '<div style="font-size:13px; color:#cbd5e1; margin-top:2px;">👤 માલિક: <b>' + (d.owner_name || '-') + '</b> | 📱 મોબાઈલ: <b><a href="tel:' + d.owner_mobile + '" style="color:#4ade80;">' + (d.owner_mobile || '-') + '</a></b> | 🔑 ID: <b>' + (d.owner_user_id || '-') + '</b></div>' +
-                    '<div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">📱 ડિવાઇસ: ' + (d.device_type || '-') + ' | તારીખ: ' + (d.timestamp || '-') + ' | સ્થિતિ: <b style="color:' + (isApproved ? '#4ade80' : '#fde047') + ';">' + (d.status || '-') + '</b></div>' +
+                    '<div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">📱 ડિવાઇસ: <b style="color:#38bdf8;">' + devBadge + '</b> | તારીખ: ' + (d.timestamp || '-') + ' | સ્થિતિ: <b style="color:' + (isApproved ? '#4ade80' : '#fde047') + ';">' + (d.status || '-') + '</b></div>' +
                     '</div>' +
                     '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
                     '<button type="button" onclick="approveShopDemo(\'' + d.shop_id + '\', \'' + encodeURIComponent(d.store_name) + '\', \'' + d.owner_mobile + '\', \'' + encodeURIComponent(d.owner_name) + '\', \'' + d.owner_user_id + '\', \'' + f.sha + '\')" style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">✅ Approve (૧૦ દિવસ ડેમો આપો)</button>' +
@@ -1364,7 +1375,8 @@ async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userI
     
     if (putRes.ok) {
         alert('✅ અભિનંદન! ' + decodeURIComponent(encStoreName) + ' નો ૧૦ દિવસનો ફ્રી ડેમો મંજૂર થઈ ગયો છે!\n\nહવે દુકાનદારને વોટ્સએપ પર લૉગિન વિગતો મોકલી આપો.');
-        window.open('https://wa.me/91' + mobile + '?text=' + encodeURIComponent('🎉 અભિનંદન ' + decodeURIComponent(encOwnerName) + 'જી! તમારી દુકાન (' + decodeURIComponent(encStoreName) + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરનો ૧૦-દિવસનો ફ્રી ડેમો મંજૂર (Approved) થઈ ગયો છે!\n\n🔗 લૉગિન લિંક: https://jayminpatel1986.github.io/devanshi-apps/client-erp.html\n👤 તમારો લૉગિન ID: ' + userId + '\n\nકોઈપણ પ્રશ્ન હોય તો મને સીધો ફોન કરજો!\nજયમીન પટેલ - 9725721215'), '_blank');
+        var directLoginUrl = 'https://jayminpatel1986.github.io/devanshi-apps/client-erp.html?shop=' + shopId + '&user=' + encodeURIComponent(userId) + '&auth=approved';
+        window.open('https://wa.me/91' + mobile + '?text=' + encodeURIComponent('🎉 અભિનંદન ' + decodeURIComponent(encOwnerName) + 'જી! તમારી દુકાન (' + decodeURIComponent(encStoreName) + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરનો ૧૦-દિવસનો ફ્રી ડેમો મંજૂર (Approved) થઈ ગયો છે!\n\n🔗 સીધી લૉગિન લિંક (૧-ક્લિકમાં ખુલી જશે):\n' + directLoginUrl + '\n\n👤 તમારો લૉગિન ID: ' + userId + '\n\nકોઈપણ પ્રશ્ન હોય તો મને સીધો ફોન કરજો!\nજયમીન પટેલ - 9725721215'), '_blank');
         loadPendingAdminSignups();
     } else {
         alert('❌ એપ્રુવલ અપડેટ કરવામાં ક્ષતિ આવી!');
