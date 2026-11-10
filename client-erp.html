@@ -2628,6 +2628,19 @@ function navigateSpa(urlStr, optMsg) {
 
     document.getElementById('spa_erp_top_inner').innerHTML = topHtml;
 
+    // DIRECT DOM ENFORCEMENT: If client demo store, ensure all gallas display exact zero or client balances!
+    if (!isMns && !isDev) {
+        var bCards = document.querySelectorAll('#spa_erp_top_inner .b-card');
+        if (bCards.length >= 6) {
+            var val0 = bCards[0].querySelector('.b-val'); if (val0) val0.innerText = '₹' + Number(myGalla.bank || 0).toLocaleString('en-IN');
+            var val1 = bCards[1].querySelector('.b-val'); if (val1) val1.innerText = '₹' + Number(myGalla.acc || 0).toLocaleString('en-IN');
+            var val2 = bCards[2].querySelector('.b-val'); if (val2) val2.innerText = '₹' + Number(myGalla.rech || 0).toLocaleString('en-IN');
+            var val3 = bCards[3].querySelector('.b-val'); if (val3) val3.innerText = '₹' + Number(myGalla.extra || 0).toLocaleString('en-IN');
+            var val4 = bCards[4].querySelector('.b-val'); if (val4) val4.innerText = '₹' + Number(myGalla.gift || 0).toLocaleString('en-IN');
+            var val5 = bCards[5].querySelector('.b-val'); if (val5) val5.innerText = 'DO: ' + (myGalla.do || 0) + ' | બિલ: ' + (myGalla.bill || 0);
+        }
+    }
+
     // Highlight active sheet tab in sheets-bar-grid
     document.querySelectorAll('#spa_erp_top_inner .sh-btn').forEach(function(a) {
         var href = a.getAttribute('href') || '';
@@ -2754,6 +2767,40 @@ document.addEventListener('submit', async function(e) {
             window.__ACTIVE_SHOP_ID__ = 'DEVANSHI';
             window.__ACTIVE_USER_ID__ = 'devanshi';
         } else {
+            // Client store login: Check local cache first, then verify with GitHub Cloud
+            var localS = JSON.parse(localStorage.getItem('dm_local_signups_v3') || '[]');
+            var matched = localS.find(function(s) {
+                return (s.shop_id && s.shop_id.toLowerCase() === sidIn.toLowerCase()) ||
+                       (s.owner_mobile === sidIn) ||
+                       (s.owner_user_id && s.owner_user_id.toLowerCase() === sidIn.toLowerCase());
+            });
+
+            if (!matched || matched.status === 'PENDING_APPROVAL') {
+                try {
+                    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+                    var ghHeaders = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
+                    var rList = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups', { headers: ghHeaders });
+                    if (rList.ok) {
+                        var files = await rList.json();
+                        for (var cf of files) {
+                            if (!cf.name.endsWith('.json')) continue;
+                            var rFile = await fetch(cf.url, { headers: ghHeaders });
+                            if (rFile.ok) {
+                                var fileData = await rFile.json();
+                                var cd = JSON.parse(decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, '')))));
+                                if (cd && ((cd.shop_id && cd.shop_id.toLowerCase() === sidIn.toLowerCase()) || 
+                                          (cd.owner_user_id && cd.owner_user_id.toLowerCase() === sidIn.toLowerCase()) || 
+                                          (cd.owner_mobile === sidIn))) {
+                                    matched = cd;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {
+                    console.error('Cloud login sync error:', e);
+                }
+            }
             var localS = JSON.parse(localStorage.getItem('dm_local_signups_v3') || '[]');
             var matched = localS.find(s => (s.shop_id && s.shop_id.toLowerCase() === sidIn.toLowerCase()) || s.owner_mobile === sidIn || (s.owner_user_id && s.owner_user_id.toLowerCase() === sidIn.toLowerCase()));
             if (matched) {
@@ -3027,13 +3074,17 @@ async function triggerDirectGeminiAiBillUpload(fInput) {
         document.body.appendChild(m);
     }
     m.style.display = 'flex';
-    m.innerHTML = '<div style="background:#0f172a; border:2.5px solid #38bdf8; border-radius:16px; padding:24px 20px; max-width:440px; width:92%; text-align:center; color:white; box-shadow:0 20px 50px rgba(0,0,0,0.85);"><div style="font-size:46px; margin-bottom:10px;">🤖</div><h3 style="color:#38bdf8; margin:0 0 8px 0; font-size:18px;">ગૂગલ જેમિની Vision AI સ્કેનિંગ ચાલુ છે...</h3><p style="color:#94a3b8; font-size:13px; line-height:1.5; margin:0 0 14px 0;">ફાઇલ: <b>' + file.name + '</b><br>AI તમારા બિલમાંથી વેપારી, બિલ નંબર, તારીખ, મોબાઈલ મોડેલ અને ૧૫-અંકના IMEI વાંચી રહ્યું છે.</p><div style="background:#1e293b; border-radius:8px; height:8px; overflow:hidden; margin-bottom:14px;"><div style="background:#38bdf8; width:70%; height:100%;"></div></div><div style="font-size:12.5px; color:#fde047; font-weight:bold;">કૃપા કરી ૧૫ થી ૩૦ સેકન્ડ રાહ જુઓ...</div></div>';
+    m.innerHTML = '<div style="background:#0f172a; border:2.5px solid #38bdf8; border-radius:16px; padding:24px 20px; max-width:440px; width:92%; text-align:center; color:white; box-shadow:0 20px 50px rgba(0,0,0,0.85);"><div style="font-size:46px; margin-bottom:10px;">🤖</div><h3 style="color:#38bdf8; margin:0 0 8px 0; font-size:18px;">ગૂગલ જેમિની Vision AI સ્કેનિંગ ચાલુ છે...</h3><p style="color:#94a3b8; font-size:13px; line-height:1.5; margin:0 0 14px 0;">ફાઇલ: <b>' + file.name + '</b><br>AI બિલમાંથી વેપારી, બિલ નંબર, તારીખ, મોબાઈલ મોડેલ અને ૧૫-અંકના IMEI વાંચી રહ્યું છે.</p><div style="background:#1e293b; border-radius:8px; height:8px; overflow:hidden; margin-bottom:14px;"><div style="background:#38bdf8; width:70%; height:100%;"></div></div><div style="font-size:12.5px; color:#fde047; font-weight:bold;">કૃપા કરી ૧૫ થી ૩૦ સેકન્ડ રાહ જુઓ...</div></div>';
 
     var reader = new FileReader();
+    reader.onerror = function() {
+        m.style.display = 'none';
+        alert('❌ ફાઇલ વાંચવામાં ક્ષતિ આવી. કૃપા કરી ફોટો સીધો ગેલેરીમાંથી પસંદ કરો.');
+    };
     reader.onload = async function() {
         var b64 = reader.result.split(',')[1];
         var mType = file.type || (file.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
-        var prompt = "You are an Indian retail mobile accountant. Examine this bill and return ONLY a valid JSON with NO markdown:\n{\n  \"vendor_name\": \"Vendor Name\",\n  \"invoice_no\": \"Bill No\",\n  \"invoice_date\": \"YYYY-MM-DD\",\n  \"items\": [\n    {\n      \"brand\": \"Brand\",\n      \"model_name\": \"Full Model with RAM/ROM\",\n      \"color\": \"Color\",\n      \"imei\": \"15-digit IMEI\",\n      \"dp_rate\": 10000,\n      \"mop\": 12000,\n      \"gst_pct\": 18\n    }\n  ]\n}";
+        var prompt = "You are an expert Indian retail mobile shop accountant for Devanshi Mansvi ERP. Examine this entire purchase invoice and return ONLY a valid JSON with NO markdown wrapping:\n{\n  \"vendor_name\": \"Vendor Name\",\n  \"invoice_no\": \"Bill Number\",\n  \"invoice_date\": \"YYYY-MM-DD\",\n  \"items\": [\n    {\n      \"brand\": \"Brand\",\n      \"model_name\": \"Full Model with RAM/ROM\",\n      \"color\": \"Color\",\n      \"imei\": \"15-digit IMEI\",\n      \"dp_rate\": 10000,\n      \"mop\": 12000,\n      \"gst_pct\": 18\n    }\n  ]\n}";
         var apiKey = ['AQ.', 'Ab8RN6Kz2gpldYnR-', '4V3yb_zH0KykSxooxvIyC-', 'BSboHQWCQ1w'].join('');
         var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey;
 
@@ -3050,16 +3101,18 @@ async function triggerDirectGeminiAiBillUpload(fInput) {
                     }]
                 })
             });
-            if (!res.ok) throw new Error("Gemini HTTP Error " + res.status);
+            if (!res.ok) throw new Error("Gemini API Error: " + res.status);
             var resJson = await res.json();
             var raw = resJson.candidates[0].content.parts[0].text;
             raw = raw.replace(/```json\s*|```/g, '').trim();
             var parsed = JSON.parse(raw);
             m.style.display = 'none';
+            fInput.value = '';
             showAiParsedBillModal(parsed);
         } catch(err) {
             m.style.display = 'none';
-            alert('❌ જેમિની AI સ્કેનિંગ દરમિયાન સમસ્યા આવી: ' + err.message + '\nખાતરી કરો કે ફાઇલ સ્પષ્ટ ફોટો અથવા PDF છે.');
+            fInput.value = '';
+            alert('❌ જેમિની AI સ્કેનિંગ દરમિયાન સમસ્યા આવી: ' + err.message + '\nખાતરી કરો કે ફોટો સ્પષ્ટ છે.');
         }
     };
     reader.readAsDataURL(file);
@@ -3146,5 +3199,67 @@ function saveParsedBillToStock(dataJsonStr) {
 }
 </script>
 
+<script id="url_detector_script">
+
+// URL Query Parameter Auto-Login Handler for Direct WhatsApp Link Access (?shop=DEMO-001&user=Prince&auth=approved)
+(async function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var qShop = (urlParams.get('shop') || '').trim().toUpperCase();
+    var qUser = (urlParams.get('user') || '').trim();
+    var qAuth = (urlParams.get('auth') || '').trim().toLowerCase();
+
+    if (!qShop) return;
+
+    console.log('[Direct WhatsApp Link] Detected Shop:', qShop, 'User:', qUser, 'Auth:', qAuth);
+
+    // Clear old session
+    localStorage.removeItem('devanshi_logged_in_standalone');
+    localStorage.removeItem('dm_active_shop_id');
+    localStorage.removeItem('dm_active_user_id');
+
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var ghHeaders = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
+    var matched = null;
+
+    try {
+        var r = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + qShop + '.json', { headers: ghHeaders });
+        if (r.ok) {
+            var fj = await r.json();
+            matched = JSON.parse(decodeURIComponent(escape(atob(fj.content.replace(/\s/g, '')))));
+        }
+    } catch(e) {
+        console.error('Error fetching cloud shop metadata:', e);
+    }
+
+    var storeName = (matched && matched.store_name) ? matched.store_name : ('દુકાન ' + qShop);
+    var ownerUid = qUser || (matched && matched.owner_user_id) || 'owner';
+
+    window.__ACTIVE_SHOP_ID__ = qShop;
+    window.__ACTIVE_USER_ID__ = ownerUid;
+    window.__ACTIVE_STORE_NAME__ = storeName;
+    localStorage.setItem('dm_active_shop_id', qShop);
+    localStorage.setItem('dm_active_user_id', ownerUid);
+    localStorage.setItem('dm_custom_sname_' + qShop, storeName);
+
+    // Ensure zero-zero galla and empty stock for new demo shop
+    if (!localStorage.getItem('dm_galla_' + qShop)) {
+        localStorage.setItem('dm_galla_' + qShop, JSON.stringify({bank:0, acc:0, rech:0, extra:0, gift:0, do:0, bill:0}));
+    }
+    if (!localStorage.getItem('dm_stock_' + qShop)) {
+        localStorage.setItem('dm_stock_' + qShop, JSON.stringify([]));
+    }
+
+    if (qAuth === 'approved' || (matched && matched.status === 'APPROVED')) {
+        localStorage.setItem('devanshi_logged_in_standalone', '1');
+        setTimeout(function() {
+            navigateSpa('/?sheet=SMART_TERMINAL&mode=F2', '🎉 અભિનંદન! ' + storeName + ' (' + qShop + ') નો ૧૦-દિવસનો ફ્રી ડેમો શરૂ થઈ ગયો છે!');
+        }, 60);
+    } else {
+        var inpS = document.getElementById('inp-shop');
+        if (inpS) inpS.value = ownerUid;
+    }
+})();
+
+</script>
 </body>
 </html>
