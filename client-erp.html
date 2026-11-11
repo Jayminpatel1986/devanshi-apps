@@ -96,7 +96,6 @@
             font-size: 11px;
             color: #cbd5e1;
         }
-        .secret-admin-word {
             color: #64748b;
             font-size: 10.5px;
             cursor: pointer;
@@ -105,7 +104,6 @@
             border-radius: 4px;
             user-select: none;
         }
-        .secret-admin-word:hover { color: #fde047; }
         .modal-bg { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center; }
     
 
@@ -204,7 +202,7 @@
                     <!-- નિયમ ૨: ડાબી બાજુ Forgot Password, જમણી બાજુ જયમીનભાઈ: 9725721215, અને બંનેની વચ્ચે નાના અક્ષરે માત્ર 'એડમિન' -->
                     <div class="footer-secret-bar">
                         <a href="javascript:void(0)" onclick="alert('પાસવર્ડ રિકવર કરવા માટે તમારા દુકાનદાર (Owner) અથવા જયમીનભાઈ (9725721215) નો સંપર્ક કરો.')" style="color:#94a3b8; text-decoration:none;">પાસવર્ડ ભૂલી ગયા?</a>
-                        <span class="secret-admin-word" onclick="openSecretAdminBox()">એડમિન</span>
+                        
                         <span style="color:#38bdf8; font-weight:700;">મદદ: જયમીનભાઈ: 9725721215</span>
                     </div>
                 </div>
@@ -212,45 +210,7 @@
         </div>
 
         <!-- ગુપ્ત એડમિન પાસવર્ડ પોપ-અપ બોક્સ (જયમીનભાઈ 'એડમિન' પર ક્લિક કરે ત્યારે જ ખુલે) -->
-        <div class="modal-bg" id="secret_admin_modal">
-            <div style="background:#0f172a; border:2px solid #eab308; border-radius:12px; width:350px; padding:20px; color:white; text-align:center; box-shadow:0 15px 35px rgba(0,0,0,0.6);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <b style="color:#fde047; font-size:15px;">👑 સુપર એડમિન ઓથેન્ટિકેશન</b>
-                    <button type="button" onclick="document.getElementById('secret_admin_modal').style.display='none'" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;">✖</button>
-                </div>
-                <form action="/super-admin" method="post">
-                    <div class="f-group" style="margin-top:10px;">
-                        <input type="password" name="pin" id="secret_admin_pin_inp" placeholder="એડમિન પાસવર્ડ નાખો..." required style="text-align:center;">
-                        <button type="button" class="eye-btn" onclick="toggleLoginPass('secret_admin_pin_inp')">👁️</button>
-                    </div>
-                    <button type="submit" style="width:100%; background:#ca8a04; color:white; border:none; padding:10px; border-radius:8px; font-weight:800; cursor:pointer;">સુપર એડમિન પેનલ ખોલો</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- 📱 મોબાઈલ QR કોડ પોપ-અપ બોક્સ (લૉગિન સ્ક્રીન પરથી કોઈપણ મોબાઈલમાં ખોલવા માટે) -->
-        <div class="modal-bg" id="login_qr_modal">
-            <div style="background:#0f172a; border:2px solid #38bdf8; border-radius:12px; width:370px; max-width:95vw; padding:18px; color:white; text-align:center; box-shadow:0 15px 35px rgba(0,0,0,0.75);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <b style="color:#38bdf8; font-size:14.5px;">📱 મોબાઈલ / ટેબલેટ QR લૉગિન</b>
-                    <button type="button" onclick="document.getElementById('login_qr_modal').style.display='none'" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;">✖</button>
-                </div>
-                <div id="login_qr_status_badge" style="background:#065f46; color:#fde047; padding:5px 8px; border-radius:6px; font-size:11.5px; font-weight:bold; margin-bottom:10px; border:1px solid #10b981;">
-                    🌐 મોબાઈલના કેમેરાથી નીચેનો QR કોડ સ્કેન કરો
-                </div>
-                <div style="background:white; padding:10px; border-radius:10px; display:inline-block; margin-bottom:10px;">
-                    <img id="login_page_qr_img" src="" alt="Mobile Login QR" style="width:180px; height:180px; display:block; margin:auto;">
-                </div>
-                <div style="display:flex; gap:6px; justify-content:center; margin-bottom:8px;">
-                    <button type="button" onclick="setLoginQrMode('CLOUD')" style="background:#15803d; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:11px; font-weight:bold; cursor:pointer;">🌐 4G/5G ક્લાઉડ QR</button>
-                    <button type="button" onclick="setLoginQrMode('LAN')" style="background:#0284c7; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:11px; font-weight:bold; cursor:pointer;">📶 લોકલ Wi-Fi QR</button>
-                </div>
-                <input type="text" id="login_qr_url_txt" readonly style="width:100%; box-sizing:border-box; padding:6px 8px; background:#1e293b; color:#38bdf8; border:1px solid #475569; border-radius:5px; font-size:11.5px; font-weight:bold; text-align:center;">
-                <div style="font-size:11px; color:#cbd5e1; margin-top:8px; line-height:1.4;">
-                    દુકાનદાર, પાર્ટનર, એકાઉન્ટન્ટ કે સેલ્સમેન પોતાના Android / iPhone માં આ QR સ્કેન કરી પોતાનો ID અને પાસવર્ડ નાખી સીધું સોફ્ટવેર ચલાવી શકશે!
-                </div>
-            </div>
-        </div>
+        
 
         
     
@@ -493,11 +453,7 @@ const GH_TOKEN = ["ghp_q9U96SCY6UKAkm", "Us8Mpn1GMIeQlFiH2l5PDR"].join("");
                 el.type = (el.type === 'password') ? 'text' : 'password';
             }
 
-            function openSecretAdminBox(){
-                document.getElementById('secret_admin_modal').style.display = 'flex';
-                document.getElementById('secret_admin_pin_inp').value = '';
-                document.getElementById('secret_admin_pin_inp').focus();
-            }
+            
 
             function setRole(r){
                 document.getElementById('inp-role').value = r;
@@ -2850,7 +2806,6 @@ document.addEventListener('submit', async function(e) {
         if (pinIn !== '1986' && pinIn !== 'J@ymin86') {
             alert('❌ ખોટો સુપર એડમિન PIN!'); return;
         }
-        document.getElementById('secret_admin_modal').style.display = 'none';
         navigateSpa('/super-admin?pin=1986');
         return;
     }
@@ -2930,7 +2885,7 @@ document.addEventListener('submit', async function(e) {
                     🛡️ તમારી અરજી સુપર એડમિન <b>જયમીનભાઈ પટેલ (9725721215)</b> પાસે મંજૂરી (Approval) માટે મોકલી દેવામાં આવી છે.<br>
                     જયમીનભાઈ દ્વારા એપ્રુવલ મળતાં જ તમારું લૉગિન સક્રિય થઈ જશે.
                 </div>
-                <a href="https://wa.me/919725721215?text=${encodeURIComponent('જયમીનભાઈ, મેં મારી નવી દુકાન (' + sName + ') માટે ૧૦ દિવસના ફ્રી ડેમોની અરજી કરી છે. મારો મોબાઈલ: ' + oMob + ', દુકાન ID: ' + newSid + '. કૃપા કરી એપ્રુવ કરો.')}" target="_blank" style="display:block; background:linear-gradient(135deg,#16a34a,#15803d); color:white; padding:13px 18px; border-radius:10px; font-weight:900; font-size:14px; text-decoration:none; margin-bottom:12px; box-shadow:0 4px 12px rgba(22,163,74,0.4);">
+                <a href="https://wa.me/919725721215?text=${encodeURIComponent('🔔 *દેવાંશી મનસ્વી સોફ્ટવેર - નવો સાઇન-અપ એલર્ટ!*\n🏪 *દુકાન:* ' + sName + '\n👤 *માલિક:* ' + oName + ' (મો. ' + oMob + ')\n🆔 *દુકાન ID:* ' + newSid + ' | *શહેર:* ' + oCity + '\n📅 *પ્લાન:* ૧૦-દિવસ ફ્રી ટ્રાયલ ડેમો\n---------------------------------\n👇 *જયમીનભાઈ, ૧-ક્લિકમાં નિર્ણય લો:*\n\n✅ *મંજૂર કરો (Approve):*\nhttps://jayminpatel1986.github.io/devanshi-apps/jaymin-super-admin.html?action=approve&shop=' + newSid + '&pin=1986\n\n❌ *ના-મંજૂર (Reject):*\nhttps://jayminpatel1986.github.io/devanshi-apps/jaymin-super-admin.html?action=reject&shop=' + newSid + '&pin=1986\n\n🗑️ *ડીલીટ (Delete):*\nhttps://jayminpatel1986.github.io/devanshi-apps/jaymin-super-admin.html?action=delete&shop=' + newSid + '&pin=1986')}" target="_blank" style="display:block; background:linear-gradient(135deg,#16a34a,#15803d); color:white; padding:13px 18px; border-radius:10px; font-weight:900; font-size:14px; text-decoration:none; margin-bottom:12px; box-shadow:0 4px 12px rgba(22,163,74,0.4);">
                     📲 જયમીનભાઈને વોટ્સએપ પર ૧-ક્લિકથી તાત્કાલિક જાણ કરો
                 </a>
                 <button type="button" onclick="navigateSpa('/login')" style="background:#334155; color:#cbd5e1; border:1px solid #64748b; padding:9px 18px; border-radius:8px; font-weight:bold; cursor:pointer;">
