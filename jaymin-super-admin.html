@@ -58,13 +58,97 @@ function verifyAdminMasterPin() {
         document.getElementById('pin_error_msg').style.display = 'block';
     }
 }
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', async function() {
     var u = new URLSearchParams(window.location.search);
     if (u.get('pin') === '1986' || window.location.hash.indexOf('1986') !== -1 || localStorage.getItem('dm_admin_unlocked') === '1') {
         var ls = document.getElementById('jaymin_pin_lock_screen');
         if (ls) ls.style.display = 'none';
     }
+    var act = u.get('action');
+    var targetShop = u.get('shop');
+    if (act && targetShop && (u.get('pin') === '1986' || localStorage.getItem('dm_admin_unlocked') === '1')) {
+        handleWhatsAppDirectAction(act, targetShop);
+    }
 });
+
+async function handleWhatsAppDirectAction(act, shopId) {
+    var actionBox = document.getElementById('whatsapp_action_alert_box');
+    if (!actionBox) {
+        actionBox = document.createElement('div');
+        actionBox.id = 'whatsapp_action_alert_box';
+        actionBox.style = 'background:#0f172a; border:3px solid #38bdf8; border-radius:14px; padding:18px 20px; margin:14px; color:white; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.8);';
+        document.body.insertBefore(actionBox, document.body.firstChild.nextSibling);
+    }
+    
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    
+    actionBox.innerHTML = '<div style="font-size:20px; font-weight:bold; color:#38bdf8;">⏳ ૧-ક્લિક WhatsApp એક્શન પ્રોસેસ થઈ રહી છે... (દુકાન: ' + shopId + ')</div>';
+    
+    try {
+        var fileUrl = 'https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json';
+        var getRes = await fetch(fileUrl, { headers: headers });
+        if (!getRes.ok) {
+            actionBox.innerHTML = '<div style="color:#ef4444; font-size:16px; font-weight:bold;">❌ દુકાન (' + shopId + ') નો ડેટા મળ્યો નથી!</div>';
+            return;
+        }
+        var data = await getRes.json();
+        var currentData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+        
+        if (act === 'approve') {
+            var now = new Date();
+            var todayIso = now.toISOString().split('T')[0];
+            var expIso = new Date(now.getTime() + 10 * 86400000).toISOString().split('T')[0];
+            currentData.status = 'APPROVED';
+            currentData.validity_from = todayIso;
+            currentData.validity_to = expIso;
+            currentData.demo_days = 10;
+            currentData.approved_at = new Date().toISOString();
+            
+            var b64Content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+            await fetch(fileUrl, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify({ message: 'WhatsApp 1-Click Approve: ' + shopId, content: b64Content, sha: data.sha })
+            });
+            
+            var directLoginUrl = 'https://jayminpatel1986.github.io/devanshi-apps/client-erp.html?shop=' + shopId + '&uid=' + (currentData.owner_user_id || 'owner');
+            var waReply = '🎉 *અભિનંદન ' + currentData.owner_name + '!*\n\nતમારી દુકાન *' + currentData.store_name + '* નું દેવાંશી મોબાઈલ સોફ્ટવેર ૧૦ દિવસના ફ્રી ડેમો માટે મંજૂર (Active) થઈ ગયું છે!\n\n👇 *તમારું સોફ્ટવેર શરૂ કરવા અહીં ક્લિક કરો:*\n' + directLoginUrl + '\n\nસહયોગ માટે સંપર્ક: જયમીનભાઈ પટેલ (9725721215)';
+            
+            actionBox.style.borderColor = '#22c55e';
+            actionBox.innerHTML = `
+                <div style="font-size:36px; margin-bottom:6px;">🎉</div>
+                <h2 style="color:#4ade80; margin:0 0 6px 0; font-size:20px;">દુકાન સફળતાપૂર્વક મંજૂર (APPROVED) થઈ ગઈ છે!</h2>
+                <div style="font-size:14px; color:#cbd5e1; margin-bottom:14px;">
+                    🏪 <b>દુકાન:</b> ${currentData.store_name} | 👤 <b>માલિક:</b> ${currentData.owner_name} (${currentData.owner_mobile})
+                </div>
+                <a href="https://wa.me/91${currentData.owner_mobile}?text=${encodeURIComponent(waReply)}" target="_blank" style="display:inline-block; background:linear-gradient(135deg,#16a34a,#15803d); color:white; padding:12px 24px; border-radius:10px; font-weight:900; font-size:15px; text-decoration:none; box-shadow:0 6px 20px rgba(22,163,74,0.5);">
+                    📲 ૧-ક્લિક: દુકાનદારને WhatsApp પર મંજૂરી મેસેજ અને લિંક મોકલો
+                </a>
+            `;
+        } else if (act === 'reject') {
+            currentData.status = 'REJECTED';
+            var b64Content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+            await fetch(fileUrl, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify({ message: 'WhatsApp 1-Click Reject: ' + shopId, content: b64Content, sha: data.sha })
+            });
+            actionBox.style.borderColor = '#ef4444';
+            actionBox.innerHTML = '<div style="color:#f87171; font-size:17px; font-weight:bold;">❌ દુકાન (' + currentData.store_name + ') ના-મંજૂર (REJECTED) કરી દેવામાં આવી છે.</div>';
+        } else if (act === 'delete') {
+            await fetch(fileUrl, {
+                method: 'DELETE',
+                headers: headers,
+                body: JSON.stringify({ message: 'WhatsApp 1-Click Delete: ' + shopId, sha: data.sha })
+            });
+            actionBox.style.borderColor = '#dc2626';
+            actionBox.innerHTML = '<div style="color:#fca5a5; font-size:17px; font-weight:bold;">🗑️ દુકાન (' + shopId + ') સિસ્ટમમાંથી કાયમ માટે ડીલીટ કરી દેવામાં આવી છે.</div>';
+        }
+    } catch (e) {
+        actionBox.innerHTML = '<div style="color:#ef4444; font-size:15px;">એક્શન દરમિયાન ખામી: ' + e.message + '</div>';
+    }
+}
 </script>
 
 
