@@ -1904,12 +1904,29 @@ function openLiveOnlinePlatform(platform, fieldId) {{
     var inp = document.getElementById(fieldId);
     var mod = inp ? inp.value.trim() : '';
     if (!mod || mod.length < 2) {{
-        alert('⚠️ કૃપા કરીને પહેલા મોબાઈલ મોડેલનું નામ લખો (દા.ત. Motorola G Max)!');
+        alert('⚠️ કૃપા કરીને પહેલા મોબાઈલ મોડેલનું નામ લખો (દા.ત. Motorola G Max, Fold8 Ultra)!');
         if (inp) inp.focus();
         return;
     }}
     
-    var q = encodeURIComponent(mod);
+    // Check if brand dropdown has a selection
+    var brandFieldId = (fieldId === 'f2_mod') ? 'f2_brand' : (fieldId === 'f1_mod_inp' ? 'f1_brand_inp' : '');
+    var brandVal = '';
+    if (brandFieldId) {{
+        var bElem = document.getElementById(brandFieldId);
+        if (bElem) {{
+            brandVal = (bElem.value || '').trim();
+            if (brandVal === 'Other' || brandVal === 'NON_EXISTENT') brandVal = '';
+        }}
+    }}
+
+    var lowerMod = mod.toLowerCase();
+    var fullQuery = mod;
+    if (brandVal && lowerMod.indexOf(brandVal.toLowerCase()) === -1) {{
+        fullQuery = brandVal + ' ' + mod;
+    }}
+
+    var q = encodeURIComponent(fullQuery);
     var url = '';
     
     if (platform === 'AMAZON') {{
@@ -1917,24 +1934,24 @@ function openLiveOnlinePlatform(platform, fieldId) {{
     }} else if (platform === 'FLIPKART') {{
         url = 'https://www.flipkart.com/search?q=' + q;
     }} else if (platform === 'BRAND') {{
-        var lower = mod.toLowerCase();
-        var brand = '';
-        if (lower.indexOf('moto') !== -1) brand = 'Motorola';
-        else if (lower.indexOf('oppo') !== -1) brand = 'Oppo';
-        else if (lower.indexOf('vivo') !== -1) brand = 'Vivo';
-        else if (lower.indexOf('samsung') !== -1) brand = 'Samsung';
-        else if (lower.indexOf('iphone') !== -1 || lower.indexOf('apple') !== -1) brand = 'Apple';
-        else if (lower.indexOf('oneplus') !== -1) brand = 'OnePlus';
-        else if (lower.indexOf('realme') !== -1) brand = 'Realme';
-        else if (lower.indexOf('redmi') !== -1 || lower.indexOf('xiaomi') !== -1) brand = 'Xiaomi';
-        else if (lower.indexOf('iqoo') !== -1) brand = 'iQOO';
-        else if (lower.indexOf('nothing') !== -1) brand = 'Nothing';
-        else if (lower.indexOf('poco') !== -1) brand = 'Poco';
+        var lower = fullQuery.toLowerCase();
+        var detectedBrand = brandVal;
+        if (lower.indexOf('moto') !== -1) detectedBrand = 'Motorola';
+        else if (lower.indexOf('oppo') !== -1) detectedBrand = 'Oppo';
+        else if (lower.indexOf('vivo') !== -1) detectedBrand = 'Vivo';
+        else if (lower.indexOf('samsung') !== -1) detectedBrand = 'Samsung';
+        else if (lower.indexOf('iphone') !== -1 || lower.indexOf('apple') !== -1) detectedBrand = 'Apple';
+        else if (lower.indexOf('oneplus') !== -1) detectedBrand = 'OnePlus';
+        else if (lower.indexOf('realme') !== -1) detectedBrand = 'Realme';
+        else if (lower.indexOf('redmi') !== -1 || lower.indexOf('xiaomi') !== -1) detectedBrand = 'Xiaomi';
+        else if (lower.indexOf('iqoo') !== -1) detectedBrand = 'iQOO';
+        else if (lower.indexOf('nothing') !== -1) detectedBrand = 'Nothing';
+        else if (lower.indexOf('poco') !== -1) detectedBrand = 'Poco';
         
-        if (brand) {{
-            url = 'https://www.google.com/search?q=' + encodeURIComponent(mod + ' ' + brand + ' India official store buy price');
+        if (detectedBrand) {{
+            url = 'https://www.google.com/search?q=' + encodeURIComponent(fullQuery + ' ' + detectedBrand + ' India official store buy price');
         }} else {{
-            url = 'https://www.google.com/search?q=' + encodeURIComponent(mod + ' official store buy price India');
+            url = 'https://www.google.com/search?q=' + encodeURIComponent(fullQuery + ' official store buy price India');
         }}
     }}
     
@@ -1942,7 +1959,6 @@ function openLiveOnlinePlatform(platform, fieldId) {{
         window.open(url, '_blank');
     }}
 }}
-
 
 function openOnlinePriceSpyModal(modName, defaultMop) {{
     var modal = document.getElementById('online_price_spy_modal');
