@@ -3039,6 +3039,51 @@ async function triggerOneClickDataWipe() {
 // =========================================================================================
 // 🛒 6-IN-1 HI-FI AI MODULE (Live MOP Tracker, Gujarati Voice Billing, AI Coach, Reviews)
 // =========================================================================================
+
+function openLiveOnlinePlatform(platform, fieldId) {
+    var inp = document.getElementById(fieldId);
+    var mod = inp ? inp.value.trim() : '';
+    if (!mod || mod.length < 2) {
+        alert('⚠️ કૃપા કરીને પહેલા મોબાઈલ મોડેલનું નામ લખો (દા.ત. Motorola G Max)!');
+        if (inp) inp.focus();
+        return;
+    }
+    
+    var q = encodeURIComponent(mod);
+    var url = '';
+    
+    if (platform === 'AMAZON') {
+        url = 'https://www.amazon.in/s?k=' + q;
+    } else if (platform === 'FLIPKART') {
+        url = 'https://www.flipkart.com/search?q=' + q;
+    } else if (platform === 'BRAND') {
+        var lower = mod.toLowerCase();
+        var brand = '';
+        if (lower.indexOf('moto') !== -1) brand = 'Motorola';
+        else if (lower.indexOf('oppo') !== -1) brand = 'Oppo';
+        else if (lower.indexOf('vivo') !== -1) brand = 'Vivo';
+        else if (lower.indexOf('samsung') !== -1) brand = 'Samsung';
+        else if (lower.indexOf('iphone') !== -1 || lower.indexOf('apple') !== -1) brand = 'Apple';
+        else if (lower.indexOf('oneplus') !== -1) brand = 'OnePlus';
+        else if (lower.indexOf('realme') !== -1) brand = 'Realme';
+        else if (lower.indexOf('redmi') !== -1 || lower.indexOf('xiaomi') !== -1) brand = 'Xiaomi';
+        else if (lower.indexOf('iqoo') !== -1) brand = 'iQOO';
+        else if (lower.indexOf('nothing') !== -1) brand = 'Nothing';
+        else if (lower.indexOf('poco') !== -1) brand = 'Poco';
+        
+        if (brand) {
+            url = 'https://www.google.com/search?q=' + encodeURIComponent(mod + ' ' + brand + ' India official store buy price');
+        } else {
+            url = 'https://www.google.com/search?q=' + encodeURIComponent(mod + ' official store buy price India');
+        }
+    }
+    
+    if (url) {
+        window.open(url, '_blank');
+    }
+}
+
+
 function openOnlinePriceSpyModal(modName, defaultMop) {
     var modal = document.getElementById('online_price_spy_modal');
     if (!modal) return;
