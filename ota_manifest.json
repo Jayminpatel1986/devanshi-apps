@@ -1,6 +1,6 @@
 {
     "version_id": "2026.11.12.001",
-    "updated_at": "12-11-2026 07:50 PM",
+    "updated_at": "12-11-2026 08:04 PM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
@@ -9,12 +9,12 @@
     "files": {
         "app.py": "bb78bc67f66595baf4b75aecb2f1d37380e0bcb921d612c1eeedc3c48e52c5b9",
         "part1_core.py": "39328def0aad6d2f523f59e597ffafcc5de4a627a3e0259bd3a39b18dd7d5286",
-        "part2_views.py": "bda3a136a3a3432f4dc9bbf298ccca708eb2ec22e929f22127395d2b9fda0eef",
-        "part2_b_counters.py": "3d39f36135a9127b70c1cf28f1092d41a1d3113b512a72238e426e20ef9a0c6f",
+        "part2_views.py": "dfd0d5621ef4f595c3075f41999c9be4bccc5909ec71fd4e9cb27599bc831232",
+        "part2_b_counters.py": "35f08ae58dd3ac2069e8551fa676f07c355745c761286c9e41a3f38d29470f85",
         "part2_c_counters_extra.py": "c0f13893c402ce881dc7f0daf1da7ffdac84188af0c115da1ab0a6f4efde765b",
         "part2_d_sheets.py": "39e85ddeb79ce7c19795d2e42f407527882cdb3d194a88d5dd681e198cb5cf75",
         "part3_routes.py": "722eccef515db3882b97278d2c9ef85a90a7f3b0155da601019086f2cd3b18c5",
-        "part4_ai_import.py": "59dc08c28332dcba830f6d39880f766d8c9abeca2c5f683650ad2f02e2b6f4af",
+        "part4_ai_import.py": "caa7b0f9f356a991430467a86b9dfcb20f8b16a6b20f9b75420682e8c6b47655",
         "part5_saas_control.py": "894a4feb496214213e99bdb89544a4890ba42afa7f511769841495243c3cecb4",
         "part6_police_vault.py": "ed6b7df42fa733673619f469260f56fe3d5f52862cf05419fd54eabbcb1f3755",
         "part7_eod_whatsapp.py": "44354f74b3f40048f921ae4a63a0a2de7e3335511c4ac0b88e7678a8468777c5",
