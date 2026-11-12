@@ -178,9 +178,9 @@ def render_smart_terminal(
                 <div id="f1_live_price_bar" style="background:linear-gradient(90deg, #fff7ed, #eff6ff); border:1.5px solid #fdba74; padding:6px 12px; border-radius:6px; margin:4px 0 8px 243px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     <span style="font-weight:bold; color:#c2410c; font-size:12px;">🌐 લાઈવ ઓનલાઈન ભાવ & સ્કીમ:</span>
                     <button type="button" onclick="openOnlinePriceSpyModal(document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '', document.getElementById('f1_mop_inp') ? document.getElementById('f1_mop_inp').value : 0)" style="background:linear-gradient(135deg, #ea580c, #c2410c); color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; font-size:11.5px; cursor:pointer;" title="Amazon / Flipkart / Brand e-Store લાઈવ MOP તુલના">⚖️ 4-પ્લેટફોર્મ સરખામણી & બેંક કેશબેક ↗</button>
-                    <a id="f1_amz_btn" href="https://www.amazon.in" target="_blank" style="background:#232f3e; color:#ff9900; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🛒 Amazon ભાવ ↗</a>
-                    <a id="f1_fk_btn" href="https://www.flipkart.com" target="_blank" style="background:#2874f0; color:#ffe500; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🛍️ Flipkart ભાવ ↗</a>
-                    <a id="f1_brand_btn" href="https://www.google.com" target="_blank" style="background:#047857; color:white; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🏢 બ્રાન્ડ વેબસાઈટ ભાવ ↗</a>
+                    <button type="button" onclick="openLiveOnlinePlatform('AMAZON', 'f1_mod_inp')" style="background:#232f3e; color:#ff9900; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Amazon પર આ મોડેલનું લાઈવ પેજ ખોલો">🛒 Amazon લાઈવ પેજ ↗</button>
+                    <button type="button" onclick="openLiveOnlinePlatform('FLIPKART', 'f1_mod_inp')" style="background:#2874f0; color:#ffe500; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Flipkart પર આ મોડેલનું લાઈવ પેજ ખોલો">🛍️ Flipkart લાઈવ પેજ ↗</button>
+                    <button type="button" onclick="openLiveOnlinePlatform('BRAND', 'f1_mod_inp')" style="background:#047857; color:white; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="બ્રાન્ડની સત્તાવાર વેબસાઈટ પર લાઈવ પેજ ખોલો">🏢 બ્રાન્ડ વેબસાઈટ ↗</button>
                     <span id="f1_live_est_tag" style="font-size:11.5px; font-weight:bold; color:#0369a1; background:#e0f2fe; padding:3px 8px; border-radius:4px; margin-left:auto;"></span>
                 </div>
 
@@ -658,9 +658,9 @@ def render_smart_terminal(
             <div id="f2_live_price_bar" style="background:linear-gradient(90deg, #fff7ed, #eff6ff); border:1.5px solid #fdba74; padding:6px 12px; border-radius:6px; margin:4px 0 8px 243px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <span style="font-weight:bold; color:#c2410c; font-size:12px;">🌐 લાઈવ ઓનલાઈન ભાવ & સ્કીમ:</span>
                 <button type="button" onclick="openOnlinePriceSpyModal(document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '', document.getElementById('f2_mop') ? document.getElementById('f2_mop').value : 0)" style="background:linear-gradient(135deg, #ea580c, #c2410c); color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; font-size:11.5px; cursor:pointer;" title="Amazon / Flipkart / Brand e-Store લાઈવ MOP તુલના">⚖️ 4-પ્લેટફોર્મ સરખામણી & બેંક કેશબેક ↗</button>
-                <a id="f2_amz_btn" href="https://www.amazon.in" target="_blank" style="background:#232f3e; color:#ff9900; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🛒 Amazon ભાવ ↗</a>
-                <a id="f2_fk_btn" href="https://www.flipkart.com" target="_blank" style="background:#2874f0; color:#ffe500; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🛍️ Flipkart ભાવ ↗</a>
-                <a id="f2_brand_btn" href="https://www.google.com" target="_blank" style="background:#047857; color:white; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🏢 બ્રાન્ડ વેબસાઈટ ભાવ ↗</a>
+                <button type="button" onclick="openLiveOnlinePlatform('AMAZON', 'f2_mod')" style="background:#232f3e; color:#ff9900; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Amazon પર આ મોડેલનું લાઈવ પેજ ખોલો">🛒 Amazon લાઈવ પેજ ↗</button>
+                <button type="button" onclick="openLiveOnlinePlatform('FLIPKART', 'f2_mod')" style="background:#2874f0; color:#ffe500; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Flipkart પર આ મોડેલનું લાઈવ પેજ ખોલો">🛍️ Flipkart લાઈવ પેજ ↗</button>
+                <button type="button" onclick="openLiveOnlinePlatform('BRAND', 'f2_mod')" style="background:#047857; color:white; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="બ્રાન્ડની સત્તાવાર વેબસાઈટ પર લાઈવ પેજ ખોલો">🏢 બ્રાન્ડ વેબસાઈટ ↗</button>
                 <span id="f2_live_est_tag" style="font-size:11.5px; font-weight:bold; color:#0369a1; background:#e0f2fe; padding:3px 8px; border-radius:4px; margin-left:auto;"></span>
             </div>
             <div class="f-row" id="f2_scheme_profit_row" style="background:#fefce8; border:1.5px solid #eab308; padding:5px 8px; border-radius:6px;">
@@ -2420,6 +2420,51 @@ def render_universal_search(
 // =========================================================================================
 // 🛒 6-IN-1 HI-FI AI MODULE (Live MOP Tracker, Gujarati Voice Billing, AI Coach, Reviews)
 // =========================================================================================
+
+function openLiveOnlinePlatform(platform, fieldId) {{
+    var inp = document.getElementById(fieldId);
+    var mod = inp ? inp.value.trim() : '';
+    if (!mod || mod.length < 2) {{
+        alert('⚠️ કૃપા કરીને પહેલા મોબાઈલ મોડેલનું નામ લખો (દા.ત. Motorola G Max)!');
+        if (inp) inp.focus();
+        return;
+    }}
+    
+    var q = encodeURIComponent(mod);
+    var url = '';
+    
+    if (platform === 'AMAZON') {{
+        url = 'https://www.amazon.in/s?k=' + q;
+    }} else if (platform === 'FLIPKART') {{
+        url = 'https://www.flipkart.com/search?q=' + q;
+    }} else if (platform === 'BRAND') {{
+        var lower = mod.toLowerCase();
+        var brand = '';
+        if (lower.indexOf('moto') !== -1) brand = 'Motorola';
+        else if (lower.indexOf('oppo') !== -1) brand = 'Oppo';
+        else if (lower.indexOf('vivo') !== -1) brand = 'Vivo';
+        else if (lower.indexOf('samsung') !== -1) brand = 'Samsung';
+        else if (lower.indexOf('iphone') !== -1 || lower.indexOf('apple') !== -1) brand = 'Apple';
+        else if (lower.indexOf('oneplus') !== -1) brand = 'OnePlus';
+        else if (lower.indexOf('realme') !== -1) brand = 'Realme';
+        else if (lower.indexOf('redmi') !== -1 || lower.indexOf('xiaomi') !== -1) brand = 'Xiaomi';
+        else if (lower.indexOf('iqoo') !== -1) brand = 'iQOO';
+        else if (lower.indexOf('nothing') !== -1) brand = 'Nothing';
+        else if (lower.indexOf('poco') !== -1) brand = 'Poco';
+        
+        if (brand) {{
+            url = 'https://www.google.com/search?q=' + encodeURIComponent(mod + ' ' + brand + ' India official store buy price');
+        }} else {{
+            url = 'https://www.google.com/search?q=' + encodeURIComponent(mod + ' official store buy price India');
+        }}
+    }}
+    
+    if (url) {{
+        window.open(url, '_blank');
+    }}
+}}
+
+
 function openOnlinePriceSpyModal(modName, defaultMop) {{
     var modal = document.getElementById('online_price_spy_modal');
     if (!modal) return;
