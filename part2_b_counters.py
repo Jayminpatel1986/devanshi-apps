@@ -832,8 +832,12 @@ def render_smart_terminal(
                         }}
                     }}
                     var tag = document.getElementById('f2_live_est_tag');
-                    if(tag && d && d.mop > 0){{
-                        tag.innerHTML = '✨ ઓટો-MOP: ₹' + d.mop.toLocaleString('en-IN');
+                    if(tag){{
+                        if(d && d.mop > 0){{
+                            tag.innerHTML = (d.mop_source === 'STOCK_AUTHENTIC' ? '📦 સ્ટોક MOP: ₹' : '✨ MOP: ₹') + d.mop.toLocaleString('en-IN');
+                        }} else {{
+                            tag.innerHTML = '🌐 દુકાનના સ્ટોકમાં નથી (ઓનલાઇન તપાસો)';
+                        }}
                     }}
                     if(d && d.active_scheme_amt > 0){{
                         document.getElementById('f2_scheme_benefit').value = d.active_scheme_amt;
@@ -2439,7 +2443,7 @@ function openLiveOnlinePlatform(platform, fieldId) {{
     var inp = document.getElementById(fieldId);
     var mod = inp ? inp.value.trim() : '';
     if (!mod || mod.length < 2) {{
-        alert('⚠️ કૃપા કરીને પહેલા મોબાઈલ મોડેલનું નામ લખો (દા.ત. Motorola G Max, Fold8 Ultra)!');
+        alert('⚠️ કૃપા કરીને પહેલા મોબાઈલ મોડેલનું નામ લખો (દા.ત. Oppo Find X, Motorola G Max)!');
         if (inp) inp.focus();
         return;
     }}
@@ -2491,7 +2495,21 @@ function openLiveOnlinePlatform(platform, fieldId) {{
     }}
     
     if (url) {{
-        window.open(url, '_blank');
+        // ૧. બેકગ્રાઉન્ડ પાયથન સર્વર દ્વારા સીધું જ વિન્ડોઝ ડિફોલ્ટ બ્રાઉઝરમાં ખોલો (Chrome --app મોડમાં પોપ-અપ બ્લોક ૧૦૦% બાયપાસ!)
+        fetch('/api/open-external-url?url=' + encodeURIComponent(url)).catch(function(){{}});
+        
+        // ૨. બ્રાઉઝર એન્કર ક્લિક પ્રયાસ
+        try {{
+            var a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {{ try {{ document.body.removeChild(a); }} catch(e){{}} }}, 300);
+        }} catch(e) {{
+            window.open(url, '_blank');
+        }}
     }}
 }}
 
