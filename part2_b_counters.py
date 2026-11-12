@@ -175,14 +175,7 @@ def render_smart_terminal(
                 </div>
 
                 <!-- 🛒 F1 લાઈવ ઓનલાઈન ભાવ તપાસો બાર (Amazon | Flipkart | Brand Portal) -->
-                <div id="f1_live_price_bar" style="background:linear-gradient(90deg, #fff7ed, #eff6ff); border:1.5px solid #fdba74; padding:6px 12px; border-radius:6px; margin:4px 0 8px 243px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <span style="font-weight:bold; color:#c2410c; font-size:12px;">🌐 લાઈવ ઓનલાઈન ભાવ & સ્કીમ:</span>
-                    <button type="button" onclick="openOnlinePriceSpyModal(document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '', document.getElementById('f1_mop_inp') ? document.getElementById('f1_mop_inp').value : 0)" style="background:linear-gradient(135deg, #ea580c, #c2410c); color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; font-size:11.5px; cursor:pointer;" title="Amazon / Flipkart / Brand e-Store લાઈવ MOP તુલના">⚖️ 4-પ્લેટફોર્મ સરખામણી & બેંક કેશબેક ↗</button>
-                    <button type="button" onclick="openLiveOnlinePlatform('AMAZON', 'f1_mod_inp')" style="background:#232f3e; color:#ff9900; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Amazon પર આ મોડેલનું લાઈવ પેજ ખોલો">🛒 Amazon લાઈવ પેજ ↗</button>
-                    <button type="button" onclick="openLiveOnlinePlatform('FLIPKART', 'f1_mod_inp')" style="background:#2874f0; color:#ffe500; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Flipkart પર આ મોડેલનું લાઈવ પેજ ખોલો">🛍️ Flipkart લાઈવ પેજ ↗</button>
-                    <button type="button" onclick="openLiveOnlinePlatform('BRAND', 'f1_mod_inp')" style="background:#047857; color:white; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="બ્રાન્ડની સત્તાવાર વેબસાઈટ પર લાઈવ પેજ ખોલો">🏢 બ્રાન્ડ વેબસાઈટ ↗</button>
-                    <span id="f1_live_est_tag" style="font-size:11.5px; font-weight:bold; color:#0369a1; background:#e0f2fe; padding:3px 8px; border-radius:4px; margin-left:auto;"></span>
-                </div>
+                
 
                 <div class="f-row">
                     <div class="lbl">૭. ૧૫-અંક IMEI / સિરિયલ નંબર:</div>
@@ -655,14 +648,7 @@ def render_smart_terminal(
             </div>
 
             <!-- 🛒 F2 લાઈવ ઓનલાઈન ભાવ તપાસો બાર (Amazon | Flipkart | Brand Portal) -->
-            <div id="f2_live_price_bar" style="background:linear-gradient(90deg, #fff7ed, #eff6ff); border:1.5px solid #fdba74; padding:6px 12px; border-radius:6px; margin:4px 0 8px 243px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <span style="font-weight:bold; color:#c2410c; font-size:12px;">🌐 લાઈવ ઓનલાઈન ભાવ & સ્કીમ:</span>
-                <button type="button" onclick="openOnlinePriceSpyModal(document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '', document.getElementById('f2_mop') ? document.getElementById('f2_mop').value : 0)" style="background:linear-gradient(135deg, #ea580c, #c2410c); color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; font-size:11.5px; cursor:pointer;" title="Amazon / Flipkart / Brand e-Store લાઈવ MOP તુલના">⚖️ 4-પ્લેટફોર્મ સરખામણી & બેંક કેશબેક ↗</button>
-                <button type="button" onclick="openLiveOnlinePlatform('AMAZON', 'f2_mod')" style="background:#232f3e; color:#ff9900; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Amazon પર આ મોડેલનું લાઈવ પેજ ખોલો">🛒 Amazon લાઈવ પેજ ↗</button>
-                <button type="button" onclick="openLiveOnlinePlatform('FLIPKART', 'f2_mod')" style="background:#2874f0; color:#ffe500; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Flipkart પર આ મોડેલનું લાઈવ પેજ ખોલો">🛍️ Flipkart લાઈવ પેજ ↗</button>
-                <button type="button" onclick="openLiveOnlinePlatform('BRAND', 'f2_mod')" style="background:#047857; color:white; padding:5px 10px; border-radius:4px; border:none; font-weight:bold; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="બ્રાન્ડની સત્તાવાર વેબસાઈટ પર લાઈવ પેજ ખોલો">🏢 બ્રાન્ડ વેબસાઈટ ↗</button>
-                <span id="f2_live_est_tag" style="font-size:11.5px; font-weight:bold; color:#0369a1; background:#e0f2fe; padding:3px 8px; border-radius:4px; margin-left:auto;"></span>
-            </div>
+            
             <div class="f-row" id="f2_scheme_profit_row" style="background:#fefce8; border:1.5px solid #eab308; padding:5px 8px; border-radius:6px;">
                 <div class="lbl" style="color:#854d0e;">🎁 કંપની સ્કીમ / પ્રાઇસ-ડ્રોપ નફો (₹):</div>
                 <input type="number" step="any" name="scheme_benefit_amt" id="f2_scheme_benefit" value="0" oninput="calcF2()" placeholder="તારીખ-લોક સ્કીમ / ભાવ ફરક એક્સ્ટ્રા પ્રોફિટ ₹" style="max-width:160px; font-weight:bold; color:#15803d;">
