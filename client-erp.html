@@ -3342,15 +3342,24 @@ function selectSpyModelPill(name, mop) {
     calcSpyOffers(mop);
 }
 
+
 function calcSpyOffers(forcedMop) {
     var nameInp = document.getElementById('spy_model_name');
     var rawName = (nameInp ? nameInp.value : '').trim().toLowerCase();
+    if(!rawName && (document.getElementById('f2_mod') || document.getElementById('f1_mod_inp'))) {
+        rawName = (document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '') || (document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '');
+        if(nameInp) nameInp.value = rawName;
+    }
     
     var catalog = {
+        'oppo find': { name: 'Oppo Find X10 Pro Max (12/512)', store: 99999, amz: 104999, fk: 104999, brand: 104999, bname: 'Oppo India Official Store' },
+        'find 10': { name: 'Oppo Find X10 Pro Max (12/512)', store: 99999, amz: 104999, fk: 104999, brand: 104999, bname: 'Oppo India Official Store' },
+        'find x': { name: 'Oppo Find Series Flagship', store: 89999, amz: 94999, fk: 94999, brand: 94999, bname: 'Oppo India Official Store' },
         'vivo y58': { name: 'Vivo Y58 5G (8/128)', store: 15499, amz: 15999, fk: 15999, brand: 15999, bname: 'Vivo India e-Store' },
         'vivo v40': { name: 'Vivo V40 5G (8/128)', store: 34499, amz: 34999, fk: 34999, brand: 34999, bname: 'Vivo India e-Store' },
         'samsung a15': { name: 'Samsung Galaxy A15 5G', store: 16199, amz: 16499, fk: 16499, brand: 16499, bname: 'Samsung Official Shop' },
         'iphone 15': { name: 'Apple iPhone 15 128GB', store: 68999, amz: 69999, fk: 69999, brand: 79900, bname: 'Apple India Store' },
+        'iphone 16': { name: 'Apple iPhone 16 Pro Max', store: 134900, amz: 139900, fk: 139900, brand: 139900, bname: 'Apple India Store' },
         'oneplus': { name: 'OnePlus Nord CE4 5G', store: 24499, amz: 24999, fk: 24999, brand: 24999, bname: 'OnePlus Official' },
         'realme': { name: 'Realme 12 Pro 5G', store: 21499, amz: 21999, fk: 21999, brand: 21999, bname: 'Realme Official Store' },
         'redmi': { name: 'Redmi Note 13 5G', store: 16999, amz: 17499, fk: 17499, brand: 17499, bname: 'Xiaomi India e-Store' }
@@ -3375,19 +3384,25 @@ function calcSpyOffers(forcedMop) {
     } else if (forcedMop && Number(forcedMop) > 0) {
         storeMop = Number(forcedMop);
         baseMop = Math.round(storeMop * 1.03);
+    } else if (rawName.indexOf('pro max') !== -1 || rawName.indexOf('ultra') !== -1) {
+        storeMop = 89999;
+        baseMop = 94999;
     }
+    
+    var customInp = document.getElementById('spy_custom_mop_inp');
+    if (customInp && (!customInp.value || parseFloat(customInp.value) === 0 || forcedMop)) customInp.value = storeMop;
     
     var bankSel = document.getElementById('spy_bank_sel');
     var bVal = bankSel ? bankSel.value : 'NONE';
     var bankDisc = 0;
-    if (bVal === 'HDFC_2000') bankDisc = 2000;
-    else if (bVal === 'ICICI_1500') bankDisc = 1500;
-    else if (bVal === 'SBI_1000') bankDisc = 1000;
-    else if (bVal === 'AXIS_1500') bankDisc = 1500;
+    if (bVal === 'HDFC_2000' || bVal === 'HDFC') bankDisc = storeMop >= 70000 ? 5000 : 2000;
+    else if (bVal === 'ICICI_1500' || bVal === 'ICICI') bankDisc = storeMop >= 70000 ? 4000 : 1500;
+    else if (bVal === 'SBI_1000' || bVal === 'SBI') bankDisc = storeMop >= 70000 ? 3000 : 1000;
+    else if (bVal === 'AXIS_1500' || bVal === 'AXIS') bankDisc = storeMop >= 70000 ? 4000 : 1500;
     else if (bVal === 'KOTAK_1000') bankDisc = 1000;
     
     var netOnline = Math.max(0, baseMop - bankDisc);
-    var netOffline = Math.max(0, storeMop - (bankDisc > 0 ? (bankDisc - 200) : 0));
+    var netOffline = Math.max(0, storeMop - (bankDisc > 0 ? (bankDisc - 300) : 0));
     
     var sStore = document.getElementById('spy_store_mop');
     var sAmz = document.getElementById('spy_amz_mop');
@@ -3411,144 +3426,66 @@ function calcSpyOffers(forcedMop) {
     var q = encodeURIComponent(rawName || 'smartphone');
     if (amzLink) amzLink.href = 'https://www.amazon.in/s?k=' + q;
     if (fkLink) fkLink.href = 'https://www.flipkart.com/search?q=' + q;
-    if (brandLink) brandLink.href = 'https://www.google.com/search?q=' + q + '+official+store';
+    if (brandLink) brandLink.href = 'https://www.google.com/search?q=' + q + '+official+price+India';
     
+    var bAmzF1 = document.getElementById('f1_btn_amz');
+    var bFkF1 = document.getElementById('f1_btn_fk');
+    var bBrandF1 = document.getElementById('f1_btn_brand');
+    if(bAmzF1) bAmzF1.href = 'https://www.amazon.in/s?k=' + q;
+    if(bFkF1) bFkF1.href = 'https://www.flipkart.com/search?q=' + q;
+    if(bBrandF1) bBrandF1.href = 'https://www.google.com/search?q=' + q + '+official+price+India';
+
+    var bAmzF2 = document.getElementById('f2_btn_amz');
+    var bFkF2 = document.getElementById('f2_btn_fk');
+    var bBrandF2 = document.getElementById('f2_btn_brand');
+    if(bAmzF2) bAmzF2.href = 'https://www.amazon.in/s?k=' + q;
+    if(bFkF2) bFkF2.href = 'https://www.flipkart.com/search?q=' + q;
+    if(bBrandF2) bBrandF2.href = 'https://www.google.com/search?q=' + q + '+official+price+India';
+
     var pitchBox = document.getElementById('spy_pitch_box');
     if (pitchBox) {
-        var diff = Math.max(200, netOnline - netOffline);
-        pitchBox.innerHTML = '"સાહેબ, ઓનલાઈન કરતાં આપણી પાસે ₹' + diff + ' સસ્તો પડશે અને સાથે ₹૭૯૮ ના ઓરિજિનલ 11D ટેમ્પર્ડ ગ્લાસ + સ્મોક કવર તદ્દન ફ્રી ચડાવી આપીશું! સૌથી મોટો ફાયદો એ કે ઓનલાઇનમાં પાર્સલમાં ખોટો કે તૂટેલો ફોન નીકળે તો ૧૫ દિવસ કસ્ટમર કેરમાં દોડવું પડે, જ્યારે અહીં તમારી નજર સામે સીલ પેક બોક્સ ખુલે છે, જૂના ફોનનો તમામ ડેટા ૧૦ મિનિટમાં ફ્રી શિફ્ટ કરી આપીએ છીએ અને ૧ વર્ષની હાથોહાથ સર્વિસ વોરંટી આપણી દુકાન તરફથી મળે છે!"';
+        var diff = Math.max(300, netOnline - netOffline);
+        pitchBox.innerHTML = '"સાહેબ, ' + (rawName || 'આ મોડેલ') + ' ઓનલાઈન Amazon/Flipkart કરતાં આપણી પાસે ₹' + diff + ' સસ્તો પડશે અને સાથે ₹૭૯૮ ના ઓરિજિનલ 11D ટેમ્પર્ડ ગ્લાસ + સ્મોક કવર તદ્દન ફ્રી ચડાવી આપીશું! સૌથી મોટો ફાયદો એ કે ઓનલાઇનમાં પાર્સલમાં ખોટો કે તૂટેલો ફોન નીકળે તો ૧૫ દિવસ કસ્ટમર કેરમાં દોડવું પડે, જ્યારે અહીં તમારી નજર સામે સીલ પેક બોક્સ ખુલે છે, જૂના ફોનનો તમામ ડેટા ૧૦ મિનિટમાં ફ્રી શિફ્ટ કરી આપીએ છીએ અને ૧ વર્ષની હાથોહાથ સર્વિસ વોરંટી આપણી દુકાન તરફથી મળે છે!"';
     }
 }
 
 function applySpyPriceToBilling() {
-    var sNetOff = document.getElementById('spy_net_offline');
-    var val = sNetOff ? parseInt(sNetOff.innerText.replace(/[^0-9]/g, '')) : 0;
+    var customInp = document.getElementById('spy_custom_mop_inp');
+    var sStore = document.getElementById('spy_store_mop');
+    var finalVal = (customInp && parseFloat(customInp.value) > 0) ? parseFloat(customInp.value) : (sStore ? parseFloat(sStore.innerText.replace(/,/g, '')) || 0 : 0);
+    
+    if (finalVal <= 0) {
+        alert('⚠️ કૃપા કરીને માન્ય MOP રકમ દાખલ કરો!');
+        return;
+    }
+
     var nameInp = document.getElementById('spy_model_name');
     var modName = nameInp ? nameInp.value.trim() : '';
-    
+
     var f2Mop = document.getElementById('f2_mop');
     var f2Mod = document.getElementById('f2_mod');
     var f1Mop = document.getElementById('f1_mop_inp');
     var f1Mod = document.getElementById('f1_mod_inp');
-    
+
     if (f2Mop && f2Mop.offsetParent !== null) {
-        if (val > 0) f2Mop.value = val;
+        f2Mop.value = finalVal;
         if (modName && f2Mod && (!f2Mod.value || f2Mod.value.length < 3)) f2Mod.value = modName;
+        if (typeof autoCalcExpectedDp === 'function') autoCalcExpectedDp();
         if (typeof calcF2 === 'function') calcF2();
     } else if (f1Mop && f1Mop.offsetParent !== null) {
-        if (val > 0) f1Mop.value = val;
+        f1Mop.value = finalVal;
         if (modName && f1Mod && (!f1Mod.value || f1Mod.value.length < 3)) f1Mod.value = modName;
-        if (typeof calcF1 === 'function') calcF1();
+        if (typeof calcF1Gst === 'function') calcF1Gst();
+    } else {
+        if (f2Mop) { f2Mop.value = finalVal; if (typeof calcF2 === 'function') calcF2(); }
+        if (f1Mop) { f1Mop.value = finalVal; if (typeof calcF1Gst === 'function') calcF1Gst(); }
     }
     closeOnlinePriceSpyModal();
+    alert('✅ MOP ₹' + finalVal.toLocaleString('en-IN') + ' સફળતાપૂર્વક લાગુ થઈ ગયો!');
 }
 
-function startGujaratiVoiceBilling() {
-    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) {
-        alert('⚠️ આ બ્રાઉઝરમાં માઇક્રોફોન સ્પીચ રિકોગ્નિશન ઉપલબ્ધ નથી.\nGoogle Chrome નો ઉપયોગ કરવા વિનંતી!');
-        return;
-    }
-    
-    var btn = document.getElementById('f2_voice_btn');
-    var origText = btn ? btn.innerHTML : '';
-    if (btn) {
-        btn.innerHTML = '🔴 <b>સાંભળી રહ્યો છું... બોલો!</b>';
-        btn.style.background = '#dc2626';
-    }
-    
-    var rec = new SpeechRec();
-    rec.lang = 'gu-IN';
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-    
-    rec.onresult = function(e) {
-        var text = e.results[0][0].transcript;
-        console.log('Voice recognized:', text);
-        
-        var mobMatch = text.match(/[6-9]\d{9}/);
-        if (mobMatch) {
-            var mobInp = document.getElementById('f2_cust_mob');
-            if (mobInp) mobInp.value = mobMatch[0];
-        }
-        
-        var numMatches = text.match(/\d+/g);
-        if (numMatches) {
-            for (var i = 0; i < numMatches.length; i++) {
-                var n = parseInt(numMatches[i]);
-                if (n >= 1000 && n <= 200000 && n.toString().length !== 10) {
-                    var mopInp = document.getElementById('f2_mop');
-                    if (mopInp) mopInp.value = n;
-                    break;
-                }
-            }
-        }
-        
-        var models = ['vivo', 'oppo', 'samsung', 'iphone', 'realme', 'redmi', 'xiaomi', 'oneplus', 'y58', 'v40', 'a15', 'a35', 'nord'];
-        for (var m of models) {
-            if (text.toLowerCase().indexOf(m) !== -1) {
-                var modInp = document.getElementById('f2_mod');
-                if (modInp) {
-                    modInp.value = text.replace(/[0-9]/g, '').trim();
-                }
-                break;
-            }
-        }
-        
-        var custInp = document.getElementById('f2_cust');
-        if (custInp && !custInp.value) {
-            var words = text.split(' ');
-            if (words.length > 0 && words[0].length >= 3) {
-                custInp.value = words[0];
-            }
-        }
-        
-        if (typeof calcF2 === 'function') calcF2();
-        alert('🎙️ બોલેલ વિગતો બિલમાં ભરાઈ ગઈ છે:\n"' + text + '"');
-    };
-    
-    rec.onerror = function(e) {
-        console.log('Voice error:', e);
-        if (btn) {
-            btn.innerHTML = origText;
-            btn.style.background = 'linear-gradient(135deg, #7c3aed, #6d28d9)';
-        }
-    };
-    
-    rec.onend = function() {
-        if (btn) {
-            btn.innerHTML = origText;
-            btn.style.background = 'linear-gradient(135deg, #7c3aed, #6d28d9)';
-        }
-    };
-    
-    try {
-        rec.start();
-    } catch(err) {
-        if (btn) {
-            btn.innerHTML = origText;
-            btn.style.background = 'linear-gradient(135deg, #7c3aed, #6d28d9)';
-        }
-    }
-}
 
-function generateSalesmanClosingPitch() {
-    var modal = document.getElementById('salesman_closing_pitch_modal');
-    if (modal) modal.style.display = 'flex';
-}
 
-function closeSalesmanClosingPitchModal() {
-    var modal = document.getElementById('salesman_closing_pitch_modal');
-    if (modal) modal.style.display = 'none';
-}
-
-function triggerGoogleReviewBooster(custName, custMob, modelName) {
-    if (!custMob || custMob.length < 10) return;
-    var shopName = window.__ACTIVE_SHOP_ID__ || 'દેવાંશી / મનસ્વી મોબાઇલ';
-    var text = 'નમસ્તે ' + (custName || 'ગ્રાહક મિત્ર') + ' જી 🙏\n\n' + shopName + ' માંથી ' + (modelName || 'મોબાઇલ') + ' ખરીદવા બદલ આપનો ખૂબ ખૂબ આભાર!\n\nઅમારી સેવા અને સ્ટાફનો વ્યવહાર આપને કેવો લાગ્યો? કૃપા કરીને નીચેની લિંક પર ક્લિક કરી અમને Google પર ૫-સ્ટાર રેટિંગ ⭐⭐⭐⭐⭐ આપી આપના આશીર્વાદ આપશો:\n\nhttps://g.page/r/devanshi-mansvi-mobile/review\n\nઆભાર સહ,\n' + shopName;
-    var waUrl = 'https://api.whatsapp.com/send?phone=91' + encodeURIComponent(custMob) + '&text=' + encodeURIComponent(text);
-    window.open(waUrl, '_blank');
-}
 
 </script>
 
@@ -3580,7 +3517,16 @@ function triggerGoogleReviewBooster(custName, custMob, modelName) {
             </div>
 
             <!-- 4-Pillar Live Price Comparison Grid -->
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:14px;">
+            
+            <div style="background:#fef3c7; border:1.5px solid #d97706; border-radius:6px; padding:8px 12px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <div style="font-weight:bold; font-size:12px; color:#92400e;">✍️ ઓનલાઇન જોયેલો સાચો MOP અહીં સુધારો / લખો (₹):</div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:14px; font-weight:bold; color:#b45309;">₹</span>
+                    <input type="number" id="spy_custom_mop_inp" placeholder="દા.ત. 99999" style="width:130px; padding:5px 8px; font-size:13px; font-weight:bold; border:1.5px solid #d97706; border-radius:4px; background:#fff; color:#92400e;">
+                    <button type="button" onclick="calcSpyOffers(document.getElementById('spy_custom_mop_inp').value)" style="background:#d97706; color:#fff; border:none; padding:5px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">રીકેલ્ક્યુલેટ</button>
+                </div>
+            </div>
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:14px;">
                 <!-- Card 1: Our Offline Store -->
                 <div style="background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; padding:10px; text-align:center;">
                     <div style="font-size:11px; font-weight:800; color:#15803d;">🏪 આપણી ઓફલાઇન દુકાન</div>
