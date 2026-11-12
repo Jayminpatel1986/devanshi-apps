@@ -336,7 +336,7 @@
                     <button type="button" onclick="quickAskMunimji('કયા વેપારી (Supplier) ને કેટલા રૂપિયા ચૂકવવાના બાકી છે?')" style="background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">🧾 વેપારી બાકી ખાતાવહી</button>
                 </div>
                 <div style="display:flex; gap:6px; margin-bottom:8px;">
-                    <input type="text" id="ai_chat_input" onkeydown="if(event.key==='Enter'){event.preventDefault();askDevanshiAi();}" placeholder="અહીં પ્રશ્ન કે ૧૫-અંક IMEI લખો (દા.ત. Vivo નું લેજર બતાવ / આ મહિનાનું રિપેરિંગ / GST નિયમ)..." style="flex:1; padding:8px; border:2px solid #7c3aed; border-radius:4px; font-weight:bold;">
+                    <input type="text" id="ai_chat_input" onkeydown="handleAiChatKeydown(event)" placeholder="અહીં પ્રશ્ન કે ૧૫-અંક IMEI લખો (દા.ત. Vivo નું લેજર બતાવ / આ મહિનાનું રિપેરિંગ / GST નિયમ)..." style="flex:1; padding:8px; border:2px solid #7c3aed; border-radius:4px; font-weight:bold;">
                     <button type="button" onclick="startAiVoiceMic()" style="background:#059669; color:white; border:none; padding:7px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" title="બોલીને પૂછો">🎤 બોલો</button>
                     <button type="button" onclick="askDevanshiAi()" style="background:#7c3aed; color:white; border:none; padding:7px 16px; border-radius:4px; font-weight:bold; cursor:pointer;">પૂછો (Ask AI)</button>
                 </div>
@@ -838,7 +838,8 @@ const GH_TOKEN = ["ghp_q9U96SCY6UKAkm", "Us8Mpn1GMIeQlFiH2l5PDR"].join("");
             if (inp) inp.focus();
         }
 
-        async function askDevanshiAi() {
+        async function handleAiChatKeydown(e){ if(e && e.key==='Enter'){ e.preventDefault(); askDevanshiAi(); } }
+        function askDevanshiAi() {
             const inp = document.getElementById('ai_chat_input');
             const box = document.getElementById('ai_chat_response');
             const q = (inp.value || '').trim();
