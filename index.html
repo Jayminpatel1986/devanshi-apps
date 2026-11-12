@@ -9,122 +9,135 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="દેવાંશી ERP">
-<title>👑 દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર (v2026.11.12.001) - સત્તાવાર લાઈવ પોર્ટલ</title>
+<title>👑 દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર (v2026.11.12) - સત્તાવાર લાઈવ પોર્ટલ</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-    body { font-family:'Noto Sans Gujarati','Segoe UI',sans-serif; background:radial-gradient(circle at top,#1e293b 0%,#091224 100%); color:#f8fafc; margin:0; padding:16px; display:flex; align-items:center; justify-content:center; min-height:100vh; box-sizing:border-box; }
+    * { box-sizing: border-box; }
+    body { font-family:'Noto Sans Gujarati','Segoe UI',sans-serif; background:radial-gradient(circle at top,#1e293b 0%,#091224 100%); color:#f8fafc; margin:0; padding:16px; display:flex; align-items:center; justify-content:center; min-height:100vh; }
     .card { max-width:540px; width:100%; background:rgba(15,23,42,0.96); border:2.5px solid #eab308; border-radius:18px; padding:24px 20px; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.85); backdrop-filter:blur(8px); }
     .btn { display:block; padding:14px 18px; border-radius:12px; font-weight:900; font-size:15px; text-decoration:none; margin:11px 0; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
     .btn:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,0.45); }
-    .btn-pwa { background:linear-gradient(135deg,#f59e0b,#d97706); color:#0f172a; border:2px solid #fef08a; font-size:16px; }
     .btn-green { background:linear-gradient(135deg,#16a34a,#15803d); color:white; border:1.5px solid #86efac; }
     .btn-gold { background:linear-gradient(135deg,#eab308,#ca8a04); color:#0f172a; border:1.5px solid #fef08a; }
     .btn-blue { background:linear-gradient(135deg,#0284c7,#0369a1); color:white; border:1.5px solid #7dd3fc; }
-    .btn-demo { background:#1e293b; color:#38bdf8; border:1.5px solid #0284c7; font-size:14px; }
+    .btn-demo { background:linear-gradient(135deg,#7c3aed,#4c1d95); color:#fde047; border:2px solid #fde047; font-size:15.5px; box-shadow:0 0 15px rgba(253,224,71,0.35); }
     .banner-wa { display:none; background:#854d0e; color:#fef08a; padding:10px 14px; border-radius:10px; font-weight:800; font-size:12.5px; margin-bottom:14px; border:1.5px dashed #fde047; text-align:left; line-height:1.5; }
+    .badge-dev { display:inline-block; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold; background:#0284c7; color:white; margin-bottom:10px; }
 </style>
 <script>
-    var deferredPrompt = null;
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('sw.js').catch(function(){});
-        });
-    }
-    window.addEventListener('beforeinstallprompt', function(e) {
-        e.preventDefault();
-        deferredPrompt = e;
-        var pwaBtn = document.getElementById('btn_pwa_install');
-        if (pwaBtn) pwaBtn.style.display = 'block';
-    });
-
-    function triggerPWAInstall() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function(choice) {
-                deferredPrompt = null;
-            });
-        } else {
-            alert('📱 તમારા બ્રાઉઝર મેનૂમાંથી "Add to Home screen" (હોમ સ્ક્રીન પર ઉમેરો) દબાવો!');
-        }
-    }
-
     window.addEventListener('DOMContentLoaded', function() {
         var ua = (navigator.userAgent || '').toLowerCase();
-        var host = (window.location.hostname || '').toLowerCase();
-        var isGithubPages = (host.indexOf('github.io') !== -1 || window.location.protocol === 'file:');
-        var ghBase = 'https://github.com/Jayminpatel1986/devanshi-apps/releases/latest/download/';
-        var localBase = '/download-file/';
-        var base = isGithubPages ? ghBase : localBase;
+        var isAndroid = ua.indexOf('android') !== -1;
+        var isIOS = ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1 || ua.indexOf('ipod') !== -1;
+        var isWindows = ua.indexOf('windows') !== -1;
 
-        var apkUrl = base + 'Devanshi_ERP.apk';
-        var iosUrl = base + 'Devanshi_iOS_App.mobileconfig';
-        var exeUrl = base + 'Devanshi_Mansvi_ERP.exe';
-
-        var btnApk = document.getElementById('btn_dl_apk');
-        var btnIos = document.getElementById('btn_dl_ios');
-        var btnExe = document.getElementById('btn_dl_exe');
-        if (btnApk) btnApk.href = apkUrl;
-        if (btnIos) btnIos.href = iosUrl;
-        if (btnExe) btnExe.href = exeUrl;
-
-        // WhatsApp Detection
         var isWhatsApp = (ua.indexOf('whatsapp') !== -1 || ua.indexOf('fban') !== -1 || ua.indexOf('fbav') !== -1);
         if (isWhatsApp) {
             var waB = document.getElementById('wa_notice_banner');
             if (waB) waB.style.display = 'block';
         }
 
-        // Device Auto Highlight
-        var msg = '💻 તમારું Windows કમ્પ્યુટર ઓળખાઈ ગયું છે — સીધું .EXE સોફ્ટવેર ડાઉનલોડ કરો.';
-        if (ua.indexOf('android') !== -1) {
-            msg = '📱 તમારો Android ફોન ઓળખાઈ ગયો છે — Play Store જેવું ૧-ક્લિક ઇન્સ્ટોલેશન તૈયાર છે.';
-            var pwaBtn = document.getElementById('btn_pwa_install');
-            if (pwaBtn) pwaBtn.style.display = 'block';
-        } else if (ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1 || ua.indexOf('ipod') !== -1) {
+        var btnApk = document.getElementById('btn_dl_apk');
+        var btnIos = document.getElementById('btn_dl_ios');
+        var btnExe = document.getElementById('btn_dl_exe');
+        var hintBox = document.getElementById('device_hint_box');
+
+        var msg = '💻 તમારું Windows કમ્પ્યુટર ઓળખાઈ ગયું છે — સીધું સોફ્ટવેર ડાઉનલોડ અથવા વેબ શરૂ કરો.';
+        if (isAndroid) {
+            msg = '📱 તમારો Android ફોન ઓળખાઈ ગયો છે — ૧-ક્લિક .APK ડાઉનલોડ તૈયાર છે!';
+            if (btnApk) {
+                btnApk.style.border = '2.5px solid #fde047';
+                btnApk.style.boxShadow = '0 0 16px rgba(250,204,21,0.6)';
+            }
+            if (hintBox) {
+                hintBox.innerHTML = '💡 <b>Android ટિપ:</b> ક્રોમ બ્રાઉઝરમાં ઉપર જમણી બાજુ <b>૩ ટપકાં (⋮)</b> દબાવી <b>\'Add to Home screen\' (હોમ સ્ક્રીન પર ઉમેરો)</b> કરવાથી એપ આઈકોન બની જશે!';
+                hintBox.style.display = 'block';
+            }
+        } else if (isIOS) {
             msg = '🍎 તમારો Apple iPhone ઓળખાઈ ગયો છે — ૧-ટૅપમાં iOS એપ ઉમેરો.';
-            if (btnIos) btnIos.style.border = '2.5px solid #fde047';
+            if (btnIos) {
+                btnIos.style.border = '2.5px solid #fde047';
+                btnIos.style.boxShadow = '0 0 16px rgba(250,204,21,0.6)';
+            }
+            if (hintBox) {
+                hintBox.innerHTML = '💡 <b>iPhone ટિપ:</b> Safari માં નીચે <b>Share બટન</b> દબાવી <b>\'Add to Home Screen\'</b> કરવાથી એપ સ્ક્રીન પર આવી જશે!';
+                hintBox.style.display = 'block';
+            }
         }
         var st = document.getElementById('auto_dl_status');
         if (st) st.innerText = msg;
+
+        // Check if admin is visiting
+        var q = window.location.search || '';
+        if (q.indexOf('admin') !== -1 || q.indexOf('jaymin') !== -1 || q.indexOf('1986') !== -1) {
+            var adminBox = document.getElementById('jaymin_admin_box');
+            if (adminBox) adminBox.style.display = 'block';
+        }
     });
+
+    function promptOwnerAccess() {
+        var pin = prompt('કૃપા કરીને સંચાલક માસ્ટર PIN દાખલ કરો:');
+        if (pin === '1986') {
+            window.location.href = 'jaymin-super-admin.html?pin=1986';
+        } else if (pin) {
+            alert('❌ ખોટો PIN!');
+        }
+    }
 </script>
 </head>
 <body>
 <div class="card">
-    <div style="font-size:44px; margin-bottom:2px;">👑</div>
-    <h2 style="margin:0 0 4px 0; color:#fde047; font-size:22px; font-weight:900;">દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર</h2>
-    <div style="font-size:12.5px; color:#38bdf8; font-weight:bold; margin-bottom:12px;">સત્તાવાર પોર્ટલ v2026.11.12.001 | એડમિન: જયમીનભાઈ પટેલ (9725721215)</div>
+    <div style="font-size:46px; margin-bottom:2px;">👑</div>
+    <h2 style="margin:0 0 4px 0; color:#fde047; font-size:23px; font-weight:900;">દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર</h2>
+    <div style="font-size:12.5px; color:#38bdf8; font-weight:bold; margin-bottom:12px;">સત્તાવાર ઓલ-ઇન-વન ક્લાઉડ & રિટેલ ERP | સપોર્ટ: 9725721215</div>
 
     <div id="wa_notice_banner" class="banner-wa">
         👉 <b>વોટ્સએપ સિક્યોરિટી એલર્ટ:</b> સરળ ઇન્સ્ટોલ કરવા ઉપર જમણી બાજુ <b>૩ ટપકાં (⋮)</b> દબાવી <b>'Open in Chrome' (ક્રોમમાં ખોલો)</b> સિલેક્ટ કરો!
     </div>
 
-    <div id="auto_dl_status" style="background:rgba(22,163,74,0.22); border:1.8px solid #4ade80; padding:10px 14px; border-radius:10px; margin-bottom:14px; font-weight:bold; color:#bbf7d0; font-size:13.5px;">
+    <!-- 👑 જયમીનભાઈ માટે સુપર એડમિન બોક્સ (ફક્ત PIN / એડમિન URL થી દેખાશે) -->
+    <div id="jaymin_admin_box" style="display:none; background:rgba(15,32,67,0.95); border:2px solid #fde047; border-radius:12px; padding:12px; margin-bottom:14px; text-align:center;">
+        <div style="font-size:13px; color:#fde047; font-weight:900; margin-bottom:8px;">👑 સંચાલક કંટ્રોલ હબ (જયમીનભાઈ પટેલ - Samsung S23 Ultra)</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+            <a href="jaymin-sample-erp.html?shop=DEVANSHI" style="background:linear-gradient(135deg,#0f2043,#1e3a8a); color:#fde047; border:1px solid #fde047; padding:9px 6px; border-radius:8px; text-decoration:none; font-weight:900; font-size:12px; display:block;">👑 ૧. દેવાંશી સ્ટોર (સેમ્પલ)</a>
+            <a href="jaymin-sample-erp.html?shop=MANSHVI" style="background:linear-gradient(135deg,#78350f,#92400e); color:#fef08a; border:1px solid #fde047; padding:9px 6px; border-radius:8px; text-decoration:none; font-weight:900; font-size:12px; display:block;">🏪 ૨. મનસ્વી સ્ટોર (સેમ્પલ)</a>
+        </div>
+        <a href="jaymin-super-admin.html?pin=1986" style="background:linear-gradient(135deg,#7c3aed,#581c87); color:white; border:1px solid #c4b5fd; padding:10px; border-radius:8px; text-decoration:none; font-weight:900; font-size:13px; display:block; box-shadow:0 0 12px rgba(196,181,253,0.4);">⚡ ૩. સુપર એડમિન હબ (બધા સ્ટોરનું લાઈવ મોનિટરિંગ)</a>
+    </div>
+
+    <div id="auto_dl_status" style="background:rgba(22,163,74,0.22); border:1.8px solid #4ade80; padding:10px 14px; border-radius:10px; margin-bottom:12px; font-weight:bold; color:#bbf7d0; font-size:13.5px;">
         ⚡ તમારું ડિવાઇસ ઓળખાઈ રહ્યું છે...
     </div>
 
-    <button type="button" id="btn_pwa_install" onclick="triggerPWAInstall()" class="btn btn-pwa" style="display:none; width:100%;">
-        📲 ૧. Play Store ની જેમ ઍપ ઇન્સ્ટોલ કરો (Zero Security Warning)
-    </button>
-
-    <a id="btn_dl_apk" href="/download-file/Devanshi_ERP.apk" download="Devanshi_ERP.apk" class="btn btn-green">
-        📥 ૨. Android .APK ફાઇલ સીધી ડાઉનલોડ કરો
+    <!-- 🚀 દુકાનદાર માટે સીધું જ ફૂલ વેબ સોફ્ટવેર (Zero Install) -->
+    <a href="client-erp.html" class="btn btn-demo">
+        🚀 ૧. સીધું ઓનલાઇન શરૂ કરો / ૧૦-દિવસ ફ્રી ટ્રાયલ (Zero Install)
     </a>
 
-    <a id="btn_dl_ios" href="/download-file/Devanshi_iOS_App.mobileconfig" class="btn btn-gold">
+    <!-- 📥 Android APK ડાઉનલોડ -->
+    <a id="btn_dl_apk" href="Devanshi_ERP.apk" download="Devanshi_ERP.apk" class="btn btn-green">
+        📱 ૨. Android સ્માર્ટફોન માટે .APK ડાઉનલોડ કરો
+    </a>
+
+    <!-- 🍎 Apple iPhone iOS એપ -->
+    <a id="btn_dl_ios" href="Devanshi_iOS_App.mobileconfig" class="btn btn-gold">
         🍎 ૩. Apple iPhone (iOS) સત્તાવાર એપ પ્રોફાઇલ
     </a>
 
-    <a id="btn_dl_exe" href="/download-file/Devanshi_Mansvi_ERP.exe" class="btn btn-blue">
+    <!-- 💻 Windows કમ્પ્યુટર / લેપટોપ સોફ્ટવેર -->
+    <a id="btn_dl_exe" href="https://github.com/Jayminpatel1986/devanshi-apps/releases/latest/download/Devanshi_Mansvi_ERP.exe" class="btn btn-blue">
         💻 ૪. Windows કમ્પ્યુટર / લેપટોપ (.EXE સોફ્ટવેર)
     </a>
 
-    <a href="/login" class="btn btn-demo">
-        🚀 ૫. ઇન્સ્ટોલ વગર સીધું જ લૉગિન કરો / ૧૦-દિવસ ફ્રી ડેમો ખોલો
-    </a>
+    <div id="device_hint_box" style="display:none; margin-top:10px; background:rgba(30,58,138,0.3); border:1.5px solid #38bdf8; color:#bae6fd; padding:10px; border-radius:10px; font-size:12.5px; text-align:left; line-height:1.5;"></div>
 
-    <div style="margin-top:14px; font-size:11.5px; color:#94a3b8; line-height:1.5; text-align:left; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;">
-        🔒 <b>સુરક્ષા બાંહેધરી:</b> આ ૧૦૦% સત્તાવાર ડિજિટલ સહી કરેલી એપ છે. ૧૦ દિવસ સુધી કોઈપણ ચાર્જ વગર સંપૂર્ણ સુવિધાઓ સાથે વાપરી શકશો.
+    <div style="margin-top:14px; font-size:12px; color:#94a3b8; line-height:1.5; text-align:left; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;">
+        🔒 <b>સુરક્ષા બાંહેધરી:</b> આ ૧૦૦% સત્તાવાર ડિજિટલ સહી કરેલી એપ છે. ૧૦ દિવસ સુધી કોઈપણ ચાર્જ વગર સંપૂર્ણ સુવિધાઓ સાથે વાપરી શકશો.<br>
+        📞 હેલ્પલાઇન / WhatsApp સપોર્ટ: <b>+91 9725721215</b> (જયમીનભાઈ પટેલ)
+    </div>
+
+    <div style="margin-top:14px; font-size:11.5px; color:#64748b; text-align:center;">
+        <a href="javascript:void(0)" onclick="promptOwnerAccess()" style="color:#64748b; text-decoration:none;">🔐 સંચાલક પ્રવેશ</a>
     </div>
 </div>
 </body>
