@@ -173,6 +173,17 @@ def render_smart_terminal(
                         <option value="Apple iPhone 15 (128GB) Black">
                     </datalist>
                 </div>
+
+                <!-- 🛒 F1 લાઈવ ઓનલાઈન ભાવ તપાસો બાર (Amazon | Flipkart | Brand Portal) -->
+                <div id="f1_live_price_bar" style="background:linear-gradient(90deg, #fff7ed, #eff6ff); border:1.5px solid #fdba74; padding:6px 12px; border-radius:6px; margin:4px 0 8px 243px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span style="font-weight:bold; color:#c2410c; font-size:12px;">🌐 લાઈવ ઓનલાઈન ભાવ & સ્કીમ:</span>
+                    <button type="button" onclick="openOnlinePriceSpyModal(document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '', document.getElementById('f1_mop_inp') ? document.getElementById('f1_mop_inp').value : 0)" style="background:linear-gradient(135deg, #ea580c, #c2410c); color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; font-size:11.5px; cursor:pointer;" title="Amazon / Flipkart / Brand e-Store લાઈવ MOP તુલના">⚖️ 4-પ્લેટફોર્મ સરખામણી & બેંક કેશબેક ↗</button>
+                    <a id="f1_amz_btn" href="https://www.amazon.in" target="_blank" style="background:#232f3e; color:#ff9900; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🛒 Amazon ભાવ ↗</a>
+                    <a id="f1_fk_btn" href="https://www.flipkart.com" target="_blank" style="background:#2874f0; color:#ffe500; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🛍️ Flipkart ભાવ ↗</a>
+                    <a id="f1_brand_btn" href="https://www.google.com" target="_blank" style="background:#047857; color:white; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🏢 બ્રાન્ડ વેબસાઈટ ભાવ ↗</a>
+                    <span id="f1_live_est_tag" style="font-size:11.5px; font-weight:bold; color:#0369a1; background:#e0f2fe; padding:3px 8px; border-radius:4px; margin-left:auto;"></span>
+                </div>
+
                 <div class="f-row">
                     <div class="lbl">૭. ૧૫-અંક IMEI / સિરિયલ નંબર:</div>
                     <input type="text" name="imei" placeholder="AI ઓટો-રીડ / બલ્ક બારકોડ ગન સ્કેન / મેન્યુઅલ ટાઇપિંગ (સીધા In-Stock માં જમા)">
@@ -367,7 +378,13 @@ def render_smart_terminal(
             function autoFetchOfficialMopAndGstF1(forceUpdate){{
                 var mod = (document.getElementById('f1_mod_inp').value || '').trim();
                 var dp = parseFloat(document.getElementById('f1_dp_inp').value) || 0;
-                if(mod.length < 3) return;
+                if(mod.length < 2) return;
+
+                var q = encodeURIComponent(mod);
+                var aBtn = document.getElementById('f1_amz_btn'); if(aBtn) aBtn.href = 'https://www.amazon.in/s?k=' + q;
+                var fBtn = document.getElementById('f1_fk_btn'); if(fBtn) fBtn.href = 'https://www.flipkart.com/search?q=' + q;
+                var bBtn = document.getElementById('f1_brand_btn'); if(bBtn) bBtn.href = 'https://www.google.com/search?q=' + q + '+official+price+India';
+
                 fetch('/api/lookup-model-mop-gst?model=' + encodeURIComponent(mod) + '&dp=' + dp)
                 .then(r => r.json())
                 .then(d => {{
@@ -380,6 +397,9 @@ def render_smart_terminal(
                             }}
                         }}
                     }}
+                    if(d && d.amazon_search_url){{ var a = document.getElementById('f1_amz_btn'); if(a) a.href = d.amazon_search_url; }}
+                    if(d && d.flipkart_search_url){{ var f = document.getElementById('f1_fk_btn'); if(f) f.href = d.flipkart_search_url; }}
+                    if(d && d.brand_search_url){{ var b = document.getElementById('f1_brand_btn'); if(b) b.href = d.brand_search_url; }}
                     if(d && d.gst_pct !== undefined){{
                         document.getElementById('f1_gst_pct').value = String(Math.round(d.gst_pct));
                         calcF1Gst();
@@ -387,6 +407,10 @@ def render_smart_terminal(
                     var mopEl = document.getElementById('f1_mop_inp');
                     if(mopEl && d.mop > 0 && (forceUpdate || !parseFloat(mopEl.value) || parseFloat(mopEl.value) === 0)){{
                         mopEl.value = d.mop;
+                    }}
+                    var tag = document.getElementById('f1_live_est_tag');
+                    if(tag && d && d.mop > 0){{
+                        tag.innerHTML = '✨ ઓટો-MOP: ₹' + d.mop.toLocaleString('en-IN') + ' (GST 18%)';
                     }}
                 }}).catch(()=>{{}});
             }}
@@ -629,6 +653,16 @@ def render_smart_terminal(
                 </div>
                 <button type="button" onclick="checkActiveSchemeForModelF2(true)" style="background:#0284c7; color:white; border:none; padding:6px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:11px;">🌐 ઓફિશિયલ MOP & સ્કીમ</button>
             </div>
+
+            <!-- 🛒 F2 લાઈવ ઓનલાઈન ભાવ તપાસો બાર (Amazon | Flipkart | Brand Portal) -->
+            <div id="f2_live_price_bar" style="background:linear-gradient(90deg, #fff7ed, #eff6ff); border:1.5px solid #fdba74; padding:6px 12px; border-radius:6px; margin:4px 0 8px 243px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="font-weight:bold; color:#c2410c; font-size:12px;">🌐 લાઈવ ઓનલાઈન ભાવ & સ્કીમ:</span>
+                <button type="button" onclick="openOnlinePriceSpyModal(document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '', document.getElementById('f2_mop') ? document.getElementById('f2_mop').value : 0)" style="background:linear-gradient(135deg, #ea580c, #c2410c); color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; font-size:11.5px; cursor:pointer;" title="Amazon / Flipkart / Brand e-Store લાઈવ MOP તુલના">⚖️ 4-પ્લેટફોર્મ સરખામણી & બેંક કેશબેક ↗</button>
+                <a id="f2_amz_btn" href="https://www.amazon.in" target="_blank" style="background:#232f3e; color:#ff9900; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🛒 Amazon ભાવ ↗</a>
+                <a id="f2_fk_btn" href="https://www.flipkart.com" target="_blank" style="background:#2874f0; color:#ffe500; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🛍️ Flipkart ભાવ ↗</a>
+                <a id="f2_brand_btn" href="https://www.google.com" target="_blank" style="background:#047857; color:white; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:11.5px; display:inline-flex; align-items:center; gap:4px;">🏢 બ્રાન્ડ વેબસાઈટ ભાવ ↗</a>
+                <span id="f2_live_est_tag" style="font-size:11.5px; font-weight:bold; color:#0369a1; background:#e0f2fe; padding:3px 8px; border-radius:4px; margin-left:auto;"></span>
+            </div>
             <div class="f-row" id="f2_scheme_profit_row" style="background:#fefce8; border:1.5px solid #eab308; padding:5px 8px; border-radius:6px;">
                 <div class="lbl" style="color:#854d0e;">🎁 કંપની સ્કીમ / પ્રાઇસ-ડ્રોપ નફો (₹):</div>
                 <input type="number" step="any" name="scheme_benefit_amt" id="f2_scheme_benefit" value="0" oninput="calcF2()" placeholder="તારીખ-લોક સ્કીમ / ભાવ ફરક એક્સ્ટ્રા પ્રોફિટ ₹" style="max-width:160px; font-weight:bold; color:#15803d;">
@@ -760,24 +794,32 @@ def render_smart_terminal(
             function checkActiveSchemeForModelF2(forceMop){{
                 var mod = (document.getElementById('f2_mod').value || '').trim();
                 var bDate = (document.querySelector('input[name="bill_date"]').value || '').trim();
-                if(mod.length < 3) return;
+                if(mod.length < 2) return;
+
+                var q = encodeURIComponent(mod);
+                var aBtn = document.getElementById('f2_amz_btn'); if(aBtn) aBtn.href = 'https://www.amazon.in/s?k=' + q;
+                var fBtn = document.getElementById('f2_fk_btn'); if(fBtn) fBtn.href = 'https://www.flipkart.com/search?q=' + q;
+                var bBtn = document.getElementById('f2_brand_btn'); if(bBtn) bBtn.href = 'https://www.google.com/search?q=' + q + '+official+price+India';
+
                 fetch('/api/lookup-model-mop-gst?model=' + encodeURIComponent(mod) + '&bill_date=' + encodeURIComponent(bDate))
                 .then(r => r.json())
                 .then(d => {{
                     if(d && d.brand) document.getElementById('f2_brand').value = d.brand;
+                    if(d && d.amazon_search_url){{ var a = document.getElementById('f2_amz_btn'); if(a) a.href = d.amazon_search_url; }}
+                    if(d && d.flipkart_search_url){{ var f = document.getElementById('f2_fk_btn'); if(f) f.href = d.flipkart_search_url; }}
+                    if(d && d.brand_search_url){{ var b = document.getElementById('f2_brand_btn'); if(b) b.href = d.brand_search_url; }}
                     var mopInp = document.getElementById('f2_mop');
                     var curMopNum = parseFloat(mopInp.value) || 0;
                     if(d && d.mop > 0){{
-                        // જો સ્ટોકમાં પહેલેથી સાચી MOP હોય (દા.ત. ૨૭,૪૯૯) તો તેને જેનરિક ૧૪,૯૯૯ થી ઓવરરાઇટ ન કરવી!
-                        if(!curMopNum || curMopNum === 0 || (forceMop && d.mop_source === 'STOCK_AUTHENTIC')){{
-                            mopInp.value = d.mop;
-                            autoCalcExpectedDp();
-                            calcF2();
-                        }} else if(forceMop && curMopNum > 0 && d.mop !== 14999){{
+                        if(!curMopNum || curMopNum === 0 || forceMop || d.mop_source === 'STOCK_AUTHENTIC'){{
                             mopInp.value = d.mop;
                             autoCalcExpectedDp();
                             calcF2();
                         }}
+                    }}
+                    var tag = document.getElementById('f2_live_est_tag');
+                    if(tag && d && d.mop > 0){{
+                        tag.innerHTML = '✨ ઓટો-MOP: ₹' + d.mop.toLocaleString('en-IN');
                     }}
                     if(d && d.active_scheme_amt > 0){{
                         document.getElementById('f2_scheme_benefit').value = d.active_scheme_amt;
@@ -2246,9 +2288,16 @@ def render_universal_search(
                 </div>
             </div>
 
+            <!-- ✍️ ઓનલાઇન જોયેલો સાચો MOP અહીં લખો / સુધારો -->
+            <div style="background:#fefce8; border:1.5px solid #ca8a04; border-radius:6px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="font-weight:bold; color:#854d0e; font-size:12.5px;">✍️ ઓનલાઇન જોયેલો સાચો MOP અહીં સુધારો / લખો (₹):</span>
+                <input type="number" id="spy_custom_mop_inp" placeholder="દા.ત. 99999" style="padding:6px 12px; border:2px solid #ea580c; border-radius:4px; font-weight:bold; font-size:14px; width:160px; color:#c2410c;">
+                <span style="font-size:11.5px; color:#713f12;">(આ રકમ સીધી F1 ખરીદી અથવા F2 વેચાણ બિલમાં ભરાઈ જશે)</span>
+            </div>
+
             <!-- Action Buttons -->
             <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button type="button" onclick="applySpyPriceToBilling()" style="background:linear-gradient(135deg, #15803d, #166534); color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; font-size:13px; cursor:pointer; box-shadow:0 2px 6px rgba(22,101,52,0.3);">✅ આ MOP બિલમાં ભરો (Apply to Bill)</button>
+                <button type="button" onclick="applySpyPriceToBilling()" style="background:linear-gradient(135deg, #15803d, #166534); color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; font-size:13px; cursor:pointer; box-shadow:0 2px 6px rgba(22,101,52,0.3);">✅ આ MOP બિલ/ખરીદીમાં ભરો (Apply to Bill)</button>
                 <button type="button" onclick="closeOnlinePriceSpyModal()" style="background:#64748b; color:white; border:none; padding:10px 18px; border-radius:6px; font-weight:bold; font-size:13px; cursor:pointer;">બંધ કરો (Close)</button>
             </div>
         </div>
@@ -2375,7 +2424,7 @@ function openOnlinePriceSpyModal(modName, defaultMop) {{
     var modal = document.getElementById('online_price_spy_modal');
     if (!modal) return;
     var inp = document.getElementById('spy_model_name');
-    var curVal = modName || (document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '') || (document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '') || 'Vivo Y58 5G';
+    var curVal = modName || (document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '') || (document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '') || '';
     if (inp) inp.value = curVal;
     calcSpyOffers(defaultMop);
     modal.style.display = 'flex';
@@ -2394,50 +2443,11 @@ function selectSpyModelPill(name, mop) {{
 
 function calcSpyOffers(forcedMop) {{
     var nameInp = document.getElementById('spy_model_name');
-    var rawName = (nameInp ? nameInp.value : '').trim().toLowerCase();
-    
-    var catalog = {{
-        'vivo y58': {{ name: 'Vivo Y58 5G (8/128)', store: 15499, amz: 15999, fk: 15999, brand: 15999, bname: 'Vivo India e-Store' }},
-        'vivo v40': {{ name: 'Vivo V40 5G (8/128)', store: 34499, amz: 34999, fk: 34999, brand: 34999, bname: 'Vivo India e-Store' }},
-        'samsung a15': {{ name: 'Samsung Galaxy A15 5G', store: 16199, amz: 16499, fk: 16499, brand: 16499, bname: 'Samsung Official Shop' }},
-        'iphone 15': {{ name: 'Apple iPhone 15 128GB', store: 68999, amz: 69999, fk: 69999, brand: 79900, bname: 'Apple India Store' }},
-        'oneplus': {{ name: 'OnePlus Nord CE4 5G', store: 24499, amz: 24999, fk: 24999, brand: 24999, bname: 'OnePlus Official' }},
-        'realme': {{ name: 'Realme 12 Pro 5G', store: 21499, amz: 21999, fk: 21999, brand: 21999, bname: 'Realme Official Store' }},
-        'redmi': {{ name: 'Redmi Note 13 5G', store: 16999, amz: 17499, fk: 17499, brand: 17499, bname: 'Xiaomi India e-Store' }}
-    }};
-    
-    var matched = null;
-    for (var k in catalog) {{
-        if (rawName.indexOf(k) !== -1) {{
-            matched = catalog[k];
-            break;
-        }}
+    var rawName = (nameInp ? nameInp.value : '').trim();
+    if(!rawName && (document.getElementById('f2_mod') || document.getElementById('f1_mod_inp'))) {{
+        rawName = (document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '') || (document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '');
+        if(nameInp) nameInp.value = rawName;
     }}
-    
-    var baseMop = 15999;
-    var storeMop = 15499;
-    var bName = 'ઓફિશિયલ બ્રાન્ડ e-Store';
-    
-    if (matched) {{
-        baseMop = matched.amz;
-        storeMop = matched.store;
-        bName = matched.bname;
-    }} else if (forcedMop && Number(forcedMop) > 0) {{
-        storeMop = Number(forcedMop);
-        baseMop = Math.round(storeMop * 1.03);
-    }}
-    
-    var bankSel = document.getElementById('spy_bank_sel');
-    var bVal = bankSel ? bankSel.value : 'NONE';
-    var bankDisc = 0;
-    if (bVal === 'HDFC_2000') bankDisc = 2000;
-    else if (bVal === 'ICICI_1500') bankDisc = 1500;
-    else if (bVal === 'SBI_1000') bankDisc = 1000;
-    else if (bVal === 'AXIS_1500') bankDisc = 1500;
-    else if (bVal === 'KOTAK_1000') bankDisc = 1000;
-    
-    var netOnline = Math.max(0, baseMop - bankDisc);
-    var netOffline = Math.max(0, storeMop - (bankDisc > 0 ? (bankDisc - 200) : 0));
     
     var sStore = document.getElementById('spy_store_mop');
     var sAmz = document.getElementById('spy_amz_mop');
@@ -2449,48 +2459,103 @@ function calcSpyOffers(forcedMop) {{
     var amzLink = document.getElementById('spy_amz_link');
     var fkLink = document.getElementById('spy_fk_link');
     var brandLink = document.getElementById('spy_brand_link');
-    
-    if (sStore) sStore.innerText = storeMop.toLocaleString('en-IN');
-    if (sAmz) sAmz.innerText = baseMop.toLocaleString('en-IN');
-    if (sFk) sFk.innerText = baseMop.toLocaleString('en-IN');
-    if (sBrand) sBrand.innerText = baseMop.toLocaleString('en-IN');
-    if (sBrandName) sBrandName.innerText = bName;
-    if (sNetOn) sNetOn.innerText = netOnline.toLocaleString('en-IN');
-    if (sNetOff) sNetOff.innerText = netOffline.toLocaleString('en-IN');
-    
+    var customInp = document.getElementById('spy_custom_mop_inp');
+
     var q = encodeURIComponent(rawName || 'smartphone');
     if (amzLink) amzLink.href = 'https://www.amazon.in/s?k=' + q;
     if (fkLink) fkLink.href = 'https://www.flipkart.com/search?q=' + q;
-    if (brandLink) brandLink.href = 'https://www.google.com/search?q=' + q + '+official+store';
-    
-    var pitchBox = document.getElementById('spy_pitch_box');
-    if (pitchBox) {{
-        var diff = Math.max(200, netOnline - netOffline);
-        pitchBox.innerHTML = '"સાહેબ, ઓનલાઈન કરતાં આપણી પાસે ₹' + diff + ' સસ્તો પડશે અને સાથે ₹૭૯૮ ના ઓરિજિનલ 11D ટેમ્પર્ડ ગ્લાસ + સ્મોક કવર તદ્દન ફ્રી ચડાવી આપીશું! સૌથી મોટો ફાયદો એ કે ઓનલાઇનમાં પાર્સલમાં ખોટો કે તૂટેલો ફોન નીકળે તો ૧૫ દિવસ કસ્ટમર કેરમાં દોડવું પડે, જ્યારે અહીં તમારી નજર સામે સીલ પેક બોક્સ ખુલે છે, જૂના ફોનનો તમામ ડેટા ૧૦ મિનિટમાં ફ્રી શિફ્ટ કરી આપીએ છીએ અને ૧ વર્ષની હાથોહાથ સર્વિસ વોરંટી આપણી દુકાન તરફથી મળે છે!"';
+    if (brandLink) brandLink.href = 'https://www.google.com/search?q=' + q + '+official+price+India';
+
+    if(!rawName) {{
+        if(sStore) sStore.innerText = '0';
+        if(sAmz) sAmz.innerText = '0';
+        if(sFk) sFk.innerText = '0';
+        if(sBrand) sBrand.innerText = '0';
+        if(customInp) customInp.value = '';
+        return;
     }}
+
+    fetch('/api/lookup-model-mop-gst?model=' + encodeURIComponent(rawName) + '&dp=0')
+    .then(r => r.json())
+    .then(d => {{
+        var storeMop = (forcedMop && Number(forcedMop) > 0) ? Number(forcedMop) : (d.store_mop || d.mop || 0);
+        var amzMop = d.amazon_mop || (storeMop > 0 ? Math.round(storeMop * 1.01) : 0);
+        var fkMop = d.flipkart_mop || (storeMop > 0 ? Math.round(storeMop * 1.01) : 0);
+        var brandMop = d.brand_mop || (storeMop > 0 ? Math.round(storeMop * 1.03) : 0);
+        var brandTitle = d.brand_store_name || ((d.brand || 'ઓફિશિયલ બ્રાન્ડ') + ' e-Store');
+
+        if (sStore) sStore.innerText = storeMop.toLocaleString('en-IN');
+        if (sAmz) sAmz.innerText = amzMop.toLocaleString('en-IN');
+        if (sFk) sFk.innerText = fkMop.toLocaleString('en-IN');
+        if (sBrand) sBrand.innerText = brandMop.toLocaleString('en-IN');
+        if (sBrandName) sBrandName.innerText = brandTitle;
+        if (customInp && (!customInp.value || parseFloat(customInp.value) === 0 || forcedMop)) customInp.value = storeMop;
+
+        if (d.amazon_search_url && amzLink) amzLink.href = d.amazon_search_url;
+        if (d.flipkart_search_url && fkLink) fkLink.href = d.flipkart_search_url;
+        if (d.brand_search_url && brandLink) brandLink.href = d.brand_search_url;
+
+        var bankSel = document.getElementById('spy_bank_sel');
+        var bVal = bankSel ? bankSel.value : 'AUTO';
+        var bankDisc = 0;
+        if (bVal === 'HDFC') bankDisc = storeMop >= 70000 ? 5000 : (storeMop >= 30000 ? 3000 : 2000);
+        else if (bVal === 'ICICI') bankDisc = storeMop >= 70000 ? 4000 : (storeMop >= 30000 ? 2500 : 1500);
+        else if (bVal === 'SBI') bankDisc = storeMop >= 70000 ? 3000 : (storeMop >= 30000 ? 2000 : 1000);
+        else if (bVal === 'AXIS') bankDisc = storeMop >= 70000 ? 4000 : (storeMop >= 30000 ? 2500 : 1500);
+        else if (bVal === 'NONE') bankDisc = 0;
+        else {{
+            // Default AUTO best offer
+            bankDisc = storeMop >= 70000 ? 5000 : (storeMop >= 30000 ? 3000 : 2000);
+        }}
+
+        var baseOnline = amzMop || storeMop;
+        var netOnline = Math.max(0, baseOnline - bankDisc);
+        var netOffline = Math.max(0, storeMop - (bankDisc > 0 ? (bankDisc - 300) : 0));
+
+        if (sNetOn) sNetOn.innerText = netOnline.toLocaleString('en-IN');
+        if (sNetOff) sNetOff.innerText = netOffline.toLocaleString('en-IN');
+
+        var pitchBox = document.getElementById('spy_pitch_box');
+        if (pitchBox) {{
+            var diff = Math.max(300, netOnline - netOffline);
+            pitchBox.innerHTML = '"સાહેબ, ' + rawName + ' ઓનલાઈન Amazon/Flipkart કરતાં આપણી પાસે ₹' + diff + ' સસ્તો પડશે અને સાથે ₹૭૯૮ ના ઓરિજિનલ 11D ટેમ્પર્ડ ગ્લાસ + સ્મોક કવર તદ્દન ફ્રી ચડાવી આપીશું! સૌથી મોટો ફાયદો એ કે ઓનલાઇનમાં પાર્સલમાં ખોટો કે તૂટેલો ફોન નીકળે તો ૧૫ દિવસ કસ્ટમર કેરમાં દોડવું પડે, જ્યારે અહીં તમારી નજર સામે સીલ પેક બોક્સ ખુલે છે, જૂના ફોનનો તમામ ડેટા ૧૦ મિનિટમાં ફ્રી શિફ્ટ કરી આપીએ છીએ અને ૧ વર્ષની હાથોહાથ સર્વિસ વોરંટી આપણી દુકાન તરફથી મળે છે!"';
+        }}
+    }}).catch(()=>{{}});
 }}
 
 function applySpyPriceToBilling() {{
-    var sNetOff = document.getElementById('spy_net_offline');
-    var val = sNetOff ? parseInt(sNetOff.innerText.replace(/[^0-9]/g, '')) : 0;
+    var customInp = document.getElementById('spy_custom_mop_inp');
+    var sStore = document.getElementById('spy_store_mop');
+    var finalVal = (customInp && parseFloat(customInp.value) > 0) ? parseFloat(customInp.value) : (sStore ? parseFloat(sStore.innerText.replace(/,/g, '')) || 0 : 0);
+    
+    if (finalVal <= 0) {{
+        alert('⚠️ કૃપા કરીને માન્ય MOP રકમ દાખલ કરો!');
+        return;
+    }}
+
     var nameInp = document.getElementById('spy_model_name');
     var modName = nameInp ? nameInp.value.trim() : '';
-    
+
     var f2Mop = document.getElementById('f2_mop');
     var f2Mod = document.getElementById('f2_mod');
     var f1Mop = document.getElementById('f1_mop_inp');
     var f1Mod = document.getElementById('f1_mod_inp');
-    
+
     if (f2Mop && f2Mop.offsetParent !== null) {{
-        if (val > 0) f2Mop.value = val;
+        f2Mop.value = finalVal;
         if (modName && f2Mod && (!f2Mod.value || f2Mod.value.length < 3)) f2Mod.value = modName;
+        if (typeof autoCalcExpectedDp === 'function') autoCalcExpectedDp();
         if (typeof calcF2 === 'function') calcF2();
     }} else if (f1Mop && f1Mop.offsetParent !== null) {{
-        if (val > 0) f1Mop.value = val;
+        f1Mop.value = finalVal;
         if (modName && f1Mod && (!f1Mod.value || f1Mod.value.length < 3)) f1Mod.value = modName;
-        if (typeof calcF1 === 'function') calcF1();
+        if (typeof calcF1Gst === 'function') calcF1Gst();
+    }} else {{
+        if (f2Mop) {{ f2Mop.value = finalVal; if (typeof calcF2 === 'function') calcF2(); }}
+        if (f1Mop) {{ f1Mop.value = finalVal; if (typeof calcF1Gst === 'function') calcF1Gst(); }}
     }}
     closeOnlinePriceSpyModal();
+    alert('✅ MOP ₹' + finalVal.toLocaleString('en-IN') + ' સફળતાપૂર્વક લાગુ થઈ ગયો!');
 }}
 
 function startGujaratiVoiceBilling() {{
