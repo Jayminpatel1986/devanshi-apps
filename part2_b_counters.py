@@ -677,6 +677,49 @@ def render_smart_terminal(
                 </select>
             </div>
 
+            <!-- 📦 મલ્ટીપલ ફોન / આઇટમ્સ એડિંગ વિભાગ (એક જ બિલમાં ૧ થી ૧૦+ ફોન ઉમેરવા માટે) -->
+            <div id="f2_multi_item_section" style="background:#f8fafc; border:2px dashed #0284c7; border-radius:8px; padding:10px; margin:8px 0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-weight:900; color:#0f2043; font-size:13px;">📦 એક જ બિલમાં મલ્ટીપલ ફોન (૨, ૩, ૫ કે ૧૦ ફોન) ઉમેરો:</span>
+                    <button type="button" onclick="addCurrentPhoneToMultiList()" id="btn_add_multi_item" style="background:linear-gradient(135deg, #0284c7, #0369a1); color:white; border:none; padding:6px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(2,132,199,0.3);">
+                        ➕ આ ફોન બિલમાં જોડો (Add to Bill)
+                    </button>
+                </div>
+                
+                <!-- છુપાયેલું JSON ઇનપુટ જેથી સર્વર પર આખું લિસ્ટ જાય -->
+                <input type="hidden" name="items_json" id="f2_items_json" value="">
+
+                <!-- આઇટમ્સ ટેબલ -->
+                <div id="f2_items_table_wrap" style="display:none; overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; background:white; border:1px solid #cbd5e1; font-size:12px; text-align:left;">
+                        <thead>
+                            <tr style="background:#0f2043; color:white;">
+                                <th style="padding:6px; border:1px solid #334155; width:35px; text-align:center;">#</th>
+                                <th style="padding:6px; border:1px solid #334155;">બ્રાન્ડ & મોડેલ</th>
+                                <th style="padding:6px; border:1px solid #334155;">૧૫-અંક IMEI</th>
+                                <th style="padding:6px; border:1px solid #334155; text-align:right;">MOP (₹)</th>
+                                <th style="padding:6px; border:1px solid #334155; text-align:right;">ડિસ્કાઉન્ટ (₹)</th>
+                                <th style="padding:6px; border:1px solid #334155; text-align:right;">ચોખ્ખી રકમ (₹)</th>
+                                <th style="padding:6px; border:1px solid #334155; text-align:center; width:60px;">કાઢો</th>
+                            </tr>
+                        </thead>
+                        <tbody id="f2_items_tbody"></tbody>
+                        <tfoot>
+                            <tr style="background:#fef08a; font-weight:bold; color:#0f2043;">
+                                <td colspan="3" id="f2_items_total_count" style="padding:7px; border:1px solid #eab308;">કુલ ફોન: 0 નંગ</td>
+                                <td id="f2_items_total_mop" style="padding:7px; border:1px solid #eab308; text-align:right;">₹0</td>
+                                <td id="f2_items_total_disc" style="padding:7px; border:1px solid #eab308; text-align:right;">₹0</td>
+                                <td id="f2_items_total_net" style="padding:7px; border:1px solid #eab308; text-align:right; color:#15803d; font-size:13px;">₹0</td>
+                                <td style="padding:7px; border:1px solid #eab308; text-align:center;">-</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div id="f2_multi_hint" style="font-size:11.5px; color:#64748b; margin-top:4px;">
+                    💡 ગ્રાહકે ૧ થી વધુ (૨, ૩, ૫ કે ૧૦) ફોન લીધા હોય ત્યારે ઉપર વિગતો ભરી <b>'➕ આ ફોન બિલમાં જોડો'</b> દબાવો. દરેક ફોનનો IMEI અલગથી સ્ટોકમાંથી માઇનસ થશે અને એક જ બિલમાં લાઇનસર પ્રિન્ટ થશે.
+                </div>
+            </div>
+
             <!-- ફાઇનાન્સ લોન અને DP ખાનાં (માત્ર ફાઇનાન્સ બિલ માટે) -->
             <div id="f2_finance_loan_block">
                 <div class="f-row" style="background:#eff6ff; padding:4px; border-radius:4px;">
@@ -1130,7 +1173,116 @@ def render_smart_terminal(
                 document.getElementById('f2_comm').value = cVal;
             }}
 
-            function calcF2(){{
+            window.__f2_items = [];
+
+    function addCurrentPhoneToMultiList(){{
+        var brand = (document.getElementById('f2_brand') ? document.getElementById('f2_brand').value : '').trim();
+        var mod = (document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '').trim();
+        var imei = (document.getElementById('f2_imei') ? document.getElementById('f2_imei').value : '').trim();
+        var mop = parseFloat(document.getElementById('f2_mop') ? document.getElementById('f2_mop').value : 0) || 0;
+        var disc = parseFloat(document.getElementById('f2_disc') ? document.getElementById('f2_disc').value : 0) || 0;
+        var war = (document.getElementById('f2_warranty') ? document.getElementById('f2_warranty').value : '').trim();
+        var gst = parseFloat(document.getElementById('f2_gst_pct') ? document.getElementById('f2_gst_pct').value : 18) || 18;
+
+        if(!mod && !imei){{
+            alert('⚠️ કૃપા કરીને પહેલા મોડેલ નામ અથવા ૧૫-અંક IMEI દાખલ કરો!');
+            if(document.getElementById('f2_imei')) document.getElementById('f2_imei').focus();
+            return;
+        }}
+
+        if(imei){{
+            for(var i=0; i < window.__f2_items.length; i++){{
+                if(window.__f2_items[i].imei === imei){{
+                    alert('⚠️ આ IMEI નંબર (' + imei + ') આ જ બિલમાં પહેલેથી ઉમેરાયેલો છે!');
+                    return;
+                }}
+            }}
+        }}
+
+        var net = Math.max(0, mop - disc);
+        window.__f2_items.push({{
+            brand: brand,
+            model: mod,
+            imei: imei,
+            mop: mop,
+            discount: disc,
+            net: net,
+            warranty: war,
+            gst_pct: gst
+        }});
+
+        renderF2MultiItems();
+
+        if(document.getElementById('f2_imei')) document.getElementById('f2_imei').value = '';
+        if(document.getElementById('f2_mod')) document.getElementById('f2_mod').value = '';
+        if(document.getElementById('f2_mop')) document.getElementById('f2_mop').value = '0';
+        if(document.getElementById('f2_disc')) document.getElementById('f2_disc').value = '0';
+        if(document.getElementById('f2_imei')) document.getElementById('f2_imei').focus();
+    }}
+
+    function removeF2MultiItem(index){{
+        if(index >= 0 && index < window.__f2_items.length){{
+            window.__f2_items.splice(index, 1);
+            renderF2MultiItems();
+        }}
+    }}
+
+    function renderF2MultiItems(){{
+        var wrap = document.getElementById('f2_items_table_wrap');
+        var tbody = document.getElementById('f2_items_tbody');
+        var jsonInput = document.getElementById('f2_items_json');
+        if(!wrap || !tbody) return;
+
+        if(window.__f2_items.length === 0){{
+            wrap.style.display = 'none';
+            if(jsonInput) jsonInput.value = '';
+            calcF2();
+            return;
+        }}
+
+        wrap.style.display = 'block';
+        if(jsonInput) jsonInput.value = JSON.stringify(window.__f2_items);
+
+        var rowsHtml = '';
+        var totMop = 0, totDisc = 0, totNet = 0;
+
+        for(var i=0; i < window.__f2_items.length; i++){{
+            var it = window.__f2_items[i];
+            totMop += it.mop;
+            totDisc += it.discount;
+            totNet += it.net;
+
+            rowsHtml += '<tr style="border-bottom:1px solid #e2e8f0;">' +
+                '<td style="padding:6px; text-align:center; font-weight:bold;">' + (i + 1) + '</td>' +
+                '<td style="padding:6px; font-weight:bold; color:#0f2043;">' + it.brand + ' ' + it.model + '</td>' +
+                '<td style="padding:6px; font-family:monospace; font-weight:bold; color:#0284c7;">' + (it.imei || '-') + '</td>' +
+                '<td style="padding:6px; text-align:right;">₹' + it.mop.toLocaleString('en-IN') + '</td>' +
+                '<td style="padding:6px; text-align:right; color:#dc2626;">₹' + it.discount.toLocaleString('en-IN') + '</td>' +
+                '<td style="padding:6px; text-align:right; font-weight:bold; color:#15803d;">₹' + it.net.toLocaleString('en-IN') + '</td>' +
+                '<td style="padding:6px; text-align:center;"><button type="button" onclick="removeF2MultiItem(' + i + ')" style="background:#fee2e2; color:#dc2626; border:1px solid #f87171; border-radius:4px; padding:2px 6px; cursor:pointer; font-weight:bold;">❌</button></td>' +
+                '</tr>';
+        }}
+
+        tbody.innerHTML = rowsHtml;
+        var totCountEl = document.getElementById('f2_items_total_count');
+        var totMopEl = document.getElementById('f2_items_total_mop');
+        var totDiscEl = document.getElementById('f2_items_total_disc');
+        var totNetEl = document.getElementById('f2_items_total_net');
+
+        if(totCountEl) totCountEl.innerText = 'કુલ ફોન: ' + window.__f2_items.length + ' નંગ';
+        if(totMopEl) totMopEl.innerText = '₹' + totMop.toLocaleString('en-IN');
+        if(totDiscEl) totDiscEl.innerText = '₹' + totDisc.toLocaleString('en-IN');
+        if(totNetEl) totNetEl.innerText = '₹' + totNet.toLocaleString('en-IN');
+
+        var f2MopInp = document.getElementById('f2_mop');
+        var f2DiscInp = document.getElementById('f2_disc');
+        if(f2MopInp) f2MopInp.value = totMop;
+        if(f2DiscInp) f2DiscInp.value = totDisc;
+
+        calcF2();
+    }}
+
+    function calcF2(){{
                 var bt = document.getElementById('f2_bill_type').value;
                 var mop = parseFloat(document.getElementById('f2_mop').value) || 0;
                 var disc = parseFloat(document.getElementById('f2_disc').value) || 0;
