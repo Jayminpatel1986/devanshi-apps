@@ -183,7 +183,43 @@ async def save_f1_route(
     # વિકલ્પ (૧) અને (૨): મોબાઈલ ખરીદી / અન્ય કન્ઝ્યુમર પ્રોડક્ટ્સ ખરીદી
     else:
         cat_label = "મોબાઈલ હેન્ડસેટ" if tx_type == "PURCHASE" else "લેપટોપ / TV / હોમ એપ્લાયન્સ"
-        if imei.strip():
+        # [Tally Prime F9] મલ્ટીપલ હેન્ડસેટ ઇનવોઇસ હેન્ડલિંગ (items_json)
+        parsed_f1_items = []
+        if items_json and items_json.strip():
+            try:
+                parsed_f1_items = json.loads(items_json)
+            except Exception:
+                parsed_f1_items = []
+
+        if parsed_f1_items:
+            sum_f1_dp = 0.0
+            for itm in parsed_f1_items:
+                i_br = str(itm.get("brand") or brand or "Phone").strip()
+                i_md = str(itm.get("model") or model or "").strip()
+                i_im = str(itm.get("imei") or "").strip()
+                i_dp = float(itm.get("dp") or 0.0)
+                i_mop = float(itm.get("mop") or i_dp)
+                sum_f1_dp += i_dp
+                if i_im:
+                    c.execute("""INSERT OR IGNORE INTO live_stock
+                        (bill_no, entry_date, party_name, brand, model, imei, purchase_rate, sale_rate, status, category, doc_path, store_id, last_purchase_dp)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'IN_STOCK', ?, ?, ?, ?)""",
+                        (bill_no, d_str, supplier_name, i_br, i_md, i_im, i_dp, i_mop, cat_label, photo_url, sid, i_dp))
+                    try:
+                        from devanshi_neon_db import get_neon_connection
+                        n_c = get_neon_connection()
+                        n_c.run("""INSERT INTO live_stock
+                            (bill_no, entry_date, party_name, brand, model, imei, purchase_rate, sale_rate, status, category, store_id, last_purchase_dp)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'IN_STOCK', %s, %s, %s)
+                            ON CONFLICT DO NOTHING""",
+                            bill_no, d_str, supplier_name, i_br, i_md, i_im, i_dp, i_mop, cat_label, sid, i_dp)
+                        n_c.close()
+                    except Exception:
+                        pass
+            if sum_f1_dp > 0:
+                total_bill = sum_f1_dp
+
+        elif imei.strip():
             # મલ્ટીપલ IMEI (કોમા કે સ્પેસથી અલગ કરેલા) હોય તો બધા સીધા In-Stock માં જમા
             imei_list = [x.strip() for x in imei.replace(",", " ").split() if x.strip()]
             for single_im in imei_list:
@@ -4824,3 +4860,266 @@ async def api_wipe_store_data(req: Request):
         return JSONResponse(status_code=400, content={"status": "error", "message": "❌ ખોટો માસ્ટર પિન! ૧૯૮૬ નાખો."})
     ok, msg = part1_core.wipe_store_all_transactions(sid, pin)
     return JSONResponse(content={"status": "success" if ok else "error", "message": msg})
+
+# =========================================================================
+# [TALLY PRIME ALT+F7] બ્રાન્ચ સ્ટોક ટ્રાન્સફર (Stock Journal & Delivery Challan)
+# =========================================================================
+@app.get("/api/lookup-stock-imei")
+def api_lookup_stock_imei_route(imei: str = "", from_store: str = "DEVANSHI"):
+    imei = (imei or "").strip()
+    from_store = (from_store or "DEVANSHI").strip().upper()
+    if not imei:
+        return JSONResponse({"found": False})
+    
+    # Check SQLite
+    conn = sqlite3.connect(get_active_db_file(from_store), timeout=30.0)
+    c = conn.cursor()
+    c.execute("SELECT brand, model, purchase_rate, sale_rate FROM live_stock WHERE imei=? AND status='IN_STOCK' LIMIT 1", (imei,))
+    row = c.fetchone()
+    conn.close()
+    
+    if row:
+        return JSONResponse({
+            "found": True,
+            "brand": row[0] or "",
+            "model": row[1] or "",
+            "dp": float(row[2] or 0),
+            "mop": float(row[3] or row[2] or 0)
+        })
+    return JSONResponse({"found": False})
+
+
+@app.post("/save-stock-transfer")
+async def save_stock_transfer_route(
+    request: Request = None,
+    from_store_id: str = Form("DEVANSHI"),
+    to_store_id: str = Form("MANSHVI"),
+    challan_no: str = Form(""),
+    transfer_date: str = Form(""),
+    carrier_name: str = Form(""),
+    purpose: str = Form("બ્રાન્ચ સ્ટોક શિફ્ટિંગ"),
+    authorized_by: str = Form("PIN 1986"),
+    items_json: str = Form("")
+):
+    from_store = from_store_id.strip().upper()
+    to_store = to_store_id.strip().upper()
+    if from_store == to_store:
+        return redir("❌ મોકલનાર સ્ટોર અને મેળવનાર સ્ટોર અલગ હોવા જોઈએ!", "SMART_TERMINAL", "F6")
+
+    items = []
+    if items_json and items_json.strip():
+        try:
+            items = json.loads(items_json)
+        except Exception:
+            items = []
+
+    if not items:
+        return redir("❌ કૃપા કરીને ઓછામાં ઓછો એક ફોન/IMEI ટ્રાન્સફર લિસ્ટમાં ઉમેરો!", "SMART_TERMINAL", "F6")
+
+    now_dt = datetime.datetime.now()
+    d_str = (transfer_date or now_dt.strftime("%Y-%m-%d")).strip()
+    c_no = (challan_no or f"DC-{now_dt.strftime('%Y%m%d')}-{int(time.time())%1000:03d}").strip()
+    c_name = (carrier_name or "સ્ટાફ ડિલિવરી બોય").strip()
+    auth_by = (authorized_by or "PIN 1986").strip()
+
+    # 1. Update SQLite from_store DB & to_store DB
+    conn_from = sqlite3.connect(get_active_db_file(from_store), timeout=60.0)
+    conn_to = sqlite3.connect(get_active_db_file(to_store), timeout=60.0)
+    c_from = conn_from.cursor()
+    c_to = conn_to.cursor()
+
+    for itm in items:
+        im = str(itm.get("imei") or "").strip()
+        br = str(itm.get("brand") or "Phone").strip()
+        md = str(itm.get("model") or "").strip()
+        dp = float(itm.get("dp") or 0.0)
+        mop = float(itm.get("mop") or dp)
+
+        if not im:
+            continue
+
+        # Mark in from_store as TRANSFERRED
+        c_from.execute("UPDATE live_stock SET status='TRANSFERRED', doc_path=? WHERE imei=?", (f"TRANSFER_TO_{to_store}", im))
+        c_from.execute("""INSERT INTO stock_transfer_ledger
+            (challan_no, transfer_date, from_store_id, to_store_id, imei, brand, model, purchase_rate, mop_rate, carrier_name, purpose, status, authorized_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'COMPLETED', ?)""",
+            (c_no, d_str, from_store, to_store, im, br, md, dp, mop, c_name, purpose, auth_by))
+
+        # Add into to_store as IN_STOCK
+        c_to.execute("""INSERT INTO live_stock
+            (bill_no, entry_date, party_name, brand, model, imei, purchase_rate, sale_rate, status, category, doc_path, store_id, last_purchase_dp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'IN_STOCK', 'મોબાઈલ હેન્ડસેટ', ?, ?, ?)""",
+            (c_no, d_str, f"Transfer from {from_store}", br, md, im, dp, mop, f"TRANSFER_FROM_{from_store}", to_store, dp))
+        c_to.execute("""INSERT INTO stock_transfer_ledger
+            (challan_no, transfer_date, from_store_id, to_store_id, imei, brand, model, purchase_rate, mop_rate, carrier_name, purpose, status, authorized_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'COMPLETED', ?)""",
+            (c_no, d_str, from_store, to_store, im, br, md, dp, mop, c_name, purpose, auth_by))
+
+    conn_from.commit()
+    conn_to.commit()
+    conn_from.close()
+    conn_to.close()
+
+    # 2. Sync to Neon Cloud PostgreSQL
+    try:
+        from devanshi_neon_db import get_neon_connection
+        n_conn = get_neon_connection()
+        for itm in items:
+            im = str(itm.get("imei") or "").strip()
+            br = str(itm.get("brand") or "Phone").strip()
+            md = str(itm.get("model") or "").strip()
+            dp = float(itm.get("dp") or 0.0)
+            mop = float(itm.get("mop") or dp)
+            if im:
+                n_conn.run("""UPDATE live_stock SET store_id=%s, status='IN_STOCK' WHERE imei=%s""", to_store, im)
+                n_conn.run("""INSERT INTO stock_transfer_ledger
+                    (challan_no, transfer_date, from_store_id, to_store_id, imei, brand, model, purchase_rate, mop_rate, carrier_name, purpose, status, authorized_by)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'COMPLETED', %s)""",
+                    c_no, d_str, from_store, to_store, im, br, md, dp, mop, c_name, purpose, auth_by)
+        n_conn.close()
+    except Exception as e:
+        print("Neon stock transfer sync notice:", e)
+
+    return RedirectResponse(url=f"/stock-transfer-challan?challan_no={c_no}", status_code=303)
+
+
+@app.get("/stock-transfer-challan")
+def stock_transfer_challan_view(challan_no: str = ""):
+    c_no = (challan_no or "").strip()
+    conn = sqlite3.connect(get_active_db_file("DEVANSHI"), timeout=30.0)
+    c = conn.cursor()
+    c.execute("""SELECT challan_no, transfer_date, from_store_id, to_store_id, imei, brand, model, purchase_rate, mop_rate, carrier_name, purpose, authorized_by, created_at
+                 FROM stock_transfer_ledger WHERE challan_no=? ORDER BY id ASC""", (c_no,))
+    rows = c.fetchall()
+    conn.close()
+
+    if not rows:
+        # Try MANSHVI DB
+        conn = sqlite3.connect(get_active_db_file("MANSHVI"), timeout=30.0)
+        c = conn.cursor()
+        c.execute("""SELECT challan_no, transfer_date, from_store_id, to_store_id, imei, brand, model, purchase_rate, mop_rate, carrier_name, purpose, authorized_by, created_at
+                     FROM stock_transfer_ledger WHERE challan_no=? ORDER BY id ASC""", (c_no,))
+        rows = c.fetchall()
+        conn.close()
+
+    if not rows:
+        return HTMLResponse("<h3>❌ ચલણ નંબર મળ્યો નથી!</h3>")
+
+    meta = rows[0]
+    t_date = meta[1]
+    from_s = meta[2]
+    to_s = meta[3]
+    carrier = meta[9] or "-"
+    purpose = meta[10] or "બ્રાન્ચ સ્ટોક શિફ્ટિંગ"
+    auth_by = meta[11] or "PIN 1986"
+
+    total_dp = sum(float(r[7] or 0) for r in rows)
+    total_mop = sum(float(r[8] or 0) for r in rows)
+    total_qty = len(rows)
+
+    item_trs = "".join([
+        f"""<tr style='border-bottom:1px solid #e2e8f0;'>
+            <td style='padding:8px; text-align:center;'>{i+1}</td>
+            <td style='padding:8px; font-family:monospace; font-weight:bold; color:#1e3a8a;'>{r[4]}</td>
+            <td style='padding:8px;'><b>{r[5]}</b></td>
+            <td style='padding:8px;'>{r[6]}</td>
+            <td style='padding:8px; text-align:right; font-weight:bold;'>₹{float(r[7] or 0):,.0f}</td>
+            <td style='padding:8px; text-align:right; font-weight:bold; color:#15803d;'>₹{float(r[8] or 0):,.0f}</td>
+        </tr>"""
+        for i, r in enumerate(rows)
+    ])
+
+    html = f"""<!DOCTYPE html>
+    <html lang="gu">
+    <head>
+        <meta charset="UTF-8">
+        <title>ડિલિવરી ચલણ - {c_no} | દેવાંશી મનસ્વી ERP</title>
+        <style>
+            body {{ font-family:'Segoe UI', Tahoma, sans-serif; background:#f8fafc; margin:0; padding:20px; color:#0f172a; }}
+            .challan-box {{ max-width:850px; margin:0 auto; background:white; padding:30px; border:2px solid #1e3a8a; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }}
+            @media print {{
+                body {{ background:white; padding:0; }}
+                .challan-box {{ border:none; box-shadow:none; padding:0; width:100%; }}
+                .no-print {{ display:none !important; }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="no-print" style="max-width:850px; margin:0 auto 15px auto; display:flex; justify-content:space-between; align-items:center;">
+            <a href="/?sheet=SMART_TERMINAL&mode=F6" style="background:#64748b; color:white; padding:8px 16px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:13px;">⬅️ કાઉન્ટર પર પાછા જાઓ</a>
+            <button onclick="window.print()" style="background:#1e3a8a; color:white; border:none; padding:10px 24px; border-radius:6px; font-weight:900; font-size:14px; cursor:pointer; box-shadow:0 2px 6px rgba(30,58,138,0.3);">🖨️ ડિલિવરી ચલણ પ્રિન્ટ કરો (Print DC)</button>
+        </div>
+
+        <div class="challan-box">
+            <!-- Header -->
+            <div style="text-align:center; border-bottom:2px solid #1e3a8a; padding-bottom:12px; margin-bottom:15px;">
+                <h1 style="margin:0; font-size:22px; color:#1e3a8a; letter-spacing:0.5px;">👑 દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર (v2026)</h1>
+                <div style="font-size:14px; font-weight:bold; color:#0369a1; margin-top:4px;">
+                    આંતરિક સ્ટોક ટ્રાન્સફર ડિલિવરી ચલણ (Inter-Branch Stock Transfer Challan - Alt+F7)
+                </div>
+                <div style="font-size:11.5px; color:#64748b; margin-top:2px;">
+                    સેન્ટ્રલ ક્લાઉડ સ્ટોક કંટ્રોલ એન્જિન | સંચાલક: જયમીનભાઈ પટેલ (9725721215)
+                </div>
+            </div>
+
+            <!-- Meta Grid -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; background:#f1f5f9; padding:12px; border-radius:6px; margin-bottom:16px; font-size:13px;">
+                <div>
+                    <div><b>ચલણ નંબર (DC No.):</b> <span style="font-family:monospace; color:#1e3a8a; font-weight:bold;">{c_no}</span></div>
+                    <div style="margin-top:4px;"><b>ટ્રાન્સફર તારીખ:</b> {t_date}</div>
+                    <div style="margin-top:4px;"><b>ટ્રાન્સફર હેતુ:</b> {purpose}</div>
+                </div>
+                <div>
+                    <div><b>મોકલનાર બ્રાન્ચ (From):</b> <span style="background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:4px; font-weight:bold;">{from_s}</span></div>
+                    <div style="margin-top:4px;"><b>મેળવનાર બ્રાન્ચ (To):</b> <span style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:4px; font-weight:bold;">{to_s}</span></div>
+                    <div style="margin-top:4px;"><b>માલ લઈ જનાર વ્યક્તિ:</b> <b>{carrier}</b></div>
+                </div>
+            </div>
+
+            <!-- Handsets Table -->
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:16px;">
+                <thead>
+                    <tr style="background:#1e3a8a; color:white;">
+                        <th style="padding:8px; border:1px solid #1e3a8a;">#</th>
+                        <th style="padding:8px; border:1px solid #1e3a8a;">૧૫-અંક IMEI નંબર</th>
+                        <th style="padding:8px; border:1px solid #1e3a8a;">બ્રાન્ડ</th>
+                        <th style="padding:8px; border:1px solid #1e3a8a;">મોડેલ નામ</th>
+                        <th style="padding:8px; border:1px solid #1e3a8a; text-align:right;">ખરીદ પડતર (DP ₹)</th>
+                        <th style="padding:8px; border:1px solid #1e3a8a; text-align:right;">MOP ભાવ (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {item_trs}
+                </tbody>
+                <tfoot>
+                    <tr style="background:#f8fafc; font-weight:bold; border-top:2px solid #1e3a8a;">
+                        <td colspan="4" style="padding:10px; text-align:right;">કુલ ટ્રાન્સફર જથ્થો: <span style="color:#1e3a8a; font-size:14px;">{total_qty}</span> હેન્ડસેટ</td>
+                        <td style="padding:10px; text-align:right; font-size:14px; color:#0284c7;">₹{total_dp:,.0f}</td>
+                        <td style="padding:10px; text-align:right; font-size:14px; color:#15803d;">₹{total_mop:,.0f}</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- Signatures Section -->
+            <div style="margin-top:40px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; text-align:center; font-size:12px;">
+                <div style="border-top:1px dashed #64748b; padding-top:8px;">
+                    <b>મોકલનાર સ્ટોર સહી</b><br>
+                    <span style="color:#64748b; font-size:11px;">({from_s} મેનેજર / સ્ટાફ)</span>
+                </div>
+                <div style="border-top:1px dashed #64748b; padding-top:8px;">
+                    <b>માલ લઈ જનાર સહી</b><br>
+                    <span style="color:#64748b; font-size:11px;">({carrier})</span>
+                </div>
+                <div style="border-top:1px dashed #64748b; padding-top:8px;">
+                    <b>મેળવનાર સ્ટોર સહી</b><br>
+                    <span style="color:#64748b; font-size:11px;">({to_s} મેનેજર / સ્વીકૃતિ)</span>
+                </div>
+            </div>
+
+            <div style="margin-top:30px; border-top:1px solid #e2e8f0; padding-top:8px; font-size:11px; color:#94a3b8; text-align:center;">
+                આ એક કમ્પ્યુટર જનરેટેડ સ્ટોક ટ્રાન્સફર ડિલિવરી ચલણ છે. ઓથોરાઈઝ્ડ બાય: {auth_by} | ટ્રાન્સફર આઈડી: {c_no}
+            </div>
+        </div>
+    </body>
+    </html>"""
+    return HTMLResponse(content=html)
