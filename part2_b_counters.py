@@ -186,7 +186,142 @@ def render_smart_terminal(
                     <input type="number" step="any" name="total_bill" id="f1_dp_inp" oninput="checkF1PriceDiff(); calcF1Gst();" value="0" style="font-weight:bold; color:#0f2043;">
                 </div>
                 <!-- ખરીદી ભાવ તફાવત એલર્ટ બોક્સ -->
-                <div id="f1_price_diff_box" style="display:none; background:#fef3c7; border:2px solid #ca8a04; padding:8px 12px; margin:4px 0 6px 243px; border-radius:6px; font-size:12px; color:#854d0e; font-weight:bold;"></div>
+                
+                <!-- [Tally Prime F9] મલ્ટી-હેન્ડસેટ ખરીદી ટેબલ (૧ થી ૨૦ ફોન એક સાથે Inward) -->
+                <div style="background:#f8fafc; border:2px dashed #0284c7; border-radius:8px; padding:12px; margin:10px 0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-weight:900; color:#0369a1; font-size:13px;">📱 [Tally F9 Parity] બહુવિધ ફોન ખરીદી ઇનવોઇસ એન્ટ્રી (Multi-Phone Handset Inward - ૧ થી ૨૦ ફોન)</span>
+                        <span style="font-size:11px; background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:4px; font-weight:bold;">Tally Prime Stock Ledger Sync</span>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:flex-end;">
+                        <div style="flex:1; min-width:120px;">
+                            <label style="font-size:11px; font-weight:bold; color:#475569;">૧૫-અંક IMEI:</label>
+                            <input type="text" id="f1_multi_imei_inp" maxlength="15" placeholder="૧૫-અંક IMEI સ્કેન કરો..." style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:4px; font-weight:bold; font-family:monospace;">
+                        </div>
+                        <div style="flex:1; min-width:100px;">
+                            <label style="font-size:11px; font-weight:bold; color:#475569;">ખરીદ DP (₹):</label>
+                            <input type="number" id="f1_multi_dp_inp" value="0" placeholder="ખરીદ પડતર..." style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:4px; font-weight:bold; color:#0284c7;">
+                        </div>
+                        <button type="button" onclick="addF1MultiItem()" style="background:#16a34a; color:white; border:none; padding:7px 14px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px;">[+ ફોન ઉમેરો]</button>
+                    </div>
+
+                    <div id="f1_multi_wrap" style="margin-top:10px; display:none;">
+                        <table style="width:100%; border-collapse:collapse; font-size:12px; background:white; border:1px solid #cbd5e1;">
+                            <thead>
+                                <tr style="background:#e2e8f0; color:#1e293b;">
+                                    <th style="padding:5px; border:1px solid #cbd5e1;">#</th>
+                                    <th style="padding:5px; border:1px solid #cbd5e1;">બ્રાન્ડ</th>
+                                    <th style="padding:5px; border:1px solid #cbd5e1;">મોડેલ</th>
+                                    <th style="padding:5px; border:1px solid #cbd5e1;">IMEI (૧૫-અંક)</th>
+                                    <th style="padding:5px; border:1px solid #cbd5e1;">ખરીદ પડતર DP (₹)</th>
+                                    <th style="padding:5px; border:1px solid #cbd5e1;">MOP ભાવ (₹)</th>
+                                    <th style="padding:5px; border:1px solid #cbd5e1;">એકશન</th>
+                                </tr>
+                            </thead>
+                            <tbody id="f1_multi_tbody"></tbody>
+                            <tfoot>
+                                <tr style="background:#f1f5f9; font-weight:bold;">
+                                    <td colspan="4" style="padding:6px; text-align:right;">કુલ ઇનવોઇસ હેન્ડસેટ: <span id="f1_multi_qty" style="color:#0369a1;">0</span> ફોન</td>
+                                    <td colspan="3" style="padding:6px; color:#16a34a;">કુલ બિલ ખરીદ રકમ: ₹<span id="f1_multi_total_dp">0</span></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <input type="hidden" name="items_json" id="f1_items_json" value="">
+                </div>
+
+
+    <script>
+    var f1MultiItems = [];
+    function addF1MultiItem() {{
+        var brand = document.getElementById('f1_brand_inp') ? document.getElementById('f1_brand_inp').value : 'Vivo';
+        var model = document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '';
+        var imei = document.getElementById('f1_multi_imei_inp') ? document.getElementById('f1_multi_imei_inp').value.trim() : '';
+        var dp = parseFloat(document.getElementById('f1_multi_dp_inp') ? document.getElementById('f1_multi_dp_inp').value : 0) || 0;
+        var mop = parseFloat(document.getElementById('f1_mop_inp') ? document.getElementById('f1_mop_inp').value : 0) || dp;
+
+        if (!imei || imei.length < 14) {{
+            alert("કૃપા કરીને સાચો ૧૫-અંક IMEI નંબર દાખલ કરો!");
+            return;
+        }}
+        if (dp <= 0) {{
+            dp = parseFloat(document.getElementById('f1_dp_inp') ? document.getElementById('f1_dp_inp').value : 0) || 0;
+        }}
+        if (dp <= 0) {{
+            alert("કૃપા કરીને ખરીદ પડતર (DP ₹) દાખલ કરો!");
+            return;
+        }}
+        for (var i = 0; i < f1MultiItems.length; i++) {{
+            if (f1MultiItems[i].imei === imei) {{
+                alert("આ IMEI પહેલેથી જ આ ખરીદી બિલમાં ઉમેરાયેલ છે!");
+                return;
+            }}
+        }}
+        f1MultiItems.push({{
+            brand: brand,
+            model: model,
+            imei: imei,
+            dp: dp,
+            mop: mop
+        }});
+
+        if (document.getElementById('f1_multi_imei_inp')) {{
+            document.getElementById('f1_multi_imei_inp').value = '';
+            document.getElementById('f1_multi_imei_inp').focus();
+        }}
+        renderF1MultiItems();
+    }}
+
+    function removeF1MultiItem(idx) {{
+        f1MultiItems.splice(idx, 1);
+        renderF1MultiItems();
+    }}
+
+    function renderF1MultiItems() {{
+        var tbody = document.getElementById('f1_multi_tbody');
+        var wrap = document.getElementById('f1_multi_wrap');
+        var totQtyEl = document.getElementById('f1_multi_qty');
+        var totDpEl = document.getElementById('f1_multi_total_dp');
+        var hiddenInp = document.getElementById('f1_items_json');
+        var mainDpInp = document.getElementById('f1_dp_inp');
+
+        if (!tbody || !wrap) return;
+
+        if (f1MultiItems.length === 0) {{
+            wrap.style.display = 'none';
+            if (hiddenInp) hiddenInp.value = '';
+            return;
+        }}
+
+        wrap.style.display = 'block';
+        var totalDp = 0;
+        var trs = '';
+        for (var i = 0; i < f1MultiItems.length; i++) {{
+            var itm = f1MultiItems[i];
+            totalDp += itm.dp;
+            trs += '<tr>' +
+                '<td style="padding:5px; border:1px solid #cbd5e1; text-align:center;">' + (i + 1) + '</td>' +
+                '<td style="padding:5px; border:1px solid #cbd5e1;"><b>' + itm.brand + '</b></td>' +
+                '<td style="padding:5px; border:1px solid #cbd5e1;">' + itm.model + '</td>' +
+                '<td style="padding:5px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0f2043;">' + itm.imei + '</td>' +
+                '<td style="padding:5px; border:1px solid #cbd5e1; font-weight:bold; color:#0284c7; text-align:right;">₹' + itm.dp.toLocaleString() + '</td>' +
+                '<td style="padding:5px; border:1px solid #cbd5e1; font-weight:bold; color:#15803d; text-align:right;">₹' + itm.mop.toLocaleString() + '</td>' +
+                '<td style="padding:5px; border:1px solid #cbd5e1; text-align:center;"><button type="button" onclick="removeF1MultiItem(' + i + ')" style="background:#dc2626; color:white; border:none; padding:2px 7px; border-radius:3px; cursor:pointer;">✖</button></td>' +
+                '</tr>';
+        }}
+        tbody.innerHTML = trs;
+        if (totQtyEl) totQtyEl.innerText = f1MultiItems.length;
+        if (totDpEl) totDpEl.innerText = totalDp.toLocaleString();
+        if (hiddenInp) hiddenInp.value = JSON.stringify(f1MultiItems);
+        if (mainDpInp) {{
+            mainDpInp.value = totalDp;
+            if (typeof checkF1PriceDiff === 'function') checkF1PriceDiff();
+            if (typeof calcF1Gst === 'function') calcF1Gst();
+        }}
+    }}
+    </script>
+
+<div id="f1_price_diff_box" style="display:none; background:#fef3c7; border:2px solid #ca8a04; padding:8px 12px; margin:4px 0 6px 243px; border-radius:6px; font-size:12px; color:#854d0e; font-weight:bold;"></div>
 
                 <div class="f-row">
                     <div class="lbl">૯. ઓટો-GST ટેક્સ (% અને ₹):</div>
