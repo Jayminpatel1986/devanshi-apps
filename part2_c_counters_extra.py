@@ -167,7 +167,7 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                             </select>
                         </div>
                         <div class="f-row"><div class="lbl" style="width:135px;">૫. બાય-બેક ખરીદ પડતર (₹):</div><input type="number" step="any" name="bb_cost" value="0" required style="font-weight:bold; color:#dc2626;"></div>
-                        <div class="f-row"><div class="lbl" style="width:135px;">૬. ચૂકવણી પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option><option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option></select>{galla_bb_in}</div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૬. ચૂકવણી પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" id="f5_p1_mop" onchange="syncUniversalMopGalla(this, 'f5_p1_galla')" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash)</option><option value="ઓનલાઈન UPI">📱 ૨. ઓનલાઈન UPI</option><option value="કાર્ડ સ્વાઇપ">💳 ૩. કાર્ડ સ્વાઇપ</option><option value="બેંક ટ્રાન્સફર">🏦 ૪. બેંક ટ્રાન્સફર</option></select><select name="paid_from_galla" id="f5_p1_galla" style="font-weight:bold; color:#0f2043; flex:1;"><option value="BANK_CASH" selected>૧. બેંક કેશ (ગલ્લો ૧)</option><option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option><option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option><option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option></select></div>
                         <div class="f-row"><div class="lbl" style="width:135px;">૭. આધાર/બિલ & ગ્રાહક ફોટો:</div>
                             <input type="file" name="bb_photo" accept=".pdf,image/*" title="આધાર/બિલ પ્રૂફ" style="flex:1;">
                             <input type="file" name="customer_face_photo" accept="image/*" capture="user" title="ગ્રાહકનો ફોટો" style="flex:1;">
@@ -189,7 +189,7 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                             <input type="number" step="any" name="repair_cost" id="f5_p2_rep" value="0" oninput="calcF5P2NewCost()" required style="font-weight:bold; color:#b45309;">
                             <span id="f5_p2_new_cost_badge" style="font-size:11.5px; font-weight:800; color:#0f2043; background:#fef08a; padding:4px 8px; border-radius:4px;">નવી કુલ પડતર: ₹0</span>
                         </div>
-                        <div class="f-row"><div class="lbl" style="width:135px;">૩. ચૂકવણી પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option><option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option></select>{galla_bb_rep}</div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૩. ચૂકવણી પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" id="f5_p2_mop" onchange="syncUniversalMopGalla(this, 'f5_p2_galla')" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash)</option><option value="ઓનલાઈન UPI">📱 ૨. ઓનલાઈન UPI</option><option value="કાર્ડ સ્વાઇપ">💳 ૩. કાર્ડ સ્વાઇપ</option><option value="બેંક ટ્રાન્સફર">🏦 ૪. બેંક ટ્રાન્સફર</option></select><select name="paid_from_galla" id="f5_p2_galla" style="font-weight:bold; color:#0f2043; flex:1;"><option value="EXTRA_CASH" selected>૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option><option value="BANK_CASH">૧. બેંક કેશ (ગલ્લો ૧)</option><option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option><option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option></select></div>
                         <div class="f-row"><div class="lbl" style="width:135px;">૪. રિપેરિંગ વિગત & ફોટો/બિલ:</div>
                             <input type="text" name="remarks" placeholder="ડિસ્પ્લે, બેટરી કે રિપેરિંગ નોંધ..." style="flex:1;">
                             <input type="file" name="bb_doc" accept=".pdf,image/*" style="max-width:170px;">
@@ -217,7 +217,7 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                             <input type="text" name="phone" placeholder="૧૦-અંક મોબાઈલ" style="max-width:135px;">
                         </div>
                         <div class="f-row"><div class="lbl" style="width:135px;">૪. સેલ્સમેન નામ:</div><select name="salesman">{staff_opts_html}</select></div>
-                        <div class="f-row"><div class="lbl" style="width:135px;">૫. પ્રાપ્તિ પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option><option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option></select>{galla_bb_sale}</div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૫. પ્રાપ્તિ પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" id="f5_p3_mop" onchange="syncUniversalMopGalla(this, 'f5_p3_galla')" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash)</option><option value="ઓનલાઈન UPI">📱 ૨. ઓનલાઈન UPI</option><option value="કાર્ડ સ્વાઇપ">💳 ૩. કાર્ડ સ્વાઇપ</option><option value="બેંક ટ્રાન્સફર">🏦 ૪. બેંક ટ્રાન્સફર</option></select><select name="received_galla" id="f5_p3_galla" style="font-weight:bold; color:#0f2043; flex:1;"><option value="BANK_CASH" selected>૧. બેંક કેશ (ગલ્લો ૧)</option><option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option><option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option><option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option></select></div>
                         <button type="submit" style="width:100%; background:#15803d; color:white; border:none; padding:8px; border-radius:4px; font-weight:800; cursor:pointer; margin-top:4px;">૬. [ ભાગ ૩: જૂનો ફોન વેચાણ સેવ કરો (ઓટો-પ્રોફિટ સ્પ્લિટ) ]</button>
                     </form>
                 </div>
@@ -244,10 +244,10 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                             <div class="lbl" style="width:195px; color:#991b1b;">૫. પરત કરવાની ચોખ્ખી રકમ (₹):</div>
                             <input type="number" step="any" name="net_refund_amt" id="f5_p4_net" value="0" readonly style="font-weight:800; color:#dc2626; font-size:13.5px;">
                         </div>
-                        <div class="f-row"><div class="lbl" style="width:135px;">૬. ચૂકવણી મોડ:</div>
-                            <select name="pay_mode"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="UPI">UPI</option><option value="ઓનલાઈન ટ્રાન્સફર">ઓનલાઈન ટ્રાન્સફર</option></select>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૬. ચૂકવણી મોડ & રિફંડ ગલ્લો:</div>
+                            <select name="pay_mode" id="f5_p4_mop" onchange="syncUniversalMopGalla(this, 'f5_p4_galla')" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash)</option><option value="ઓનલાઈન UPI">📱 ૨. ઓનલાઈન UPI</option><option value="કાર્ડ સ્વાઇપ">💳 ૩. કાર્ડ સ્વાઇપ</option><option value="ઓનલાઈન ટ્રાન્સફર">🏦 ૪. બેંક ટ્રાન્સફર</option></select>
+                            <select name="refund_galla" id="f5_p4_galla" style="font-weight:bold; color:#0f2043; flex:1;"><option value="BANK_CASH" selected>૧. બેંક કેશ (ગલ્લો ૧)</option><option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option><option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option><option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option></select>
                         </div>
-                        <div class="f-row"><div class="lbl" style="width:135px;">૭. કેશ રિફંડ ગલ્લો (Vault Out):</div>{galla_bb_ret}</div>
                         <div class="f-row"><div class="lbl" style="width:135px;">૮. સ્ટાફ નામ & રિટર્નનું કારણ:</div>
                             <select name="staff_name" style="max-width:150px;">{staff_opts_html}</select>
                             <input type="text" name="reason" placeholder="રિટર્નનું કારણ..." style="flex:1;">
@@ -268,6 +268,36 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
         </div>
 
         <script>
+            function syncUniversalMopGalla(mopEl, gallaElId) {{
+                var gallaEl = (typeof gallaElId === 'string') ? document.getElementById(gallaElId) : gallaElId;
+                if (!mopEl || !gallaEl) return;
+                var mop = (mopEl.value || '').trim();
+                var isDigital = (
+                    mop.indexOf('UPI') !== -1 || mop.indexOf('બેંક') !== -1 || mop.indexOf('Bank') !== -1 ||
+                    mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1 || mop.indexOf('NEFT') !== -1 ||
+                    mop.indexOf('RTGS') !== -1 || mop.indexOf('IMPS') !== -1 || mop.indexOf('ઓનલાઇન') !== -1 ||
+                    mop.indexOf('ઓનલાઈન') !== -1 || mop.indexOf('ચેક') !== -1 || mop.indexOf('Cheque') !== -1
+                );
+                if (isDigital) {{
+                    var desc = (mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1) ? 'કાર્ડ સ્વાઇપ POS' :
+                               (mop.indexOf('UPI') !== -1 ? 'UPI QR કોડ' : 'બેંક ખાતું');
+                    gallaEl.innerHTML = '<option value="ONLINE_BANK" selected>🏦 ડિજિટલ બેંક એકાઉન્ટ (' + desc + ' - સીધા ખાતામાં)</option>';
+                    gallaEl.style.background = '#e0f2fe';
+                    gallaEl.style.borderColor = '#0284c7';
+                    gallaEl.style.color = '#0369a1';
+                }} else {{
+                    var pref = (gallaElId.indexOf('p2') !== -1 || gallaElId.indexOf('extra') !== -1) ? 'EXTRA_CASH' : 'BANK_CASH';
+                    gallaEl.innerHTML = '<option value="BANK_CASH"' + (pref === 'BANK_CASH' ? ' selected' : '') + '>૧. બેંક કેશ (ગલ્લો ૧)</option>' +
+                                        '<option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option>' +
+                                        '<option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>' +
+                                        '<option value="EXTRA_CASH"' + (pref === 'EXTRA_CASH' ? ' selected' : '') + '>૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>';
+                    gallaEl.style.background = '#ffffff';
+                    gallaEl.style.borderColor = '#15803d';
+                    gallaEl.style.color = '#0f2043';
+                }}
+            }}
+            window.syncUniversalMopGalla = syncUniversalMopGalla;
+            window.syncF7MopGalla = syncUniversalMopGalla;
             function switchF5Part(val){{
                 var p1 = document.getElementById('f5_box_p1');
                 var p2 = document.getElementById('f5_box_p2');
