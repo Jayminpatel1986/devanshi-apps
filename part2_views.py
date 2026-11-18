@@ -453,7 +453,7 @@ def root_view(
             f'<span style="background:#16a34a; color:#fde047; border:1px solid #fde047; padding:3px 7px; border-radius:4px; font-weight:900; font-size:10.5px;">♾️ લાઇફટાઇમ માસ્ટર સેમ્પલ</span>'
             f'<a href="/jaymin-open-sample/{other_sample}" style="background:#7c3aed; color:white; border:1px solid #d8b4fe; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:10.5px; text-decoration:none;">⇄ {other_lbl} ખોલો</a>'
             f'<button type="button" onclick="triggerSampleWipeFromTerminal(\'{cur_sid_up}\')" style="background:#dc2626; color:white; border:1px solid #fca5a5; padding:4px 9px; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer;">🧹 ૧-ક્લિક ડમી ડેટા સાફ કરો</button>'
-            f'<form action="/master-seed-sample-store" method="post" style="display:inline; margin:0;"><input type="hidden" name="shop_id" value="{cur_sid_up}"><input type="hidden" name="return_to" value="TERMINAL"><button type="submit" style="background:#15803d; color:white; border:1px solid #86efac; padding:4px 9px; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer;">🔄 સેમ્પલ ડેટા ભરો</button></form>'
+            f''
         )
     else:
         sample_top_btns = ""
