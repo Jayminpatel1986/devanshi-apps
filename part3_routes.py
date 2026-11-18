@@ -35,6 +35,37 @@ def redir(msg: str, sheet: str = "SMART_TERMINAL", mode: str = "F2"):
     q = urllib.parse.quote(msg)
     return RedirectResponse(url=f"/?sheet={sheet}&mode={mode}&msg={q}", status_code=303)
 
+def handle_outward_card_partner_payment(c, sid: str, d_str: str, t_str: str, amount: float, pay_mode: str, galla_name: str, payer_name: str, card_details: str, reimburse_status: str, bill_ref: str, remarks: str):
+    """
+    Tally Prime શૈલી ક્રેડિટ કાર્ડ / પાર્ટનર અંગત ચુકવણી લોજિક:
+    જો પરત ચૂકવણી બાકી હોય (PENDING): ગલ્લા કે બેંકમાંથી ₹0 કપાશે, પાર્ટનરના લેણદાર ખાતામાં જમા બોલશે.
+    જો રોકડથી તરત ચૂકતે હોય (SETTLED_CASH): પસંદ કરેલા રોકડ ગલ્લામાંથી રકમ કપાશે.
+    જો બેંકથી તરત ચૂકતે હોય (SETTLED_BANK): દુકાનના બેંક ખાતામાંથી રકમ કપાશે.
+    """
+    p_name = (payer_name or "જયમીનભાઈ પટેલ (દુકાનદાર - Owner)").strip()
+    c_det = (card_details or pay_mode or "ક્રેડિટ કાર્ડ").strip()
+    status = (reimburse_status or "PENDING").strip().upper()
+    
+    # Partner capital ledger entry (Payable Liability)
+    c.execute("""INSERT INTO partner_capital_ledger 
+        (store_id, tx_date, partner_name, tx_type, amount, pay_mode, galla_name, remarks, card_details, reimburse_status, bill_ref)
+        VALUES (?, ?, ?, 'CC_PURCHASE_PAYABLE', ?, ?, ?, ?, ?, ?, ?)""",
+        (sid, d_str, p_name, amount, pay_mode, galla_name, remarks, c_det, status, bill_ref))
+    
+    # If staff paid, also log in staff_commission_ledger for staff CC tracking
+    if any(k in p_name for k in ["સંકેત", "અજય", "કૌશલ", "એકાઉન્ટન્ટ", "સ્ટાફ"]):
+        c.execute("""INSERT INTO staff_commission_ledger 
+            (date, staff_name, entry_type, remarks, comm_earned, cc_swipe_amt, paid_amt, galla_name, bill_ref)
+            VALUES (?, ?, 'STAFF_CC_SWIPE', ?, 0, ?, 0, ?, ?)""",
+            (d_str, p_name, f"ક્રેડિટ કાર્ડ સ્વાઇપ ચૂકવણી ({c_det}): {remarks}", amount, galla_name, bill_ref))
+
+    if status == "SETTLED_CASH":
+        c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                  (d_str, galla_name, amount, f"ક્રેડિટ કાર્ડ વળતર રોકડ ચૂકવણી: {p_name} ({c_det})", sid))
+    elif status == "SETTLED_BANK":
+        c.execute("INSERT INTO bank_deposit_log (date, time_str, bank_name, amount, source_type, depositor, remarks, store_id) VALUES (?, ?, 'ONLINE_BANK', ?, 'WITHDRAWAL', ?, ?, ?)",
+                  (d_str, t_str, -amount, p_name, f"ક્રેડિટ કાર્ડ વળતર બેંક ચૂકવણી: {p_name} ({c_det})", sid))
+
 # --- [F1] ખરીદી (૫ વિકલ્પો: મોબાઈલ, કન્ઝ્યુમર પ્રોડક્ટ, બાયબેક, રિચાર્જ, એસેસરીઝ પાર્ટ-૨) ---
 @app.post("/save-f1")
 async def save_f1_route(
@@ -54,6 +85,7 @@ async def save_f1_route(
     acc_qty: int = Form(10), acc_unit_cost: float = Form(0), acc_mop: float = Form(0),
     acc_total_amt: float = Form(0), acc_paid_amt: float = Form(0),
     pay_mode: str = Form("રોકડ (Cash)"), galla_name: str = Form("BANK_CASH"), credit_days: int = Form(7), due_date: str = Form(""),
+    f1_payer_name: str = Form(""), f1_card_details: str = Form(""), f1_reimburse_status: str = Form("PENDING"),
     bb_photo: UploadFile = File(None),
     purchase_doc: UploadFile = File(None),
     customer_face_photo: UploadFile = File(None),
@@ -71,6 +103,7 @@ async def save_f1_route(
         return_mode = "F5"
     conn = sqlite3.connect(get_active_db_file(sid), timeout=60.0)
     c = conn.cursor()
+    is_f1_card_partner = any(k in pay_mode for k in ["કાર્ડ", "Card", "ખિસ્સા", "પાર્ટનર"]) or (galla_name == "PARTNER_CC")
 
     photo_url = ""
     if bb_photo and hasattr(bb_photo, "filename") and bb_photo.filename:
@@ -112,9 +145,12 @@ async def save_f1_route(
             (date, customer_name, model, imei, purchase_cost, repair_cost, total_cost, salesman, photo_path, customer_photo_path, bb_condition, brand, galla_name, source_type, status, store_id)
             VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, 'IN_STOCK', ?)""",
             (d_str, cust_full, use_mod, use_im, use_cost, use_cost, use_sm, photo_url, cust_face_url, bb_condition, use_br, galla_name, f"સીધી ખરીદી ({bb_condition})", sid))
-        if use_cost > 0 and "રોકડ" in pay_mode:
-            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, file_path, store_id) VALUES (?, ?, 0, ?, ?, ?, ?)",
-                      (d_str, galla_name, use_cost, f"જૂનો ફોન બાયબેક ખરીદી: {use_mod} ({ use_im }) [{cust_full}]", photo_url or cust_face_url, sid))
+        if use_cost > 0:
+            if is_f1_card_partner:
+                handle_outward_card_partner_payment(c, sid, d_str, t_str, use_cost, pay_mode, galla_name, f1_payer_name, f1_card_details, f1_reimburse_status, use_im, f"જૂનો ફોન બાયબેક ખરીદી: {use_mod} ({use_im}) [{cust_full}]")
+            elif "રોકડ" in pay_mode:
+                c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, file_path, store_id) VALUES (?, ?, 0, ?, ?, ?, ?)",
+                          (d_str, galla_name, use_cost, f"જૂનો ફોન બાયબેક ખરીદી: {use_mod} ({ use_im }) [{cust_full}]", photo_url or cust_face_url, sid))
         c.execute("""INSERT INTO live_terminal_grid
             (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, doc_path, store_id)
             VALUES (?, 'BB-IN', ?, ?, ?, ?, 'DIRECT_BB', ?, 0, 0, ?, ?, ?)""",
@@ -168,13 +204,16 @@ async def save_f1_route(
             (date, supplier_name, bill_no, total_bill, paid_amt, balance_due, galla_name, entry_type, doc_path, qty, unit_cost, store_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, 'ACC_PURCHASE', ?, ?, ?, ?)""",
             (d_str, use_supp, use_bno, use_tot, use_paid, bal, use_galla, photo_url, acc_qty, acc_unit_cost, sid))
-        if use_paid > 0 and "રોકડ" in pay_mode:
-            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
-                      (d_str, use_galla, use_paid, f"એસેસરીઝ ખરીદી: {use_supp} ({use_bno})", sid))
-            if use_galla != "ACC_DCASH":
-                c.execute("""INSERT INTO inter_galla_debt_ledger (store_id, tx_date, lender_galla, borrower_galla, amount, settled_amt, status, remarks)
-                             VALUES (?, ?, ?, 'ACC_DCASH', ?, 0, 'PENDING', ?)""",
-                          (sid, d_str, use_galla, use_paid, f"એસેસરીઝ ખરીદી ({use_supp} - {use_bno}) {use_galla} માંથી ઉછીના ચૂકવ્યા"))
+        if use_paid > 0:
+            if is_f1_card_partner:
+                handle_outward_card_partner_payment(c, sid, d_str, t_str, use_paid, pay_mode, use_galla, f1_payer_name, f1_card_details, f1_reimburse_status, use_bno, f"એસેસરીઝ ખરીદી ({use_supp} - {use_bno})")
+            elif "રોકડ" in pay_mode:
+                c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                          (d_str, use_galla, use_paid, f"એસેસરીઝ ખરીદી: {use_supp} ({use_bno})", sid))
+                if use_galla != "ACC_DCASH":
+                    c.execute("""INSERT INTO inter_galla_debt_ledger (store_id, tx_date, lender_galla, borrower_galla, amount, settled_amt, status, remarks)
+                                 VALUES (?, ?, ?, 'ACC_DCASH', ?, 0, 'PENDING', ?)""",
+                              (sid, d_str, use_galla, use_paid, f"એસેસરીઝ ખરીદી ({use_supp} - {use_bno}) {use_galla} માંથી ઉછીના ચૂકવ્યા"))
         c.execute("""INSERT INTO live_terminal_grid
             (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, doc_path, store_id)
             VALUES (?, ?, ?, ?, ?, ?, 'ACC_PURCHASE', ?, 0, ?, '-', ?, ?)""",
@@ -243,13 +282,16 @@ async def save_f1_route(
             (date, supplier_name, bill_no, total_bill, paid_amt, balance_due, galla_name, entry_type, doc_path, b2b_type, supplier_gstin, gst_pct, scheme_cn_amt, credit_days, due_date, store_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (d_str, supplier_name, bill_no, eff_bill, paid_amt, bal, galla_name, tx_type, photo_url, b2b_type, supplier_gstin, gst_pct, scheme_cn_amt, int(credit_days or 0), eff_due_dt, sid))
-        if paid_amt > 0 and "રોકડ" in pay_mode:
-            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
-                      (d_str, galla_name, paid_amt, f"વેપારી પેમેન્ટ: {supplier_name} ({bill_no})", sid))
-            if galla_name and galla_name != "BANK_CASH":
-                c.execute("""INSERT INTO inter_galla_debt_ledger (store_id, tx_date, lender_galla, borrower_galla, amount, settled_amt, status, remarks)
-                             VALUES (?, ?, ?, 'BANK_CASH', ?, 0, 'PENDING', ?)""",
-                          (sid, d_str, galla_name, paid_amt, f"વેપારી પેમેન્ટ ({supplier_name} - {bill_no}) {galla_name} માંથી ઉછીના ચૂકવ્યા"))
+        if paid_amt > 0:
+            if is_f1_card_partner:
+                handle_outward_card_partner_payment(c, sid, d_str, t_str, paid_amt, pay_mode, galla_name, f1_payer_name, f1_card_details, f1_reimburse_status, bill_no, f"વેપારી પેમેન્ટ ({supplier_name} - {bill_no})")
+            elif "રોકડ" in pay_mode:
+                c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                          (d_str, galla_name, paid_amt, f"વેપારી પેમેન્ટ: {supplier_name} ({bill_no})", sid))
+                if galla_name and galla_name != "BANK_CASH":
+                    c.execute("""INSERT INTO inter_galla_debt_ledger (store_id, tx_date, lender_galla, borrower_galla, amount, settled_amt, status, remarks)
+                                 VALUES (?, ?, ?, 'BANK_CASH', ?, 0, 'PENDING', ?)""",
+                              (sid, d_str, galla_name, paid_amt, f"વેપારી પેમેન્ટ ({supplier_name} - {bill_no}) {galla_name} માંથી ઉછીના ચૂકવ્યા"))
         c.execute("""INSERT INTO live_terminal_grid
             (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, doc_path, store_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, '-', ?, ?)""",
@@ -470,7 +512,7 @@ async def save_f2_route(
 @app.post("/save-f3-payout")
 def save_f3_payout_route(
     entry_date: str = Form(""), payout_target_type: str = Form("SUPPLIER"),
-    supplier_name: str = Form(""), staff_name: str = Form(""), staff_payout_sub_type: str = Form("STAFF_ADVANCE"),
+    supplier_name: str = Form(""), staff_name: str = Form(""), partner_name: str = Form(""), staff_payout_sub_type: str = Form("STAFF_ADVANCE"),
     amount: float = Form(0), pay_mode: str = Form("રોકડ (Cash)"), galla_name: str = Form("BANK_CASH"), remarks: str = Form("")
 ):
     now_dt = datetime.datetime.now()
@@ -480,7 +522,20 @@ def save_f3_payout_route(
     conn = sqlite3.connect(get_active_db_file(), timeout=60.0)
     c = conn.cursor()
 
-    if payout_target_type == "STAFF":
+    if payout_target_type == "PARTNER":
+        p_name = (partner_name or "જયમીનભાઈ પટેલ (દુકાનદાર - Owner)").strip()
+        c.execute("""INSERT INTO partner_capital_ledger 
+            (store_id, tx_date, partner_name, tx_type, amount, pay_mode, galla_name, remarks, reimburse_status)
+            VALUES (?, ?, ?, 'CC_REIMBURSE_PAID', ?, ?, ?, ?, 'SETTLED')""",
+            (sid, d_str, p_name, amount, pay_mode, galla_name, f"પાર્ટનર ક્રેડિટ કાર્ડ વળતર ચૂકવણી: {remarks}"))
+        if amount > 0 and "રોકડ" in pay_mode:
+            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                      (d_str, galla_name, amount, f"પાર્ટનર ક્રેડિટ કાર્ડ વળતર ({p_name}): {remarks}", sid))
+        elif amount > 0 and any(k in pay_mode for k in ["બેંક", "Bank", "UPI", "NEFT", "RTGS", "ઓનલાઈન", "ઓનલાઇન"]):
+            c.execute("INSERT INTO bank_deposit_log (date, time_str, bank_name, amount, source_type, depositor, remarks, store_id) VALUES (?, ?, 'ONLINE_BANK', ?, 'WITHDRAWAL', ?, ?, ?)",
+                      (d_str, t_str, -amount, p_name, f"પાર્ટનર ક્રેડિટ કાર્ડ વળતર ({p_name}): {remarks}", sid))
+        target_lbl = f"{p_name} (પાર્ટનર CC વળતર)"
+    elif payout_target_type == "STAFF":
         head_map = {
             "STAFF_ADVANCE": "૧. સ્ટાફ એડવાન્સ ઉપાડ (Advance)",
             "STAFF_SALARY": "૨. માસિક પગાર ચૂકવણી (Salary)",
@@ -875,6 +930,7 @@ def save_f6_route(
     entry_date: str = Form(""), f6_type: str = Form("EXPENSE"), head_name: str = Form(""),
     amount: float = Form(0), pay_mode: str = Form("રોકડ"), galla_name: str = Form("BANK_CASH"),
     remarks: str = Form(""), jio_lapu: float = Form(0), vi_lapu: float = Form(0),
+    exp_payer_name: str = Form(""), exp_card_details: str = Form(""), exp_reimburse_status: str = Form("PENDING"),
     lapu_companies: List[str] = Form(default=[]),
     lapu_openings: List[str] = Form(default=[]),
     lapu_topups: List[str] = Form(default=[]),
@@ -892,17 +948,24 @@ def save_f6_route(
     elif f6_type == "EXPENSE":
         if head_name.strip():
             c.execute("INSERT OR IGNORE INTO config_expense_heads (head_name) VALUES (?)", (head_name.strip(),))
-        is_cash_exp = ("રોકડ" in pay_mode or "CASH" in pay_mode.upper()) and not any(k in pay_mode.upper() for k in ["ONLINE", "UPI", "BANK", "ઓનલાઇન", "બેંક"])
-        if is_cash_exp:
-            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
-                      (d_str, galla_name, amount, f"દુકાન ખર્ચ ({head_name}): {remarks}", sid))
-            if amount > 0 and galla_name and galla_name != "BANK_CASH":
-                c.execute("""INSERT INTO inter_galla_debt_ledger (store_id, tx_date, lender_galla, borrower_galla, amount, settled_amt, status, remarks)
-                             VALUES (?, ?, ?, 'BANK_CASH', ?, 0, 'PENDING', ?)""",
-                          (sid, d_str, galla_name, amount, f"દુકાન ખર્ચ ({head_name}) {galla_name} માંથી ઉછીના ચૂકવ્યા"))
-        grid_exp_type = "F6_EXPENSE" if is_cash_exp else "F6_ONLINE_EXPENSE"
-        c.execute("INSERT INTO live_terminal_grid (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id) VALUES (?, 'EXP', ?, ?, '-', ?, ?, ?, 0, 0, '-', ?)",
-                  (t_str, head_name, f"{remarks} ({pay_mode})" if not is_cash_exp else remarks, galla_name if is_cash_exp else "ONLINE_BANK", grid_exp_type, amount, sid))
+        is_exp_card_partner = any(k in pay_mode for k in ["કાર્ડ", "Card", "ખિસ્સા", "પાર્ટનર"]) or (galla_name == "PARTNER_CC")
+        if is_exp_card_partner:
+            handle_outward_card_partner_payment(c, sid, d_str, t_str, amount, pay_mode, galla_name, exp_payer_name, exp_card_details, exp_reimburse_status, "EXPENSE", f"દુકાન ખર્ચ ({head_name}): {remarks}")
+            grid_exp_type = "F6_CC_EXPENSE"
+            c.execute("INSERT INTO live_terminal_grid (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id) VALUES (?, 'EXP', ?, ?, '-', 'PARTNER_CC', ?, ?, 0, 0, '-', ?)",
+                      (t_str, head_name, f"{remarks} ({pay_mode} - {exp_payer_name})", grid_exp_type, amount, sid))
+        else:
+            is_cash_exp = ("રોકડ" in pay_mode or "CASH" in pay_mode.upper()) and not any(k in pay_mode.upper() for k in ["ONLINE", "UPI", "BANK", "ઓનલાઇન", "બેંક"])
+            if is_cash_exp:
+                c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                          (d_str, galla_name, amount, f"દુકાન ખર્ચ ({head_name}): {remarks}", sid))
+                if amount > 0 and galla_name and galla_name != "BANK_CASH":
+                    c.execute("""INSERT INTO inter_galla_debt_ledger (store_id, tx_date, lender_galla, borrower_galla, amount, settled_amt, status, remarks)
+                                 VALUES (?, ?, ?, 'BANK_CASH', ?, 0, 'PENDING', ?)""",
+                              (sid, d_str, galla_name, amount, f"દુકાન ખર્ચ ({head_name}) {galla_name} માંથી ઉછીના ચૂકવ્યા"))
+            grid_exp_type = "F6_EXPENSE" if is_cash_exp else "F6_ONLINE_EXPENSE"
+            c.execute("INSERT INTO live_terminal_grid (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id) VALUES (?, 'EXP', ?, ?, '-', ?, ?, ?, 0, 0, '-', ?)",
+                      (t_str, head_name, f"{remarks} ({pay_mode})" if not is_cash_exp else remarks, galla_name if is_cash_exp else "ONLINE_BANK", grid_exp_type, amount, sid))
     else:
         target_g = "ACC_DCASH" if f6_type == "ACC_INCOME" else "RECHARGE"
         lapu_summary_parts = []
