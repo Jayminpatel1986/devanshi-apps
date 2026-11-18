@@ -594,8 +594,8 @@ def root_view(
         if "F2" in _act_cnts_set else
         f"<a href=\"/?sheet=SMART_TERMINAL&mode={first_allowed_cnt}\" class=\"act-btn\" style=\"background:#15803d;\">⚡ મુખ્ય કાઉન્ટર ({first_allowed_cnt})</a>"
     )
-    btn1_pur_html = "" if not ("F1_1" in _act_subs_set or "F1_2" in _act_subs_set) else "<button class=\"act-btn\" style=\"background:#0284c7;\" onclick=\"document.getElementById('stock_import_file').click()\">📥 ૧. ખરીદી બિલ AI ઇમ્પોર્ટ</button>"
-    btn2_do_html = "" if "F2_3" not in _act_subs_set else "<button class=\"act-btn\" style=\"background:#0369a1;\" onclick=\"document.getElementById('do_import_file').click()\">📥 ૨. ફાઇનાન્સ DO ઇમ્પોર્ટ</button>"
+    btn1_pur_html = "" if not ("F1_1" in _act_subs_set or "F1_2" in _act_subs_set) else "<button class=\"act-btn\" style=\"background:#0284c7; position:relative;\" onclick=\"document.getElementById('stock_import_file').click()\">📥 ૧. ખરીદી બિલ AI ઇમ્પોર્ટ <span style='background:#15803d; color:#bbf7d0; font-size:9.5px; padding:1px 5px; border-radius:3px; margin-left:4px;'>🟢 Gemini Active</span></button>"
+    btn2_do_html = "" if "F2_3" not in _act_subs_set else "<button class=\"act-btn\" style=\"background:#0369a1; position:relative;\" onclick=\"document.getElementById('do_import_file').click()\">📥 ૨. ફાઇનાન્સ DO ઇમ્પોર્ટ <span style='background:#15803d; color:#bbf7d0; font-size:9.5px; padding:1px 5px; border-radius:3px; margin-left:4px;'>🟢 Gemini Active</span></button>"
     badges_grid_html = f'<div class="badges-grid" style="display:grid; grid-template-columns:repeat({max(1, len(badge_cards))}, 1fr); gap:5px; padding:6px 8px; background:#f1f5f9; border-bottom:1px solid #cbd5e1;">' + "".join(badge_cards) + '</div>'
 
     full_html = f"""<!DOCTYPE html>
