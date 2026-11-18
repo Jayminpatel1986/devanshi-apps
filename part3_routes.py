@@ -542,9 +542,13 @@ async def save_f3_route(
         c.execute("UPDATE buyback_stock SET status='SOLD', sold_date=?, sale_price=?, sale_galla=?, photo_path= COALESCE(NULLIF(?,''), photo_path) WHERE imei=?",
                   (d_str, sale_price, galla_name, doc_url, bb_imei))
 
-        # ઓટો-સ્પ્લિટ લોજિક: મૂળ કુલ પડતર પસંદ કરેલા ગલ્લામાં (ગલ્લો ૧) અને ઉપરનો ચોખ્ખો નફો સીધો ગલ્લા ૪ (EXTRA_CASH) માં!
+        # ઓટો-સ્પ્લિટ લોજિક: જો ઓનલાઈન/ડિજિટલ હોય તો બેંકમાં, અન્યથા મૂળ પડતર ગલ્લામાં અને નફો ગલ્લા ૪ માં!
+        is_digital_sale = (galla_name == "ONLINE_BANK") or ("રોકડ" not in pay_mode and "CASH" not in pay_mode.upper())
         if sale_price > 0:
-            if orig_total_cost > 0 and sale_price > orig_total_cost:
+            if is_digital_sale:
+                c.execute("INSERT INTO bank_deposit_log (date, time_str, bank_name, amount, source_type, depositor, remarks, store_id) VALUES (?, ?, 'ONLINE_BANK', ?, 'DEPOSIT', ?, ?, ?)",
+                          (d_str, t_str, sale_price, salesman, f"જૂનો ફોન વેચાણ ({pay_mode}): {bb_mod_name} ({bb_imei}) - {customer_name}", sid))
+            elif orig_total_cost > 0 and sale_price > orig_total_cost:
                 cost_part = orig_total_cost
                 profit_part = sale_price - orig_total_cost
                 c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
@@ -562,9 +566,14 @@ async def save_f3_route(
     else:
         c.execute("UPDATE buyback_stock SET repair_cost = repair_cost + ?, total_cost = total_cost + ?, photo_path= COALESCE(NULLIF(?,''), photo_path) WHERE imei=?",
                   (repair_cost, repair_cost, doc_url, bb_imei))
+        is_digital_rep = (galla_name == "ONLINE_BANK") or ("રોકડ" not in pay_mode and "CASH" not in pay_mode.upper())
         if repair_cost > 0:
-            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
-                      (d_str, galla_name, repair_cost, f"જૂનો ફોન રિપેરિંગ ({bb_imei}): {remarks}", sid))
+            if is_digital_rep:
+                c.execute("INSERT INTO bank_deposit_log (date, time_str, bank_name, amount, source_type, depositor, remarks, store_id) VALUES (?, ?, 'ONLINE_BANK', ?, 'WITHDRAWAL', ?, ?, ?)",
+                          (d_str, t_str, -repair_cost, "REPAIR", f"જૂનો ફોન રિપેરિંગ પડતર ({pay_mode}): {bb_imei} - {remarks}", sid))
+            else:
+                c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                          (d_str, galla_name, repair_cost, f"જૂનો ફોન રિપેરિંગ ({bb_imei}): {remarks}", sid))
 
     conn.commit()
     conn.close()
@@ -599,10 +608,15 @@ def save_f5_bb_return_route(
         (store_id, return_date, return_time, imei, model, customer_name, orig_sale_date, orig_sale_price, deduction_amt, net_refund_amt, pay_mode, refund_galla, staff_name, reason)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (sid, d_str, t_str, imei.strip(), model, customer_name, orig_sale_date, orig_sale_price, deduction_amt, net_ref, pay_mode, refund_galla, staff_name, reason))
-    # ૩. જે ગલ્લામાંથી રિફંડ આપ્યું તેમાંથી રકમ માઇનસ કરો
-    if net_ref > 0 and "રોકડ" in pay_mode:
-        c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
-                  (d_str, refund_galla, net_ref, f"બાયબેક રિટર્ન કેશ રિફંડ ({model} - {imei}): ઘસારો ₹{deduction_amt:,.0f} કાપીને", sid))
+    # ૩. જે ગલ્લામાંથી રિફંડ આપ્યું તેમાંથી રકમ માઇનસ કરો (ડિજિટલ હોય તો બેંકમાંથી)
+    is_digital_ref = (refund_galla == "ONLINE_BANK") or ("રોકડ" not in pay_mode and "CASH" not in pay_mode.upper())
+    if net_ref > 0:
+        if is_digital_ref:
+            c.execute("INSERT INTO bank_deposit_log (date, time_str, bank_name, amount, source_type, depositor, remarks, store_id) VALUES (?, ?, 'ONLINE_BANK', ?, 'WITHDRAWAL', ?, ?, ?)",
+                      (d_str, t_str, -net_ref, staff_name, f"બાયબેક રિટર્ન રિફંડ ({pay_mode}): {model} - {imei} ({reason})", sid))
+        else:
+            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                      (d_str, refund_galla, net_ref, f"બાયબેક રિટર્ન કેશ રિફંડ ({model} - {imei}): ઘસારો ₹{deduction_amt:,.0f} કાપીને", sid))
     c.execute("""INSERT INTO live_terminal_grid
         (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id)
         VALUES (?, 'BB-RET', ?, ?, ?, ?, 'F5_BB_RETURN', ?, 0, 0, ?, ?)""",
