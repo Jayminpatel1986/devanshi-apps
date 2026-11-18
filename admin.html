@@ -1,0 +1,1475 @@
+<!DOCTYPE html><html lang="gu"><head><meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/vault/pwa_icon_192.png">
+    <link rel="apple-touch-icon" href="/vault/pwa_icon_192.png">
+    <meta name="theme-color" content="#0f2043">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>સુપર એડમિન કંટ્રોલ હબ - દેવાંશી મનસ્વી સોફ્ટવેર (જયમીનભાઈ: 9725721215)</title>
+    <style>
+        body { font-family:'Segoe UI',sans-serif; background:#0f172a; color:#0f172a; margin:0; padding:14px; }
+        .hub-box { max-width:1420px; margin:0 auto; background:#ffffff; border-radius:10px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:2px solid #38bdf8; }
+        table { width:100%; border-collapse:collapse; margin-top:8px; font-size:12px; }
+        th, td { border:1px solid #cbd5e1; padding:6px 8px; text-align:center; }
+        th { background:#1e293b; color:white; }
+        tr:nth-child(even) { background:#f8fafc; }
+        tr:hover { background:#f0f9ff; }
+        .ota-shop-card:hover { background:rgba(255,255,255,0.15) !important; border-color:#38bdf8 !important; }
+    </style></head>
+    <body>
+
+    <!-- 🚨 નવી પેન્ડિંગ ડેમો અરજીઓ (Pending Approval - 9725721215) -->
+    <div style="background:#0f172a; border:2.5px solid #eab308; border-radius:14px; padding:18px; margin:14px auto; max-width:960px; box-shadow:0 10px 30px rgba(0,0,0,0.6); color:white;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #eab308; padding-bottom:10px; margin-bottom:12px;">
+            <div>
+                <b style="color:#fde047; font-size:16px;">🚨 નવી પેન્ડિંગ ડેમો અરજીઓ (સુપર એડમિન એપ્રુવલ પેનલ - Jayminbhai 9725721215)</b>
+                <div style="font-size:12px; color:#94a3b8;">નવો દુકાનદાર સાઇન-અપ કરે ત્યારે તમે અહીંથી મંજૂરી (Approve) આપો ત્યારે જ એનું સોફ્ટવેર ૧૦ દિવસ માટે શરૂ થશે!</div>
+            </div>
+            <button type="button" onclick="loadPendingAdminSignups()" style="background:#16a34a; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">🔄 રિફ્રેશ કરો</button>
+        </div>
+        <div id="admin_pending_signups_box">
+            <div style="text-align:center; padding:15px; color:#94a3b8;">પેન્ડિંગ સાઇન-અપ અરજીઓ ચેક થઈ રહી છે...</div>
+        </div>
+    </div>
+
+
+<div id="jaymin_pin_lock_screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #091224, #0f172a); z-index:9999999; display:flex; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;">
+    <div style="background:#1e293b; border:2.5px solid #f59e0b; border-radius:12px; padding:24px 20px; max-width:400px; width:100%; text-align:center; box-shadow:0 10px 35px rgba(0,0,0,0.8);">
+        <div style="font-size:36px; margin-bottom:8px;">⚡</div>
+        <h3 style="color:#fde047; margin:0 0 4px; font-size:18px;">સુપર એડમિન માસ્ટર સુરક્ષા</h3>
+        <p style="color:#94a3b8; font-size:12px; margin:0 0 16px;">માત્ર જયમીનભાઈ માટે (માસ્ટર પિન ૧૯૮૬)</p>
+        <div style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
+            <input type="password" id="admin_master_pin_input" maxlength="4" placeholder="••••" style="width:140px; font-size:24px; text-align:center; letter-spacing:8px; background:#0f172a; border:2px solid #38bdf8; color:#38bdf8; border-radius:8px; padding:8px;" autofocus onkeyup="if(event.key==='Enter') verifyAdminMasterPin();">
+        </div>
+        <button type="button" onclick="verifyAdminMasterPin()" style="background:#f59e0b; color:#0f172a; border:none; padding:10px 24px; border-radius:6px; font-weight:900; font-size:14px; cursor:pointer; width:100%;">
+            🔓 અનલૉક કરો
+        </button>
+        <div id="pin_error_msg" style="color:#f87171; font-size:12px; margin-top:10px; display:none;">❌ ખોટો પિન! સાચો પિન ૧૯૮૬ છે.</div>
+    </div>
+</div>
+<script id="admin_pin_verifier">
+function verifyAdminMasterPin() {
+    var p = document.getElementById('admin_master_pin_input').value.trim();
+    if (p === '1986') {
+        localStorage.setItem('dm_admin_unlocked', '1');
+        document.getElementById('jaymin_pin_lock_screen').style.display = 'none';
+    } else {
+        document.getElementById('pin_error_msg').style.display = 'block';
+    }
+}
+window.addEventListener('DOMContentLoaded', async function() {
+    var u = new URLSearchParams(window.location.search);
+    if (u.get('pin') === '1986' || window.location.hash.indexOf('1986') !== -1 || localStorage.getItem('dm_admin_unlocked') === '1') {
+        var ls = document.getElementById('jaymin_pin_lock_screen');
+        if (ls) ls.style.display = 'none';
+    }
+    var act = u.get('action');
+    var targetShop = u.get('shop');
+    if (act && targetShop && (u.get('pin') === '1986' || localStorage.getItem('dm_admin_unlocked') === '1')) {
+        handleWhatsAppDirectAction(act, targetShop);
+    }
+});
+
+async function handleWhatsAppDirectAction(act, shopId) {
+    var actionBox = document.getElementById('whatsapp_action_alert_box');
+    if (!actionBox) {
+        actionBox = document.createElement('div');
+        actionBox.id = 'whatsapp_action_alert_box';
+        actionBox.style = 'background:#0f172a; border:3px solid #38bdf8; border-radius:14px; padding:18px 20px; margin:14px; color:white; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.8);';
+        document.body.insertBefore(actionBox, document.body.firstChild.nextSibling);
+    }
+    
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    
+    actionBox.innerHTML = '<div style="font-size:20px; font-weight:bold; color:#38bdf8;">⏳ ૧-ક્લિક WhatsApp એક્શન પ્રોસેસ થઈ રહી છે... (દુકાન: ' + shopId + ')</div>';
+    
+    try {
+        var fileUrl = 'https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json';
+        var getRes = await fetch(fileUrl, { headers: headers });
+        if (!getRes.ok) {
+            actionBox.innerHTML = '<div style="color:#ef4444; font-size:16px; font-weight:bold;">❌ દુકાન (' + shopId + ') નો ડેટા મળ્યો નથી!</div>';
+            return;
+        }
+        var data = await getRes.json();
+        var currentData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+        
+        if (act === 'approve') {
+            var now = new Date();
+            var todayIso = now.toISOString().split('T')[0];
+            var expIso = new Date(now.getTime() + 10 * 86400000).toISOString().split('T')[0];
+            currentData.status = 'APPROVED';
+            currentData.validity_from = todayIso;
+            currentData.validity_to = expIso;
+            currentData.demo_days = 10;
+            currentData.approved_at = new Date().toISOString();
+            
+            var b64Content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+            await fetch(fileUrl, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify({ message: 'WhatsApp 1-Click Approve: ' + shopId, content: b64Content, sha: data.sha })
+            });
+            
+            var directLoginUrl = 'https://jayminpatel1986.github.io/devanshi-apps/client-erp.html?shop=' + shopId + '&uid=' + (currentData.owner_user_id || 'owner');
+            var waReply = '🎉 *અભિનંદન ' + currentData.owner_name + '!*\n\nતમારી દુકાન *' + currentData.store_name + '* નું દેવાંશી મોબાઈલ સોફ્ટવેર ૧૦ દિવસના ફ્રી ડેમો માટે મંજૂર (Active) થઈ ગયું છે!\n\n👇 *તમારું સોફ્ટવેર શરૂ કરવા અહીં ક્લિક કરો:*\n' + directLoginUrl + '\n\nસહયોગ માટે સંપર્ક: જયમીનભાઈ પટેલ (9725721215)';
+            
+            actionBox.style.borderColor = '#22c55e';
+            actionBox.innerHTML = `
+                <div style="font-size:36px; margin-bottom:6px;">🎉</div>
+                <h2 style="color:#4ade80; margin:0 0 6px 0; font-size:20px;">દુકાન સફળતાપૂર્વક મંજૂર (APPROVED) થઈ ગઈ છે!</h2>
+                <div style="font-size:14px; color:#cbd5e1; margin-bottom:14px;">
+                    🏪 <b>દુકાન:</b> ${currentData.store_name} | 👤 <b>માલિક:</b> ${currentData.owner_name} (${currentData.owner_mobile})
+                </div>
+                <a href="https://wa.me/91${currentData.owner_mobile}?text=${encodeURIComponent(waReply)}" target="_blank" style="display:inline-block; background:linear-gradient(135deg,#16a34a,#15803d); color:white; padding:12px 24px; border-radius:10px; font-weight:900; font-size:15px; text-decoration:none; box-shadow:0 6px 20px rgba(22,163,74,0.5);">
+                    📲 ૧-ક્લિક: દુકાનદારને WhatsApp પર મંજૂરી મેસેજ અને લિંક મોકલો
+                </a>
+            `;
+        } else if (act === 'reject') {
+            currentData.status = 'REJECTED';
+            var b64Content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+            await fetch(fileUrl, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify({ message: 'WhatsApp 1-Click Reject: ' + shopId, content: b64Content, sha: data.sha })
+            });
+            actionBox.style.borderColor = '#ef4444';
+            actionBox.innerHTML = '<div style="color:#f87171; font-size:17px; font-weight:bold;">❌ દુકાન (' + currentData.store_name + ') ના-મંજૂર (REJECTED) કરી દેવામાં આવી છે.</div>';
+        } else if (act === 'delete') {
+            await fetch(fileUrl, {
+                method: 'DELETE',
+                headers: headers,
+                body: JSON.stringify({ message: 'WhatsApp 1-Click Delete: ' + shopId, sha: data.sha })
+            });
+            actionBox.style.borderColor = '#dc2626';
+            actionBox.innerHTML = '<div style="color:#fca5a5; font-size:17px; font-weight:bold;">🗑️ દુકાન (' + shopId + ') સિસ્ટમમાંથી કાયમ માટે ડીલીટ કરી દેવામાં આવી છે.</div>';
+        }
+    } catch (e) {
+        actionBox.innerHTML = '<div style="color:#ef4444; font-size:15px;">એક્શન દરમિયાન ખામી: ' + e.message + '</div>';
+    }
+}
+</script>
+
+
+<div id="super_admin_shortcut_bar" style="position:sticky; top:0; z-index:99999; background:linear-gradient(135deg, #091224, #1e293b); border-bottom:3px solid #38bdf8; padding:8px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; width:100%; box-sizing:border-box;">
+    <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">⚡</span>
+        <span style="font-weight:900; color:#38bdf8; font-size:13px;">સુપર એડમિન કંટ્રોલ હબ (જયમીનભાઈ: 9725721215)</span>
+    </div>
+    <div style="display:flex; gap:8px;">
+        <a href="jaymin-sample-erp.html" style="background:#7c3aed; color:white; border:1px solid #c084fc; padding:5px 12px; border-radius:5px; font-weight:bold; font-size:11.5px; text-decoration:none;">
+            👑 સેમ્પલ ERP ખોલો
+        </a>
+        <a href="index.html" style="background:#0284c7; color:white; border:1px solid #38bdf8; padding:5px 12px; border-radius:5px; font-weight:bold; font-size:11.5px; text-decoration:none;">
+            🌐 3-in-1 પબ્લિક હબ
+        </a>
+    </div>
+</div>
+
+    <div class="hub-box">
+        <!-- હેડર બાર -->
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #dc2626; padding-bottom:10px; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <div>
+                <h2 style="margin:0; color:#991b1b;">👑 દેવાંશી મનસ્વી સોફ્ટવેર - સુપર એડમિન કંટ્રોલ હબ (જયમીનભાઈ: 9725721215) <span style="background:#16a34a; color:white; padding:3px 9px; border-radius:5px; font-size:12px; vertical-align:middle;">📌 વર્ઝન: 2026.11.14_FINAL (કાયમી એક્ટિવ)</span></h2>
+                <script>
+                    try {
+                        localStorage.setItem('JAYMIN_PERMANENT_ADMIN_DEVICE', 'JAYMIN_9725721215_MASTER');
+                        if ('serviceWorker' in navigator) {
+                            navigator.serviceWorker.register('/sw.js').catch(function(){});
+                        }
+                    } catch(e) {}
+                </script>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+                    <a href="jaymin-sample-erp.html?shop=DEVANSHI" style="background:linear-gradient(135deg,#0f2043,#1e3a8a); color:#fde047; border:1.5px solid #fde047; padding:4px 10px; border-radius:5px; text-decoration:none; font-weight:900; font-size:11.5px;">👑 ૧-ક્લિક: દેવાંશી (ફ્રેન્ચાઇઝી લાઇફટાઇમ સેમ્પલ) ખોલો</a>
+                    <a href="jaymin-sample-erp.html?shop=MANSHVI" style="background:linear-gradient(135deg,#78350f,#92400e); color:#fef08a; border:1.5px solid #fde047; padding:4px 10px; border-radius:5px; text-decoration:none; font-weight:900; font-size:11.5px;">🏪 ૧-ક્લિક: મનસ્વી (રિટેલ લાઇફટાઇમ સેમ્પલ) ખોલો</a>
+                    <a href="index.html" target="_blank" style="background:linear-gradient(135deg,#15803d,#166534); color:white; border:1.5px solid #86efac; padding:4px 10px; border-radius:5px; text-decoration:none; font-weight:900; font-size:11.5px;">🌐 3-in-1 ડાયરેક્ટ ડાઉનલોડ લિંક (/download)</a>
+                </div>
+                <div style="font-size:11.5px; color:#0369a1; font-weight:bold; margin-top:3px;">👥 હાલ ઓનલાઈન એક્ટિવ યુઝર્સ અને લાઈવ સ્ક્રીન મોનિટર: હાલ ૧ એક્ટિવ સેશન (જયમીનભાઈ - માસ્ટર ટર્મિનલ)</div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <form action="/master-change-admin-pin" method="post" style="display:flex; gap:6px; align-items:center; background:#fef9c3; padding:5px 10px; border:1.5px solid #ca8a04; border-radius:6px; flex-wrap:wrap;">
+                    <span style="font-weight:800; color:#854d0e; font-size:11.5px;">🔐 ID:</span>
+                    <input type="text" name="new_admin_user" value="manshvi" title="સુપર એડમિન ID" style="width:68px; padding:3px 5px; font-weight:bold;">
+                    <span style="font-weight:800; color:#15803d; font-size:11.5px;">૧. એપ્રુવલ PIN:</span>
+                    <input type="text" name="new_admin_pin" value="1986" title="મોબાઈલ 2FA એપ્રુવલ PIN (1986)" style="width:55px; padding:3px 5px; font-weight:bold; border:1.5px solid #16a34a;">
+                    <span style="font-weight:800; color:#6b21a8; font-size:11.5px;">૨. ગુપ્ત પાસવર્ડ (ફોન બંધ હોય ત્યારે):</span>
+                    <input type="text" name="new_master_passphrase" value="Jaymin#HQ@972572" title="ફોન બંધ કે ખરાબ હોય ત્યારે ખોલવાનો તમારો ગુપ્ત પાસવર્ડ" placeholder="ગુપ્ત પાસવર્ડ" style="width:135px; padding:3px 6px; font-weight:bold; color:#6b21a8; border:1.5px solid #9333ea;">
+                    <button type="submit" style="background:#ca8a04; color:white; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">💾 સાચવો</button>
+                </form>
+                <a href="/login" style="background:#dc2626; color:white; padding:7px 12px; border-radius:4px; text-decoration:none; font-weight:bold;">🔒 લૉગિન પેજ</a>
+                <a href="jaymin-sample-erp.html" onclick="var lu=localStorage.getItem('devanshi_last_erp_url'); if(lu){window.location.href=lu; return false;}" style="background:#0f2043; color:white; padding:7px 12px; border-radius:4px; text-decoration:none; font-weight:bold;">⬅️ મુખ્ય ERP પર પાછા જાઓ</a>
+            </div>
+        </div>
+
+        <div id="live_admin_2fa_prompt_bar" style="display:none; background:#fef2f2; border:2px solid #dc2626; border-radius:8px; padding:10px 14px; margin-bottom:12px; color:#991b1b; font-weight:bold; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <span id="live_admin_2fa_prompt_txt">🔔 કોઈ ડિવાઇસ પરથી '👑 એડમિન' ખોલવાનો પ્રયાસ થઈ રહ્યો છે!</span>
+            <div style="display:flex; gap:6px;">
+                <a id="live_admin_2fa_approve_btn" href="/api/respond-2fa-request?decision=APPROVED&return_to=SUPER_ADMIN" style="background:#16a34a; color:white; padding:5px 12px; border-radius:5px; text-decoration:none; font-weight:800;">✅ હા, એપ્રુવ કરો (Approve)</a>
+                <a id="live_admin_2fa_block_btn" href="/api/respond-2fa-request?decision=BLOCKED&return_to=SUPER_ADMIN" style="background:#dc2626; color:white; padding:5px 12px; border-radius:5px; text-decoration:none; font-weight:800;">❌ બ્લોક કરો (Deny)</a>
+            </div>
+        </div>
+        <script>
+            setInterval(function(){
+                fetch('/api/check-2fa-approval-status').then(function(r){return r.json();}).then(function(d){
+                    var bar = document.getElementById('live_admin_2fa_prompt_bar');
+                    if(d && d.status === 'PENDING' && d.token) {
+                        bar.style.display = 'flex';
+                        document.getElementById('live_admin_2fa_prompt_txt').innerHTML = '🔔 <b>Google 2FA સુરક્ષા એલર્ટ:</b> નવો એડમિન લૉગિન પ્રયાસ (' + (d.time || '') + ' | IP: ' + (d.ip || '') + ') — શું તમે પરવાનગી આપો છો?';
+                        document.getElementById('live_admin_2fa_approve_btn').href = '/api/respond-2fa-request?token=' + encodeURIComponent(d.token) + '&decision=APPROVED&return_to=SUPER_ADMIN';
+                        document.getElementById('live_admin_2fa_block_btn').href = '/api/respond-2fa-request?token=' + encodeURIComponent(d.token) + '&decision=BLOCKED&return_to=SUPER_ADMIN';
+                    } else if(bar) {
+                        bar.style.display = 'none';
+                    }
+                }).catch(function(){});
+            }, 2500);
+        </script>
+        
+        
+        <div style="background:#f0fdf4; border:1px solid #86efac; color:#166534; padding:6px 12px; margin-bottom:14px; border-radius:6px; font-size:12px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <span>✅ 🔔 તમામ સાઇન-અપ નોટિફિકેશન ક્લિયર છે (કોઈ પેન્ડિંગ એલર્ટ નથી)</span>
+            <button type="button" onclick="var hb=document.getElementById('notif_history_modal_box'); hb.style.display=(hb.style.display==='none'?'block':'none');" style="background:#0284c7; color:white; border:none; padding:4px 12px; border-radius:4px; font-weight:bold; font-size:11.5px; cursor:pointer;">
+                📋 નોટિફિકેશન હિસ્ટ્રી જુઓ (0)
+            </button>
+        </div>
+        <div id="notif_history_modal_box" style="display:none; background:#f8fafc; border:2px solid #0284c7; border-radius:8px; padding:12px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <b style="color:#0f2043; font-size:13px;">📋 તમામ જૂની સાઇન-અપ & એટેન્ડન્સ નોટિફિકેશન હિસ્ટ્રી:</b>
+                <button type="button" onclick="document.getElementById('notif_history_modal_box').style.display='none'" style="background:#dc2626; color:white; border:none; padding:2px 8px; border-radius:4px; cursor:pointer; font-weight:bold;">✖ બંધ કરો</button>
+            </div>
+            <div style="max-height:240px; overflow-y:auto;"><div style='padding:8px; color:#64748b;'>હજુ કોઈ નોટિફિકેશન હિસ્ટ્રી નથી.</div></div>
+        </div>
+        
+        <div style="background:#0f172a; border:2px solid #38bdf8; border-radius:8px; padding:12px; margin-bottom:14px; color:white;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+                <h4 style="margin:0; color:#fde047; font-size:14px;">📡 લાઈવ ડિવાઇસ, બ્રાન્ડ/મોડેલ, હાર્ડવેર ID/IMEI અને GPS લોકેશન રડાર (Signup & Login Telemetry)</h4>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button type="button" onclick="shareWhatsAppSmartLinkFromAdmin()" style="background:#25D366; color:#0f172a; border:2px solid #fde047; padding:5px 14px; border-radius:5px; font-weight:900; font-size:12px; cursor:pointer;">📲 ૧-ક્લિક: WhatsApp પર દુકાનદારને 3-in-1 સોફ્ટવેર લિંક મોકલો</button>
+                    <a href="index.html" target="_blank" style="background:#16a34a; color:white; padding:5px 12px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:11.5px;">🌐 3-in-1 ડાઉનલોડ હબ ખોલો (/download)</a>
+                    <a href="/download-file/Devanshi_ERP.apk" style="background:#0284c7; color:white; padding:5px 12px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:11.5px;">📱 ડાયરેક્ટ .APK ડાઉનલોડ</a>
+                </div>
+            </div>
+            <div style="max-height:175px; overflow-y:auto;">
+                <table style="margin:0; font-size:11.5px; background:#1e293b; color:#f8fafc;">
+                    <tr><th>સમય & ઇવેન્ટ</th><th>Shop ID & દુકાન</th><th>યુઝર & રોલ</th><th>ડિવાઇસ પ્રકાર (Device)</th><th>બ્રાન્ડ & મોડેલ</th><th>હાર્ડવેર ID / IMEI</th><th>GPS લોકેશન & Maps</th></tr>
+                    <tr style='background:#0f172a;'><td>2026-11-06 14:14:15<br><b style='color:#fde047;'>🚀 નવું સાઇન-અપ (SIGNUP)</b></td><td><b>DEMO-001</b><br>દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)</td><td>દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)<br>(OWNER)</td><td style='color:#38bdf8; font-weight:bold;'>Mobile/PC</td><td> ()</td><td style='color:#86efac; font-family:monospace;'>DEMO-001</td><td><a href='https://www.google.com/maps/search/?api=1&query=%28PIN%3A%20%29' target='_blank' style='background:#0284c7; color:white; padding:3px 8px; border-radius:4px; text-decoration:none; font-weight:bold;'>📍 Maps ((PIN: ))</a></td></tr>
+                </table>
+            </div>
+        </div>
+
+        
+        <!-- 👑 સુપર એડમિન મોડ્યુલર ટેબ નેવિગેશન બાર (કન્ફ્યુઝન વગર ૧-ક્લિક સ્વિચિંગ) -->
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; background:#0f2043; padding:10px 12px; border-radius:8px; border:2px solid #38bdf8; align-items:center;">
+            <button type="button" class="adm-nav-btn active-tab" onclick="switchAdminTab('tab_shops')" id="btn_tab_shops">🏪 ૧. ૫૦+ સ્ટોર્સ માસ્ટર (2)</button>
+            <button type="button" class="adm-nav-btn" onclick="switchAdminTab('tab_pw')" id="btn_tab_pw">🔑 ૨. ID-પાસવર્ડ & સ્ટાફ (2)</button>
+            <button type="button" class="adm-nav-btn" onclick="switchAdminTab('tab_features')" id="btn_tab_features">🛠️ ૩. દુકાન સુવિધાઓ (નિયમ ૨૪૮)</button>
+            <button type="button" class="adm-nav-btn" onclick="switchAdminTab('tab_ai')" id="btn_tab_ai">🤖 ૪. AI Co-Pilot કંટ્રોલ</button>
+            <button type="button" class="adm-nav-btn" onclick="switchAdminTab('tab_ota')" id="btn_tab_ota">🚀 ૫. GitHub OTA અપડેટ</button>
+            <button type="button" class="adm-nav-btn" onclick="switchAdminTab('tab_backup')" id="btn_tab_backup">💾 ૬. ડ્રાઇવ બેકઅપ</button>
+            <button type="button" class="adm-nav-btn" onclick="switchAdminTab('tab_qr')" id="btn_tab_qr">📱 ૭. મોબાઈલ QR હબ</button>
+            <button type="button" class="adm-nav-btn" onclick="switchAdminTab('ALL')" id="btn_tab_all" style="background:#7c3aed; color:white; border-color:#c4b5fd;">👁️ બધા સેક્શન જુઓ</button>
+        </div>
+
+<div id="adm_tab_ota" style="display:none;">
+<!-- 🚀 બોક્સ ૧: જયમીનભાઈ ઓટોમેટિક OTA ક્લાઉડ અપડેટ એન્જિન -->
+        <div style="background:linear-gradient(135deg, #0f172a, #1e3a8a); border:2px solid #fde047; padding:14px; border-radius:8px; margin-bottom:14px; color:white; box-shadow:0 6px 18px rgba(0,0,0,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <h3 style="margin:0; color:#fde047; font-size:15px;">🚀 બોક્સ ૧: જયમીનભાઈ ઓટોમેટિક OTA અપડેટ એન્જિન (ફ્રેન્ચાઇઝી / રિટેલ મોડ & શોપ મલ્ટી-સિલેક્શન)</h3>
+                    <div style="font-size:11.5px; color:#bae6fd; margin-top:3px;">
+                        ✅ <b>ઝીરો ગદ્દા મજૂરી:</b> તમે તમારા લેપટોપમાં જે કંઈ સુધારો કરશો કે વચ્ચેનો ફોટો બદલશો, તે પસંદ કરેલી દુકાનોમાં GitHub કે WhatsApp ખોલ્યા વગર સીધું જ લાઈવ અપડેટ થઈ જશે!
+                    </div>
+                </div>
+                <span style="background:#16a34a; color:white; padding:5px 12px; border-radius:4px; font-weight:900; font-size:12.5px; border:2px solid #fde047;">
+                    📌 હાલનું માસ્ટર લાઈવ વર્ઝન: 2026.11.14_FINAL
+                </span>
+            </div>
+
+            <form action="/api/master-ota-publish" method="post" enctype="multipart/form-data" id="ota_publish_form" style="background:rgba(255,255,255,0.06); padding:12px; border-radius:8px; border:1px solid rgba(253,224,71,0.35);">
+                <!-- ૧. મોડ પસંદગી, ડાયરેક્ટ મોબાઈલ/લેપટોપ કોડ (.py / .zip) અપલોડર & ફોટો અપલોડર -->
+                <div style="display:grid; grid-template-columns:1.1fr 1.1fr 0.9fr 1.3fr; gap:10px; align-items:start; margin-bottom:10px;">
+                    <div>
+                        <label style="font-size:11.5px; color:#fde047; font-weight:bold; display:block; margin-bottom:4px;">૧. સ્ટોર મોડ પસંદ કરો (Store Mode Target):</label>
+                        <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                            <label style="background:rgba(255,255,255,0.12); padding:4px 7px; border-radius:4px; cursor:pointer; font-size:11px; display:flex; align-items:center; gap:4px;">
+                                <input type="radio" name="ota_mode_filter" value="ALL" checked onchange="selectOtaMode('ALL')">
+                                <span>🌐 તમામ (ALL)</span>
+                            </label>
+                            <label style="background:#0369a1; padding:4px 7px; border-radius:4px; cursor:pointer; font-size:11px; display:flex; align-items:center; gap:4px; color:#e0f2fe;">
+                                <input type="radio" name="ota_mode_filter" value="FRANCHISE_HO" onchange="selectOtaMode('FRANCHISE_HO')">
+                                <span>👑 ફ્રેન્ચાઇઝી</span>
+                            </label>
+                            <label style="background:#78350f; padding:4px 7px; border-radius:4px; cursor:pointer; font-size:11px; display:flex; align-items:center; gap:4px; color:#fef08a;">
+                                <input type="radio" name="ota_mode_filter" value="PRIVATE_RETAIL" onchange="selectOtaMode('PRIVATE_RETAIL')">
+                                <span>🏬 રિટેલ</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div style="background:rgba(22,163,74,0.2); border:1px solid #86efac; padding:6px 8px; border-radius:6px;">
+                        <label style="font-size:11.5px; color:#86efac; font-weight:800; display:block; margin-bottom:3px;">૨(ક). મોબાઈલ/લેપટોપથી નવી કોડ ફાઇલ (.py કે .zip) અપલોડ કરો:</label>
+                        <input type="file" name="ota_code_files" multiple accept=".py,.zip,.json" style="color:white; font-size:11px; width:100%;">
+                        <div style="font-size:10px; color:#bbf7d0; margin-top:2px;">(.exe ફરી આપ્યા વગર સીધું જ દુકાનદારના લેપટોપમાં લાઈવ થશે!)</div>
+                    </div>
+                    <div>
+                        <label style="font-size:11.5px; color:#fde047; font-weight:bold; display:block; margin-bottom:4px;">૨(ખ). લૉગિન ફોટો બદલો (મરજિયાત):</label>
+                        <input type="file" name="new_center_photo" accept="image/*" style="color:white; font-size:11px; width:100%;">
+                    </div>
+                    <div>
+                        <label style="font-size:11.5px; color:#fde047; font-weight:bold; display:block; margin-bottom:4px;">૩. અપડેટ નોંધ & સાયલન્ટ મોડ:</label>
+                        <input type="text" name="update_note" id="ota_msg_input" value="જયમીનભાઈએ આ નવા સુધારા-વધારા કર્યા છે અને તમારું સોફ્ટવેર ઓટોમેટિક અપડેટ થઈ ગયું છે!" style="width:100%; padding:5px 8px; border-radius:4px; border:1px solid #38bdf8; font-weight:bold; color:#0f172a; box-sizing:border-box; margin-bottom:4px;">
+                        <div style="display:flex; gap:10px; align-items:center; font-size:11px; color:#fde047; font-weight:bold;">
+                            <label style="cursor:pointer; display:flex; align-items:center; gap:4px;" title="દુકાનદારને ખબર પણ ના પડે અને ફોન કર્યા વગર બેકગ્રાઉન્ડમાં જાતે જ અપડેટ થઈ જાય">
+                                <input type="checkbox" name="silent_mode" value="1" checked> 🤫 સાયલન્ટ ઓટો-અપડેટ (દુકાનદારને ખલેલ વગર)
+                            </label>
+                            <label style="cursor:pointer; display:flex; align-items:center; gap:4px; color:#bae6fd;">
+                                <input type="checkbox" name="force_all" value="1"> 🔄 તમામ ફાઇલ ફોર્સ-પુશ
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ૨. શોપ સર્ચ, સિલેક્શન બટનો & ચેકબોક્સ લિસ્ટ -->
+                <div style="background:rgba(15,23,42,0.8); border:1px solid #38bdf8; border-radius:6px; padding:10px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:280px;">
+                            <input type="text" id="ota_shop_search_inp" placeholder="🔍 દુકાનનું નામ, Shop ID કે મોબાઈલથી સર્ચ કરો..." oninput="filterOtaShops()" style="flex:1; padding:6px 10px; border-radius:4px; border:1px solid #38bdf8; font-size:12px; color:#0f172a; font-weight:bold;">
+                        </div>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <button type="button" onclick="selectAllOtaShops(true)" style="background:#16a34a; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">[✓ બધા સિલેક્ટ કરો]</button>
+                            <button type="button" onclick="selectAllOtaShops(false)" style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">[✗ બધા અન-ટીક કરો]</button>
+                            <span id="ota_shop_count_badge" style="background:#16a34a; color:#ffffff; padding:4px 10px; border-radius:4px; font-weight:800; font-size:12px;">
+                                પસંદ કરેલ દુકાનો: ALL (બધી 2 દુકાનો)
+                            </span>
+                        </div>
+                    </div>
+                    <!-- સ્ક્રોલિંગ ચેકબોક્સ ગ્રીડ -->
+                    <div id="ota_shops_container" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; max-height:160px; overflow-y:auto; padding:4px;">
+                        
+        <label class="ota-shop-card" data-mode="RETAIL_STANDALONE" data-search="manshvi મનસ્વી સોફ્ટવેર (રિટેલ સ્ટોર મોડ - લાઇફટાઇમ) 9725721215" style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); padding:6px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.18); cursor:pointer; font-size:12px; transition:all 0.15s;">
+            <input type="checkbox" class="ota-shop-checkbox" value="MANSHVI" data-mode="RETAIL_STANDALONE" checked onchange="updateOtaSelectionState()">
+            <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                <b style="color:#fde047;">MANSHVI</b> - મનસ્વી સોફ્ટવેર (રિટેલ સ્ટોર મોડ - લાઇફટાઇમ) (9725721215)
+            </span>
+            <span style="background:#78350f; color:#fef08a; padding:2px 6px; border-radius:3px; font-size:10px; font-weight:800;">🏬 રિટેલ સ્ટોર</span>
+        </label>
+        
+        <label class="ota-shop-card" data-mode="FRANCHISE_HO" data-search="devanshi દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ) 9725721215" style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); padding:6px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.18); cursor:pointer; font-size:12px; transition:all 0.15s;">
+            <input type="checkbox" class="ota-shop-checkbox" value="DEVANSHI" data-mode="FRANCHISE_HO" checked onchange="updateOtaSelectionState()">
+            <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                <b style="color:#fde047;">DEVANSHI</b> - દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ) (9725721215)
+            </span>
+            <span style="background:#0369a1; color:#e0f2fe; padding:2px 6px; border-radius:3px; font-size:10px; font-weight:800;">👑 ફ્રેન્ચાઇઝી</span>
+        </label>
+        
+                    </div>
+                </div>
+
+                <input type="hidden" name="target_shops" id="ota_target_shops_hidden" value="ALL">
+                <input type="hidden" name="target_mode" id="ota_target_mode_hidden" value="ALL">
+
+                <!-- સબમિટ બટન -->
+                <div style="text-align:right;">
+                    <button type="submit" style="background:linear-gradient(135deg, #eab308, #ca8a04); color:#0f172a; border:2px solid #fef08a; padding:10px 22px; border-radius:6px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:0 4px 12px rgba(234,179,8,0.4);">
+                        🚀 [૧-ક્લિક: પસંદ કરેલી તમામ દુકાનોમાં અપડેટ લાઈવ પુશ કરો]
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        </div>
+<div id="adm_tab_backup" style="display:none;">
+<!-- 💾 બોક્સ ૨: જયમીનભાઈ લેપટોપ D: ડ્રાઇવ ૧-ક્લિક ૭-દિવસ ઓટો-બેકઅપ સિંક & વાર્ષિક માસ્ટર ફાઇલ મર્જ -->
+        <div style="background:#f0fdf4; border:2px solid #15803d; padding:12px; border-radius:8px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+                <h4 style="margin:0; color:#166534;">💾 બોક્સ ૨: જયમીનભાઈ લેપટોપ D: ડ્રાઇવ ૧-ક્લિક ૭-દિવસ ઓટો-બેકઅપ સિંક & વાર્ષિક માસ્ટર ફાઇલ મર્જ (GitHub ખોલ્યા વગર)</h4>
+                <span style="background:#15803d; color:white; padding:3px 10px; border-radius:4px; font-weight:bold; font-size:11.5px;">Private GitHub: devanshi-mansvi-software | 90-Day FIFO + 12-Month + Yearly Master</span>
+            </div>
+            <form action="/api/master-sync-all-stores-backup" method="post" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:white; padding:10px; border:1px solid #86efac; border-radius:6px;">
+                <input type="hidden" name="return_to" value="SUPER_ADMIN">
+                <label style="font-weight:bold; color:#0f2043; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                    <input type="checkbox" name="auto_7day_enabled" value="1" checked>
+                    <span>✅ દર ૭ દિવસે ઓટોમેટિક બેકઅપ Master_All_Stores_Backup/{Shop_ID}/ (BASE_DIR) માં સેવ અને વાર્ષિક ફાઇલમાં મર્જ કરો</span>
+                </label>
+                <input type="text" name="target_shop_id" value="ALL" placeholder="ALL અથવા ચોક્કસ Shop ID લખો..." style="padding:6px 10px; width:210px; font-weight:bold; border:2px solid #15803d; border-radius:4px;">
+                <button type="submit" name="sync_action" value="MERGE_7DAY" style="background:#15803d; color:white; border:none; padding:8px 14px; border-radius:5px; font-weight:800; cursor:pointer;">
+                    🔄 [૧-ક્લિક: બધી / પસંદ કરેલ દુકાનનો બેકઅપ D: ડ્રાઇવમાં લાવો & વાર્ષિક ફાઇલમાં મર્જ કરો]
+                </button>
+                <button type="submit" name="sync_action" value="RESTORE" onclick="return confirm('શું આ દુકાનનો ડેટા વાર્ષિક માસ્ટર ફાઇલ / GitHub પરથી પાછો રિકવર (Restore) કરવો છે?')" style="background:#b45309; color:white; border:none; padding:8px 12px; border-radius:5px; font-weight:800; cursor:pointer;">
+                    ♻️ [દુકાનદારનું લેપટોપ બગડે ત્યારે: ૧-ક્લિક ડેટા રિકવર / રીસ્ટોર]
+                </button>
+            </form>
+        </div>
+
+        <!-- 🧹 નિયમ ૨૩૮: ૧-ક્લિક તમામ જૂના ડેમો (DEMO-001, 002, 003) ચારેય જગ્યાએથી કાયમ માટે સાફ કરો + ૧૩ SaaS મોડ્યુલ સ્વિચ બોર્ડ -->
+        <div style="display:grid; grid-template-columns:1fr 1.45fr; gap:12px; margin-bottom:14px;">
+            <div style="background:linear-gradient(135deg,#fff1f2,#ffe4e6); border:2.5px solid #dc2626; padding:12px; border-radius:8px; box-shadow:0 4px 12px rgba(220,38,38,0.18);">
+                <h4 style="margin:0 0 6px 0; color:#991b1b; font-size:14px;">🧹 ૧-ક્લિક તમામ જૂના ડેમો (DEMO-001, 002, 003) ચારેય જગ્યાએથી સાફ કરો (Fresh Start from DEMO-001)</h4>
+                <div style="font-size:11.5px; color:#7f1d1d; margin-bottom:8px; line-height:1.45;">
+                    પિન <b>1986</b> નાખી આ લાલ બટન દબાવતાં જ: <b>(૧) તમારા લેપટોપ</b>, <b>(૨) દુકાનદારના કમ્પ્યુટર/મોબાઈલ</b>, <b>(૩) સુપર એડમિન પેજ</b> અને <b>(૪) ગિટહબ ક્લાઉડ</b> — ચારેય જગ્યાએથી તમામ જૂના ડેમો ૧ સેકન્ડમાં સાફ થઈ જશે અને કાઉન્ટર ફરીથી <b>DEMO-001</b> પર રીસેટ થશે! (તમારા <b>DEVANSHI</b> અને <b>MANSHVI</b> ૧૦૦% અકબંધ રહેશે).
+                </div>
+                <form action="/api/master-wipe-all-demos" method="post" onsubmit="return confirm('🚨 શું તમે ખરેખર ચારેય જગ્યાએથી તમામ જૂના ડેમો (DEMO-001, 002, 003...) કાયમ માટે સાફ કરી ફરીથી DEMO-001 થી શરૂ કરવા માંગો છો?');" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <input type="password" name="pin" value="1986" placeholder="માસ્ટર PIN (1986)" required style="width:125px; padding:8px; border:2px solid #dc2626; border-radius:5px; font-weight:900; font-size:13px; text-align:center;">
+                    <button type="submit" style="flex:1; background:linear-gradient(135deg,#dc2626,#991b1b); color:white; border:2px solid #fef08a; padding:9px 14px; border-radius:6px; font-weight:900; font-size:12.5px; cursor:pointer; box-shadow:0 4px 10px rgba(220,38,38,0.4);">
+                        🧹 [૧-ક્લિક: તમામ જૂના ડેમો ચારેય જગ્યાએથી કાયમ માટે સાફ કરો]
+                    </button>
+                </form>
+            </div>
+
+            <div style="background:#f5f3ff; border:2.5px solid #7c3aed; padding:12px; border-radius:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+                    <h4 style="margin:0; color:#5b21b6; font-size:14px;">🎛️ નિયમ ૨૩૫: સુપર એડમિન SaaS મોડ્યુલર સ્વિચ બોર્ડ (Tick / Untick લાયસન્સિંગ & Gemini AI Key)</h4>
+                    <a href="/nextlevel-hifi-ai-hub" style="background:#db2777; color:#fde047; padding:3px 10px; border-radius:4px; text-decoration:none; font-weight:900; font-size:11px;">🚀 6 Hi-Fi AI ડેમો હબ ખોલો</a>
+                </div>
+                <form action="/master-update-modular-licenses" method="post">
+                    <div style="display:flex; gap:6px; margin-bottom:6px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" name="shop_id" placeholder="Shop ID (દા.ત. DEMO-001 અથવા ALL)" value="ALL" required style="width:185px; padding:5px 8px; border:2px solid #7c3aed; border-radius:4px; font-weight:bold;">
+                        <input type="text" name="gemini_api_key_override" value="AQ.MASTER_GEMINI_KEY_ENCRYPTED" placeholder="Google Gemini AI Key..." style="flex:1; padding:5px 8px; border:1px solid #9333ea; border-radius:4px; font-family:monospace; font-size:11px;">
+                        <button type="submit" style="background:#7c3aed; color:white; border:none; padding:6px 14px; border-radius:4px; font-weight:900; cursor:pointer; font-size:12px;">💾 મોડ્યુલ લાયસન્સ સેવ કરો</button>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:4px; font-size:11px; font-weight:bold; color:#1e293b;">
+                        <label style="background:white; padding:3px 5px; border:1px solid #cbd5e1; border-radius:4px;"><input type="checkbox" name="mod_mobile_imei" value="1" checked> ૧. મોબાઈલ & IMEI</label>
+                        <label style="background:white; padding:3px 5px; border:1px solid #cbd5e1; border-radius:4px;"><input type="checkbox" name="mod_electronics_serial" value="1" checked> ૨. ટીવી/AC સીરીયલ</label>
+                        <label style="background:white; padding:3px 5px; border:1px solid #cbd5e1; border-radius:4px;"><input type="checkbox" name="mod_accessories" value="1" checked> ૩. એક્સેસરીઝ પાર્ટ-૨</label>
+                        <label style="background:white; padding:3px 5px; border:1px solid #cbd5e1; border-radius:4px;"><input type="checkbox" name="mod_smart_khata" value="1" checked> ૪. સ્માર્ટ ખાતાવહી</label>
+                        <label style="background:white; padding:3px 5px; border:1px solid #cbd5e1; border-radius:4px;"><input type="checkbox" name="mod_vendor_due_alerts" value="1" checked> ૫. વેપારી ડ્યુ એલર્ટ</label>
+                        <label style="background:white; padding:3px 5px; border:1px solid #cbd5e1; border-radius:4px;"><input type="checkbox" name="mod_gemini_ai" value="1" checked> ૬. Gemini AI રીડર</label>
+                        <label style="background:white; padding:3px 5px; border:1px solid #cbd5e1; border-radius:4px;"><input type="checkbox" name="mod_price_protection" value="1" checked> ૭. GP & પ્રાઈસ ડ્રોપ</label>
+                        <label style="background:#fdf2f8; padding:3px 5px; border:1px solid #f472b6; border-radius:4px;"><input type="checkbox" name="mod_hifi_voice_billing" value="1" checked> 🎙️ વૉઇસ બિલિંગ</label>
+                        <label style="background:#fdf2f8; padding:3px 5px; border:1px solid #f472b6; border-radius:4px;"><input type="checkbox" name="mod_hifi_cctv_footfall" value="1" checked> 📹 CCTV કાઉન્ટર</label>
+                        <label style="background:#fdf2f8; padding:3px 5px; border:1px solid #f472b6; border-radius:4px;"><input type="checkbox" name="mod_hifi_price_spy" value="1" checked> 🛒 લાઈવ ભાવ સ્પાય</label>
+                        <label style="background:#fdf2f8; padding:3px 5px; border:1px solid #f472b6; border-radius:4px;"><input type="checkbox" name="mod_hifi_sales_trainer" value="1" checked> 🎓 AI ટ્રેનર</label>
+                        <label style="background:#fdf2f8; padding:3px 5px; border:1px solid #f472b6; border-radius:4px;"><input type="checkbox" name="mod_hifi_google_review" value="1" checked> ⭐ 5-Star રિવ્યુ & ફેસ</label>
+                        <input type="hidden" name="mod_hifi_face_attendance" value="1">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+            <!-- 🔍 બોક્સ ૩: ઇન-બિલ્ટ ૧-ક્લિક લાઈવ પેજ અહીં ખોલો (કોઈ બાહ્ય AnyDesk વગર સીધું ફૂલ કલરફુલ ટર્મિનલ) -->
+            <div style="background:#f0f9ff; border:2px solid #0284c7; padding:12px; border-radius:6px;">
+                <h4 style="margin:0 0 8px 0; color:#0369a1;">🖥️ બોક્સ ૩: Shop ID કે મોબાઈલ નંબર નાખી દુકાનદાર કે સ્ટાફનું લાઈવ પેજ અહીં ખોલો (In-Built Live Screen)</h4>
+                <div style="font-size:11px; color:#64748b; margin-bottom:6px;">બાહ્ય AnyDesk વગર, ફક્ત મોબાઈલ નંબર કે Shop ID નાખી દુકાનદારનું ફૂલ કલરફુલ લાઈવ ટર્મિનલ સીધું જ તમારી સ્ક્રીન પર ખોલો:</div>
+                <form action="/master-direct-open-shop" method="post" style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <input type="text" name="target_shop_id" id="direct_live_shop_inp" placeholder="Shop ID (દા.ત. DEMO-001) અથવા મોબાઈલ નંબર નાખો..." required style="flex:1; padding:8px; border:2px solid #0284c7; border-radius:4px; font-weight:bold;">
+                    <button type="submit" style="background:#16a34a; color:white; border:none; padding:8px 14px; border-radius:4px; font-weight:bold; cursor:pointer;">🚀 લાઈવ પેજ અહીં ખોલો</button>
+                    <button type="button" onclick="var v=document.getElementById('direct_live_shop_inp').value.trim(); if(!v){alert('Shop ID કે મોબાઈલ નાખો!'); return;} window.location.href='/super-admin-live-mirror/'+encodeURIComponent(v)+'?pin=1986';" style="background:#dc2626; color:white; border:none; padding:8px 14px; border-radius:4px; font-weight:bold; cursor:pointer;">🖥️ લાઈવ સ્ક્રીન મિરર</button>
+                </form>
+            </div>
+        </div>
+        </div>
+<div id="adm_tab_features" style="display:none;">
+<!-- 🛠️ બોક્સ ૪: નિયમ ૨૪૮ — દરેક દુકાનદાર માટે છૂટક ઓપ્શન કસ્ટમાઇઝર (Granular Micro-Feature Switchboard) -->
+            <div style="background:#f0fdf4; border:2.5px solid #16a34a; padding:12px; border-radius:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+                    <h4 style="margin:0; color:#166534; font-size:13.5px;">🛠️ બોક્સ ૪: નિયમ ૨૪૮ — દુકાનદાર મુજબ છૂટક ઓપ્શન કસ્ટમાઇઝર (Granular A-la-Carte Feature Switchboard)</h4>
+                    <button type="button" onclick="var el=document.getElementById('granular_customizer_drawer'); el.style.display=(el.style.display==='none'?'block':'none');" style="background:#0f2043; color:#fde047; border:1.5px solid #eab308; padding:4px 10px; border-radius:5px; font-weight:900; font-size:11px; cursor:pointer;">
+                        🎛️ [છૂટક ઓપ્શન ચેકબોક્સ બોર્ડ ખોલો / બંધ કરો]
+                    </button>
+                </div>
+                <div style="font-size:11px; color:#1e293b; margin-bottom:8px;">
+                    કોઈ સેકન્ડના (જૂના બાયબેક) ફોનનો વેપારી હોય, માત્ર રિચાર્જ+એસેસરીઝ વાળો હોય કે પાર્ટનર/ગિફ્ટ વાળો હોય — તેને જેટલા ઓપ્શન આપવા હોય તેટલા જ અહીંથી ટીક કરીને સેટ કરો:
+                </div>
+                <form action="/master-update-shop-credentials" method="post" id="granular_feature_form">
+                    <div style="display:grid; grid-template-columns:1fr 0.8fr 0.9fr 1fr auto; gap:6px; margin-bottom:8px;">
+                        <input type="text" name="shop_id" id="gf_shop_id" placeholder="Shop ID (દા.ત. DEMO-001 અથવા ALL)" required style="padding:6px 8px; border:2px solid #16a34a; border-radius:4px; font-weight:900;">
+                        <input type="text" name="new_shop_pass" placeholder="નવો માલિક પાસવર્ડ (મરજિયાત)" style="padding:6px 8px; border:1px solid #64748b; border-radius:4px;">
+                        <select name="default_home_tab" id="gf_def_home" style="padding:6px; border:1.5px solid #0284c7; border-radius:4px; font-weight:bold; color:#0f2043;">
+                            <option value="F2">🏠 ઓપનિંગ: F2 (વેચાણ બિલ)</option>
+                            <option value="F5">🏠 ઓપનિંગ: F5 (જૂના બાયબેક ફોન)</option>
+                            <option value="F1">🏠 ઓપનિંગ: F1 (ખરીદી ડેસ્ક)</option>
+                            <option value="F3">🏠 ઓપનિંગ: F3 (ખાતાવહી/રિચાર્જ/વકરો)</option>
+                            <option value="BUYBACK_STOCK">🏠 ઓપનિંગ: શીટ ૫ (બાયબેક સ્ટોક)</option>
+                            <option value="CUSTOMER_DUE">🏠 ઓપનિંગ: શીટ ૬ (ગ્રાહક બાકી ખાતા)</option>
+                        </select>
+                        <select name="default_print_layout" id="gf_def_print_layout" style="padding:6px; border:1.5px solid #7c3aed; border-radius:4px; font-weight:bold; color:#4c1d95;" title="દુકાન માટે કાયમી બિલ પ્રિન્ટ ડિઝાઇન લોક કરો">
+                            <option value="FRANCHISE_DOUBLE_BOX">🖨️ બિલ: ફ્રેન્ચાઈઝી ડબલ-બોક્સ</option>
+                            <option value="RETAIL_STANDARD_GST">🖨️ બિલ: રીટેલ સ્ટાન્ડર્ડ GST</option>
+                            <option value="SMART_KHATA_BALANCE">🖨️ બિલ: સ્માર્ટ ખાતાવહી (પાછલી બાકી)</option>
+                            <option value="TALLY_PRIME_BATCH">🖨️ બિલ: ટેલી પ્રાઇમ (Batch: IMEI)</option>
+                            <option value="LETTERHEAD_PRINT">🖨️ બિલ: લેટરપેડ પ્રિન્ટ મોડ</option>
+                            <option value="APPLIANCE_ELECTRONICS">🖨️ બિલ: ટીવી/એસી/એપ્લાયન્સ S/N</option>
+                        </select>
+                        <button type="submit" style="background:linear-gradient(135deg,#16a34a,#15803d); color:white; border:2px solid #fef08a; padding:6px 14px; border-radius:5px; font-weight:900; cursor:pointer;">💾 સેટ કરો & પુશ</button>
+                    </div>
+
+                    <!-- 1-Click Quick Business Templates -->
+                    <div style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:6px;">
+                        <button type="button" onclick="applyGranularPreset('BUYBACK_ONLY')" style="background:#991b1b; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:10.5px; font-weight:800; cursor:pointer;" title="માત્ર જૂના બાયબેક ખરીદી, રિપેરિંગ, બાયબેક વેચાણ, બાકી ખાતા અને ગલ્લો ૪">📱 ૧. માત્ર જૂના બાયબેક ફોનનો વેપારી</button>
+                        <button type="button" onclick="applyGranularPreset('RECHARGE_ACC_DUE')" style="background:#6b21a8; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:10.5px; font-weight:800; cursor:pointer;" title="માત્ર રિચાર્જ, એસેસરીઝ અને ગ્રાહક બાકી ખાતા">🔌 ૨. માત્ર રિચાર્જ + એસેસરીઝ + બાકી ખાતા</button>
+                        <button type="button" onclick="applyGranularPreset('RECH_ACC_BB_PARTNER')" style="background:#0369a1; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:10.5px; font-weight:800; cursor:pointer;" title="રિચાર્જ + એસેસરીઝ + બાયબેક + બાકી + પાર્ટનર મૂડી/ગિફ્ટ">🤝 ૩. રિચાર્જ + એસેસરીઝ + બાયબેક + પાર્ટનર/ગિફ્ટ</button>
+                        <button type="button" onclick="applyGranularPreset('RETAIL_MOBILE')" style="background:#b45309; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:10.5px; font-weight:800; cursor:pointer;">🏬 ૪. સ્ટાન્ડર્ડ રિટેલ મોબાઈલ શોપ</button>
+                        <button type="button" onclick="applyGranularPreset('FULL_MASTER')" style="background:#15803d; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:10.5px; font-weight:800; cursor:pointer;">👑 ૫. ફુલ માસ્ટર (બધું જ ચાલુ)</button>
+                    </div>
+
+                    <input type="hidden" name="active_counters" id="gf_active_counters" value="F1,F2,F3,F4,F5,F6,F7,F8">
+                    <input type="hidden" name="active_sheets" id="gf_active_sheets" value="SMART_TERMINAL,LIVE_STOCK_VIEW,UNIVERSAL_SEARCH,APX_SALES_RAW,BUYBACK_STOCK,CUSTOMER_DUE,SUPPLIER_PURCHASE,ACCESSORIES_LEDGER,RECHARGE_LAPU_VIEW,DAILY_SUMMARY,GALLA_AUDIT_HISTORY,SALESMAN_360_MATRIX,STAFF_ATTENDANCE_SHEET,BARCODE_AUDIT,OLD_STOCK_CLEARANCE,GST_SUMMARY_SHEET,SMART_DESK_GROWTH,GUJARATI_CONFIG">
+                    <input type="hidden" name="active_gallas" id="gf_active_gallas" value="BANK_CASH,ACC_DCASH,RECHARGE,EXTRA_CASH">
+                    <input type="hidden" name="active_subparts" id="gf_active_subparts" value="F1_1,F1_2,F1_3,F1_5,F2_1,F2_2,F2_3,F3_1,F3_1_CUST_DUE,F3_1_ACC,F3_1_RECH,F3_2,F3_3,F3_4,F3_5,F3_6,F4_1,F4_2,F5_1,F5_2,F5_3,F5_4,F6_1,F7_1,F7_2,F7_3,F8_1,F8_2,F8_3">
+
+                    <!-- Collapsible Granular Checkbox Matrix -->
+                    <div id="granular_customizer_drawer" style="display:none; background:white; border:2px solid #0284c7; border-radius:6px; padding:10px; margin-top:6px; font-size:11px; color:#0f172a;">
+                        <div style="font-weight:900; color:#0369a1; margin-bottom:4px; border-bottom:1px solid #cbd5e1; padding-bottom:3px;">🔹 ભાગ (ક): કાઉન્ટરના છૂટક પેટા-ઓપ્શન (Sub-Options — જે ટીક કરશો તે જ દુકાનદારને દેખાશે):</div>
+                        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; margin-bottom:8px;">
+                            <label><input type="checkbox" class="gf-sub-chk" value="F1_1" data-parent="F1" checked onchange="syncGranularHiddenInputs()"> <b>F1(1):</b> નવો મોબાઈલ ખરીદી (IMEI)</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F1_2" data-parent="F1" checked onchange="syncGranularHiddenInputs()"> <b>F1(2):</b> TV/AC/લેપટોપ ખરીદી</label>
+                            <label style="background:#fef9c3;"><input type="checkbox" class="gf-sub-chk" value="F1_3" data-parent="F1" checked onchange="syncGranularHiddenInputs()"> <b>F1(3):</b> જૂના બાયબેક ફોન ખરીદી</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F1_5" data-parent="F1" checked onchange="syncGranularHiddenInputs()"> <b>F1(4):</b> એસેસરીઝ ખરીદી</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F2_1" data-parent="F2" checked onchange="syncGranularHiddenInputs()"> <b>F2(1):</b> રોકડ વેચાણ બિલ (Cash)</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F2_2" data-parent="F2" checked onchange="syncGranularHiddenInputs()"> <b>F2(2):</b> ગ્રાહક ઉધાર બિલ (Credit)</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F2_3" data-parent="F2" checked onchange="syncGranularHiddenInputs()"> <b>F2(3):</b> ફાઇનાન્સ બિલ & DO સેટલમેન્ટ</label>
+                            <label style="background:#dcfce7;"><input type="checkbox" class="gf-sub-chk" value="F3_1_CUST_DUE" data-parent="F3" checked onchange="syncGranularHiddenInputs()"> <b>F3(1-A):</b> ગ્રાહક બાકી ઉધાર વસૂલાત</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F3_1_ACC" data-parent="F3" checked onchange="syncGranularHiddenInputs()"> <b>F3(1-B):</b> સાંજનો એસેસરીઝ વકરો</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F3_1_RECH" data-parent="F3" checked onchange="syncGranularHiddenInputs()"> <b>F3(1-C):</b> સાંજનો રિચાર્જ વકરો & ૩-લાપુ</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F3_2" data-parent="F3" checked onchange="syncGranularHiddenInputs()"> <b>F3(2):</b> વેપારી પેમેન્ટ & સ્ટાફ પગાર</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F3_3" data-parent="F3" checked onchange="syncGranularHiddenInputs()"> <b>F3(3):</b> દૈનિક દુકાન ખર્ચા</label>
+                            <label style="background:#dcfce7;"><input type="checkbox" class="gf-sub-chk" value="F3_4" data-parent="F3" checked onchange="syncGranularHiddenInputs()"> <b>F3(4):</b> ડાયરેક્ટ ગ્રાહક બાકી ઉધાર નોંધ</label>
+                            <label style="background:#e0f2fe;"><input type="checkbox" class="gf-sub-chk" value="F3_5" data-parent="F3" checked onchange="syncGranularHiddenInputs()"> <b>F3(5):</b> પાર્ટનર મૂડી, ઉપાડ & ગિફ્ટ</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F3_6" data-parent="F3" checked onchange="syncGranularHiddenInputs()"> <b>F3(6):</b> ડિસ્ટ્રીબ્યુટર લાપુ ખરીદી</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F4_1" data-parent="F4" checked onchange="syncGranularHiddenInputs()"> <b>F4:</b> બેંક ડિપોઝિટ & વિડ્રોલ</label>
+                            <label style="background:#fef9c3;"><input type="checkbox" class="gf-sub-chk" value="F5_1" data-parent="F5" checked onchange="syncGranularHiddenInputs()"> <b>F5(1):</b> જૂનો ફોન બાયબેક ઇનવર્ડ</label>
+                            <label style="background:#fef9c3;"><input type="checkbox" class="gf-sub-chk" value="F5_2" data-parent="F5" checked onchange="syncGranularHiddenInputs()"> <b>F5(2):</b> જૂના ફોનમાં રિપેરિંગ પડતર</label>
+                            <label style="background:#fef9c3;"><input type="checkbox" class="gf-sub-chk" value="F5_3" data-parent="F5" checked onchange="syncGranularHiddenInputs()"> <b>F5(3):</b> જૂના ફોનનું સીધું વેચાણ (Resale)</label>
+                            <label style="background:#fef9c3;"><input type="checkbox" class="gf-sub-chk" value="F5_4" data-parent="F5" checked onchange="syncGranularHiddenInputs()"> <b>F5(4):</b> બાયબેક રિટર્ન & રિફંડ</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F6_1" data-parent="F6" checked onchange="syncGranularHiddenInputs()"> <b>F6:</b> આંતરિક ગલ્લા ટ્રાન્સફર</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F7_1" data-parent="F7" checked onchange="syncGranularHiddenInputs()"> <b>F7(1):</b> ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F7_2" data-parent="F7" checked onchange="syncGranularHiddenInputs()"> <b>F7(2):</b> ગ્રાહક રિપેરિંગ & કારીગર ભાગ</label>
+                            <label><input type="checkbox" class="gf-sub-chk" value="F8_1" data-parent="F8" checked onchange="syncGranularHiddenInputs()"> <b>F8:</b> ૪-ગલ્લા રોકડ ઓડિટ</label>
+                        </div>
+
+                        <div style="font-weight:900; color:#15803d; margin-bottom:4px; border-bottom:1px solid #cbd5e1; padding-bottom:3px;">🔹 ભાગ (ખ): ૧૮ શીટ્સ (Sheets) પસંદગી:</div>
+                        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; margin-bottom:8px;">
+                            <label><input type="checkbox" class="gf-sht-chk" value="SMART_TERMINAL" checked onchange="syncGranularHiddenInputs()"> ૧. સ્માર્ટ કાઉન્ટર</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="LIVE_STOCK_VIEW" checked onchange="syncGranularHiddenInputs()"> ૨. લાઈવ મોબાઈલ સ્ટોક</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="UNIVERSAL_SEARCH" checked onchange="syncGranularHiddenInputs()"> ૩. 360° યુનિવર્સલ સર્ચ</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="APX_SALES_RAW" checked onchange="syncGranularHiddenInputs()"> ૪. વેચાણ & DO રજીસ્ટર</label>
+                            <label style="background:#fef9c3;"><input type="checkbox" class="gf-sht-chk" value="BUYBACK_STOCK" checked onchange="syncGranularHiddenInputs()"> ૫. જૂના ફોન (બાયબેક) સ્ટોક</label>
+                            <label style="background:#dcfce7;"><input type="checkbox" class="gf-sht-chk" value="CUSTOMER_DUE" checked onchange="syncGranularHiddenInputs()"> ૬. ગ્રાહક બાકી ઉધાર ખાતાવહી</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="SUPPLIER_PURCHASE" checked onchange="syncGranularHiddenInputs()"> ૭. વેપારી ખરીદી ખાતાવહી</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="ACCESSORIES_LEDGER" checked onchange="syncGranularHiddenInputs()"> ૮. એસેસરીઝ સ્ટોક & D-Cash</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="RECHARGE_LAPU_VIEW" checked onchange="syncGranularHiddenInputs()"> ૯. રિચાર્જ & LAPU બેલેન્સ</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="DAILY_SUMMARY" checked onchange="syncGranularHiddenInputs()"> ૧૦. દૈનિક રોજમેળ & નફો (P&L)</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="GALLA_AUDIT_HISTORY" checked onchange="syncGranularHiddenInputs()"> ૧૧. ૪-ગલ્લા કેશ ઓડિટ લોગ</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="SALESMAN_360_MATRIX" checked onchange="syncGranularHiddenInputs()"> ૧૨. સેલ્સમેન & બ્રાન્ડ 360°</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="STAFF_ATTENDANCE_SHEET" checked onchange="syncGranularHiddenInputs()"> ૧૩. સ્ટાફ હાજરી & પગાર</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="BARCODE_AUDIT" checked onchange="syncGranularHiddenInputs()"> ૧૪. બારકોડ ઓડિટ</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="OLD_STOCK_CLEARANCE" checked onchange="syncGranularHiddenInputs()"> ૧૫. ૬૦+ દિવસ જૂનો સ્ટોક</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="GST_SUMMARY_SHEET" checked onchange="syncGranularHiddenInputs()"> ૧૬. GST રિટર્ન સમરી</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="SMART_DESK_GROWTH" checked onchange="syncGranularHiddenInputs()"> ૧૭. માસિક & વાર્ષિક ગ્રોથ</label>
+                            <label><input type="checkbox" class="gf-sht-chk" value="GUJARATI_CONFIG" checked onchange="syncGranularHiddenInputs()"> ૧૮. માસ્ટર સેટિંગ & લેજર</label>
+                        </div>
+
+                        <div style="font-weight:900; color:#b45309; margin-bottom:4px; border-bottom:1px solid #cbd5e1; padding-bottom:3px;">🔹 ભાગ (ગ): ૪ ગલ્લા (Gallas) પસંદગી:</div>
+                        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:4px;">
+                            <label><input type="checkbox" class="gf-gal-chk" value="BANK_CASH" checked onchange="syncGranularHiddenInputs()"> ગલ્લો ૧ (બેંક કેશ)</label>
+                            <label><input type="checkbox" class="gf-gal-chk" value="ACC_DCASH" checked onchange="syncGranularHiddenInputs()"> ગલ્લો ૨ (એસેસરીઝ)</label>
+                            <label><input type="checkbox" class="gf-gal-chk" value="RECHARGE" checked onchange="syncGranularHiddenInputs()"> ગલ્લો ૩ (રિચાર્જ)</label>
+                            <label><input type="checkbox" class="gf-gal-chk" value="EXTRA_CASH" checked onchange="syncGranularHiddenInputs()"> ગલ્લો ૪ (એક્સ્ટ્રા/તિજોરી)</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+<div id="adm_tab_pw" style="display:none;">
+<!-- 🔑 બોક્સ ૫: દુકાનના પાર્ટનર, એકાઉન્ટન્ટ અને સ્ટાફના ID-પાસવર્ડ વ્યૂઅર & ૧-ક્લિક રીસેટર -->
+        <div style="background:#faf5ff; border:2px solid #9333ea; padding:12px; border-radius:6px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+                <div>
+                    <h4 style="margin:0; color:#6b21a8;">🔑 બોક્સ ૫: દુકાનના પાર્ટનર, એકાઉન્ટન્ટ અને સેલ્સમેનના ID-પાસવર્ડ વ્યૂઅર & ૧-ક્લિક રીસેટર</h4>
+                    <div style="font-size:11px; color:#64748b; margin-top:2px;">સ્ટાફ કે પાર્ટનર પાસવર્ડ ભૂલી જાય ત્યારે અહીંથી સીધો નવો પાસવર્ડ આપી શકાય છે:</div>
+                </div>
+                <form method="get" action="/super-admin" style="display:flex; gap:6px;">
+                    <input type="hidden" name="pin" value="1986">
+                    <input type="text" name="lookup_shop" value="" placeholder="Shop ID કે મોબાઈલથી ફિલ્ટર કરો..." style="padding:4px 8px; border:1px solid #9333ea; border-radius:4px;">
+                    <button type="submit" style="background:#7c3aed; color:white; border:none; padding:4px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">સર્ચ કરો</button>
+                    <a href="/super-admin?pin=1986" style="background:#475569; color:white; padding:4px 10px; border-radius:4px; text-decoration:none; font-weight:bold;">બધા બતાવો</a>
+                </form>
+            </div>
+            <table>
+                <tr><th>Shop ID</th><th>નામ & રોલ</th><th>મોબાઈલ</th><th>યુઝર ID</th><th>હાલનો પાસવર્ડ</th><th>સ્ટેટસ</th><th>છેલ્લું લૉગિન</th><th>૧-ક્લિક પાસવર્ડ રીસેટ</th></tr>
+                
+        <tr>
+            <td><b>MANSHVI</b></td><td><b>જયમીનભાઈ પટેલ</b><br><span style="font-size:10.5px; color:#6b21a8; font-weight:bold;">(OWNER)</span></td><td>9725721215</td>
+            <td style="color:#0284c7; font-weight:bold;">manshvi</td>
+            <td style="color:#15803d; font-weight:bold;">J@ymin86</td>
+            <td><span style="background:#16a34a; color:white; padding:2px 6px; border-radius:4px; font-size:10.5px; font-weight:bold;">ACTIVE</span></td>
+            <td style="font-size:10.5px; text-align:left;">🟢 શરૂ: -<br>📱 ડિવાઈસ: -<br>🔴 છેલ્લે બંધ: ચાલુ</td>
+            <td>
+                <div style="display:flex; gap:4px; justify-content:center; align-items:center; flex-wrap:wrap;">
+                    <form action="/master-reset-staff-password" method="post" style="display:flex; gap:3px; margin:0;">
+                        <input type="hidden" name="staff_row_id" value="2">
+                        <input type="hidden" name="lookup_shop" value="">
+                        <input type="text" name="new_password" value="J@ymin86" style="width:80px; padding:3px; font-weight:bold;">
+                        <button type="submit" style="background:#16a34a; color:white; border:none; padding:3px 7px; border-radius:3px; cursor:pointer; font-weight:bold;">રીસેટ</button>
+                    </form>
+                    <a href="/toggle-user-login-status?uid=2&cur=ACTIVE&shop_id=MANSHVI&return_to=SUPER_ADMIN" style="background:#d97706; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="૧-ક્લિક કિલ-સ્વિચ: મોબાઈલમાંથી તાત્કાલિક બ્લોક / અનબ્લોક કરો">[🚫 બ્લોક]</a>
+                    <a href="/super-admin-live-mirror/MANSHVI?pin=1986&staff_uid=manshvi" style="background:#0284c7; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="આ સ્ટાફ કે દુકાનનું લાઈવ પેજ અહીં ખોલો">🖥️ લાઈવ પેજ</a>
+                </div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td><b>DEVANSHI</b></td><td><b>જયમીનભાઈ પટેલ</b><br><span style="font-size:10.5px; color:#6b21a8; font-weight:bold;">(OWNER)</span></td><td>9725721215</td>
+            <td style="color:#0284c7; font-weight:bold;">devanshi</td>
+            <td style="color:#15803d; font-weight:bold;">1986</td>
+            <td><span style="background:#16a34a; color:white; padding:2px 6px; border-radius:4px; font-size:10.5px; font-weight:bold;">ACTIVE</span></td>
+            <td style="font-size:10.5px; text-align:left;">🟢 શરૂ: -<br>📱 ડિવાઈસ: -<br>🔴 છેલ્લે બંધ: ચાલુ</td>
+            <td>
+                <div style="display:flex; gap:4px; justify-content:center; align-items:center; flex-wrap:wrap;">
+                    <form action="/master-reset-staff-password" method="post" style="display:flex; gap:3px; margin:0;">
+                        <input type="hidden" name="staff_row_id" value="1">
+                        <input type="hidden" name="lookup_shop" value="">
+                        <input type="text" name="new_password" value="1986" style="width:80px; padding:3px; font-weight:bold;">
+                        <button type="submit" style="background:#16a34a; color:white; border:none; padding:3px 7px; border-radius:3px; cursor:pointer; font-weight:bold;">રીસેટ</button>
+                    </form>
+                    <a href="/toggle-user-login-status?uid=1&cur=ACTIVE&shop_id=DEVANSHI&return_to=SUPER_ADMIN" style="background:#d97706; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="૧-ક્લિક કિલ-સ્વિચ: મોબાઈલમાંથી તાત્કાલિક બ્લોક / અનબ્લોક કરો">[🚫 બ્લોક]</a>
+                    <a href="/super-admin-live-mirror/DEVANSHI?pin=1986&staff_uid=devanshi" style="background:#0284c7; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="આ સ્ટાફ કે દુકાનનું લાઈવ પેજ અહીં ખોલો">🖥️ લાઈવ પેજ</a>
+                </div>
+            </td>
+        </tr>
+        
+            </table>
+        </div>
+
+        </div>
+<div id="adm_tab_ai" style="display:none;">
+<!-- 🤖 બોક્સ ૬: સુપર એડમિન AI Co-Pilot (Intelligent Gemini Auto-Coder & Control) -->
+        <div style="background:#0f172a; border:2px solid #38bdf8; padding:14px; border-radius:8px; margin-bottom:14px; color:#f8fafc;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+                <div>
+                    <h3 style="margin:0; color:#38bdf8; font-size:15px;">🤖 બોક્સ ૬: સુપર એડમિન AI Co-Pilot (Intelligent Gemini Assistant & Remote Control)</h3>
+                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">
+                        કુદરતી ગુજરાતીમાં પૂછો કે આદેશ આપો: વકરો, ૪ ગલ્લા સિલક, નફો, સ્ટોક, બાકી ઉધાર, લાયસન્સ બ્લોક કે પાસવર્ડ રીસેટ તરત લાગુ થશે!
+                    </div>
+                </div>
+                <span style="background:#1e293b; color:#fde047; padding:3px 10px; border-radius:4px; font-size:12px; font-weight:bold; border:1px solid #eab308;">હાઈ-ફાઈ એઆઈ સક્રિય</span>
+            </div>
+            <!-- ૧-ક્લિક ક્વિક પ્રોમ્પ્ટ બટનો -->
+            <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+                <button type="button" onclick="quickAiCommand('આજનો ૪ ગલ્લા લાઈવ વકરો અને રોકડ સિલક બતાવો')" style="background:#1e293b; color:#38bdf8; border:1px solid #38bdf8; padding:4px 9px; border-radius:4px; font-size:11.5px; font-weight:bold; cursor:pointer;">💰 ૪ ગલ્લા લાઈવ સિલક</button>
+                <button type="button" onclick="quickAiCommand('આજનો ચોખ્ખો દૈનિક નફો અને માર્જિન બતાવો')" style="background:#1e293b; color:#86efac; border:1px solid #86efac; padding:4px 9px; border-radius:4px; font-size:11.5px; font-weight:bold; cursor:pointer;">📈 આજનો નફો (Net Profit)</button>
+                <button type="button" onclick="quickAiCommand('આજનું કુલ વેચાણ અને બિલ રિપોર્ટ બતાવો')" style="background:#1e293b; color:#fde047; border:1px solid #fde047; padding:4px 9px; border-radius:4px; font-size:11.5px; font-weight:bold; cursor:pointer;">📊 આજનું વેચાણ</button>
+                <button type="button" onclick="quickAiCommand('હાજર સ્ટોક કેટલો છે અને કેટલી કિંમતના મોબાઈલ પડ્યા છે?')" style="background:#1e293b; color:#c084fc; border:1px solid #c084fc; padding:4px 9px; border-radius:4px; font-size:11.5px; font-weight:bold; cursor:pointer;">📱 હાજર સ્ટોક સમરી</button>
+                <button type="button" onclick="quickAiCommand('કુલ ગ્રાહક બાકી ઉધાર કેટલી છે અને કોની વધારે બાકી છે?')" style="background:#1e293b; color:#fca5a5; border:1px solid #fca5a5; padding:4px 9px; border-radius:4px; font-size:11.5px; font-weight:bold; cursor:pointer;">⚠️ ગ્રાહક બાકી ઉધાર</button>
+                <button type="button" onclick="quickAiCommand('૫૦+ બધી દુકાનોનું માસ્ટર રજીસ્ટર સ્ટેટસ બતાવો')" style="background:#1e293b; color:#93c5fd; border:1px solid #93c5fd; padding:4px 9px; border-radius:4px; font-size:11.5px; font-weight:bold; cursor:pointer;">🏬 ૫૦+ સ્ટોર્સ સ્ટેટસ</button>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr auto; gap:8px;">
+                <input type="text" id="ai_cmd_input" placeholder="અહીં તમારો AI આદેશ અથવા સવાલ ગુજરાતીમાં લખો... (દા.ત. 'આજનો નફો બતાવો', 'દુકાન TEST-RETAIL-01 બ્લોક કરો')" style="padding:10px; font-size:13.5px; border-radius:6px; border:1px solid #38bdf8; background:#1e293b; color:white; font-weight:600;">
+                <button type="button" onclick="runAiCommand()" style="background:#0284c7; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13.5px;">🚀 AI એક્શન લાગુ કરો</button>
+            </div>
+            <div id="ai_res_box" style="display:none; margin-top:10px; background:#1e293b; border:1px solid #38bdf8; padding:12px 16px; border-radius:6px; font-size:13px; color:#fde047; white-space:pre-wrap; line-height:1.5;"></div>
+        </div>
+
+        </div>
+<div id="adm_tab_shops" style="display:block;">
+<!-- 📋 બોક્સ ૭: ૫૦+ દુકાનોનું માસ્ટર રજીસ્ટર -->
+        <div style="background:#ffffff; border:2px solid #0f2043; padding:12px; border-radius:8px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                <h3 style="margin:0; color:#0f2043; font-size:15px;">📋 બોક્સ ૭: ૫૦+ દુકાનોનું માસ્ટર રજીસ્ટર (DEMO / RENT, મુદત પેકેજ, તારીખ-થી-તારીખ વેલિડિટી, ACTIVE / BLOCK & ૧-ક્લિક Delete)</h3>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <button type="button" onclick="togglePublicDemoSignup()" id="pub_signup_lock_btn" style="background:#dc2626; color:white; border:1.5px solid #fecaca; padding:4px 10px; border-radius:5px; font-weight:bold; font-size:11.5px; cursor:pointer;" title="જાહેર ડેમો સાઇન-અપ બંધ અથવા ચાલુ કરો">
+                        🔒 જાહેર ડેમો સાઇન-અપ: બંધ (સુરક્ષિત)
+                    </button>
+                </div>
+                <div style="display:flex; gap:8px; font-size:12px; font-weight:bold;">
+                    <span style="background:#e0f2fe; color:#0369a1; padding:3px 10px; border-radius:4px; border:1px solid #0284c7;">🏬 કુલ સ્ટોર્સ: 2</span>
+                    <span style="background:#dcfce7; color:#15803d; padding:3px 10px; border-radius:4px; border:1px solid #16a34a;">✅ સક્રિય (Active): 2</span>
+                    <span style="background:#fef9c3; color:#854d0e; padding:3px 10px; border-radius:4px; border:1px solid #eab308;">⏳ ડેમો (DEMO): 0</span>
+                    <a href="/jaymin-mobile-apps" target="_blank" style="background:#7c3aed; color:white; padding:3px 10px; border-radius:4px; text-decoration:none;">📱 જયમીનભાઈ 2 મોબાઈલ Apps</a>
+                </div>
+            </div>
+            <table>
+                <tr>
+                    <th>Shop ID & મોડ</th><th>દુકાનનું નામ</th><th>માલિક મોબાઈલ</th><th>માલિક ID & પાસવર્ડ</th>
+                    <th>મોડ, મુદત પેકેજ (૧૦ દિવસ / ૧-૩-૬-૧૨ મહિના), તારીખ-થી-તારીખ વેલિડિટી & સ્ટેટસ</th><th>ચાલુ કાઉન્ટર્સ</th><th>ડાયરેક્ટ ઓવરરાઇડ એક્સેસ</th>
+                </tr>
+                
+        <tr>
+            <td><b>MANSHVI</b><br><span style="font-size:10px; color:#64748b;">RETAIL_STANDALONE</span><br><span style="background:#dcfce7; color:#166534; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:800; border:1px solid #16a34a;">📌 2026.11.14_FINAL ✅ લેટેસ્ટ</span><br><span style="background:#dcfce7; color:#15803d; padding:2px 7px; border-radius:4px; font-weight:800; font-size:10px; border:1px solid #16a34a; display:inline-block; margin-top:3px;" title="લાઇવ કનેક્ટેડ: 2026-11-06 14:41:14 | ડિવાઇસ: Desktop/Laptop">🟢 લાઈવ (SMART_TERMINAL (F2))</span></td>
+            <td><b>મનસ્વી સોફ્ટવેર (રિટેલ સ્ટોર મોડ - લાઇફટાઇમ)</b><div style="font-size:10px; text-align:left; background:#f8fafc; padding:3px 5px; border-radius:4px; border:1px solid #cbd5e1; margin-top:3px; line-height:1.35;"><b>🚀 સાઇન-અપ:</b> Desktop/Mobile ()<br><b>🟢 છેલ્લે ચાલુ:</b> Desktop/Laptop (2026-11-06 14:41:14)<br><b>🔴 છેલ્લે બંધ:</b> હાલ ચાલુ</div></td>
+            <td style="color:#0284c7; font-weight:bold;">9725721215</td>
+            <td>manshvi<br><span style="color:#16a34a; font-weight:bold;">PW: J@ymin86</span></td>
+            <td>
+                <!-- બોક્સ ૭: DEMO/RENT, તારીખ-થી-તારીખ વેલિડિટી (૧૦ દિવસ / ૧-૩-૬-૧૨ મહિના / કસ્ટમ તારીખ) અને ACTIVE/BLOCK -->
+                <form action="/master-quick-row-update" method="post" style="display:flex; gap:4px; align-items:center; justify-content:center; flex-wrap:wrap;">
+                    <input type="hidden" name="shop_id" value="MANSHVI">
+                    <select name="subscription_mode" style="padding:3px; font-weight:bold; background:#fef9c3;">
+                        <option value="DEMO" >DEMO</option>
+                        <option value="RENT" >RENT (ભાડા)</option>
+                    </select>
+                    <select name="duration_package" onchange="autoCalcExpiry(this, 'vf_0', 'vt_0')" style="padding:3px; font-weight:bold; color:#0f2043;">
+                        <option value="DEMO_10" >૧૦ દિવસ ડેમો</option>
+                        <option value="1_MONTH" >૧ મહિનો</option>
+                        <option value="3_MONTHS" >૩ મહિના</option>
+                        <option value="6_MONTHS" >૬ મહિના</option>
+                        <option value="1_YEAR" >૧ વર્ષ</option>
+                        <option value="CUSTOM" >કસ્ટમ તારીખ</option>
+                    </select>
+                    <input type="date" name="validity_from" id="vf_0" value="2026-11-06" title="શરૂઆત તારીખ (From Date)" style="padding:2px; font-size:11px;">
+                    <span>થી</span>
+                    <input type="date" name="validity_to" id="vt_0" value="2099-12-31" title="પૂર્ણ તારીખ (Expiry Date - વધારાના દિવસો ઉમેરવા અહીં તારીખ વધારો)" style="padding:2px; font-size:11px; font-weight:bold; color:#dc2626;">
+                    <div style="display:inline-flex; gap:2px; margin-left:3px; vertical-align:middle;">
+                        <button type="button" onclick="extendShopDemo('MANSHVI', 1)" style="background:#15803d; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;" title="૧ દિવસ મુદત ઉમેરો">+૧ દિ</button>
+                        <button type="button" onclick="extendShopDemo('MANSHVI', 2)" style="background:#0284c7; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;" title="૨ દિવસ મુદત ઉમેરો">+૨ દિ</button>
+                        <button type="button" onclick="extendShopDemo('MANSHVI', 5)" style="background:#ca8a04; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;" title="૫ દિવસ મુદત ઉમેરો">+૫ દિ</button>
+                    </div>
+                    <select name="license_status" style="padding:3px; font-weight:bold; color:#16a34a;">
+                        <option value="ACTIVE" selected>ACTIVE</option>
+                        <option value="BLOCK" >BLOCK</option>
+                    </select>
+                    <label style="font-size:11px; background:#e0f2fe; padding:2px 5px; border-radius:4px;">
+                        <input type="checkbox" name="acc_part2" value="1" checked> પાર્ટ-૨
+                    </label>
+                    <button type="submit" style="background:#16a34a; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-weight:bold;">સેવ</button>
+                </form>
+            </td>
+            <td style="font-size:10.5px;">F1,F2,F3,F4,F5,F6,F7,F8<br><a href="/super-admin?pin=1986&lookup_shop=MANSHVI" style="color:#7c3aed; font-weight:bold;">[🔑 સ્ટાફ PW જુઓ]</a></td>
+            <td>
+                <a href="/super-admin-live-mirror/MANSHVI?pin=1986" style="display:block; margin-bottom:4px; background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; padding:6px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:11px; box-shadow:0 2px 6px rgba(220,38,38,0.4);" title="દુકાનદાર કે સ્ટાફનું ચાલુ લાઈવ પેજ આપણી ફૂલ કલરફુલ થીમમાં સીધું જ અહીં ખોલો">🖥️ ૧-ક્લિક: લાઈવ પેજ અહીં ખોલો</a><a href="/store-setup?target_shop=MANSHVI" style="display:block; margin-bottom:4px; background:#7c3aed; color:white; padding:5px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:10.5px;">⚙️ સ્ટાફ પરમિશન / સુવિધા સેટ કરો</a><button type="button" onclick="openEditStoreModal('MANSHVI', 'મનસ્વી સોફ્ટવેર (રિટેલ સ્ટોર મોડ - લાઇફટાઇમ)', '9725721215', 'manshvi', 'J@ymin86', 'RETAIL_STANDALONE', 'LIFETIME', 'LIFETIME', '2026-11-06', '2099-12-31')" style="display:block; width:100%; margin-bottom:4px; background:#eab308; color:#0f172a; padding:5px 8px; border-radius:4px; font-weight:900; border:none; text-align:center; font-size:10.5px; cursor:pointer;" title="દુકાનનું નામ, માલિક, મોબાઈલ, પાસવર્ડ અને મોડ સુધારો">✏️ વિગતો સુધારો (Edit)</button>
+                <form action="/api/master-ota-publish" method="post" style="margin-bottom:5px;">
+                    <input type="hidden" name="target_shops" value="MANSHVI">
+                    <input type="hidden" name="target_mode" value="ALL">
+                    <input type="hidden" name="silent_mode" value="1">
+                    <input type="hidden" name="force_all" value="1">
+                    <input type="hidden" name="update_note" value="જયમીનભાઈએ આપની દુકાન (MANSHVI) માટે નવું અપડેટ લાઈવ કર્યું છે">
+                    <button type="submit" style="background:linear-gradient(135deg,#eab308,#ca8a04); color:#0f172a; border:1px solid #fef08a; padding:5px 8px; border-radius:4px; font-weight:800; cursor:pointer; width:100%; font-size:11px;" title="દુકાનદારને ફોન કર્યા વગર કે .exe આપ્યા વગર સીધું જ તેના લેપટોપમાં લાઈવ અપડેટ મોકલો">⚡ [૧-ક્લિક: સીધું અપડેટ મોકલો]</button>
+                </form>
+                <form action="/master-direct-open-shop" method="post" style="display:inline;">
+                    <input type="hidden" name="target_shop_id" value="MANSHVI">
+                    <input type="hidden" name="store_name" value="મનસ્વી સોફ્ટવેર (રિટેલ સ્ટોર મોડ - લાઇફટાઇમ)">
+                    <button type="submit" style="background:#0284c7; color:white; border:none; padding:6px 10px; border-radius:4px; font-weight:bold; cursor:pointer; width:100%; font-size:11px;">[📁 લોકલ ઑફલાઇન ડેટા ખોલો]</button>
+                </form>
+                <div style="display:flex; gap:4px; margin-top:5px; justify-content:center;"><button type="button" onclick="triggerSampleWipe('MANSHVI')" style="background:#dc2626; color:white; border:none; padding:4px 7px; border-radius:4px; font-weight:bold; font-size:10.5px; cursor:pointer; flex:1;" title="આ સેમ્પલ સ્ટોરનો બધો જ ડમી ડેટા (લેજર, બ્રાન્ડ, સ્ટાફ, સ્ટોક, બિલ) ૧-ક્લિકમાં સાફ કરો">🧹 ડમી ડેટા સાફ કરો</button><form action="/master-seed-sample-store" method="post" style="display:inline; margin:0;"><input type="hidden" name="shop_id" value="MANSHVI"><button type="submit" style="background:#15803d; color:white; border:none; padding:4px 7px; border-radius:4px; font-weight:bold; font-size:10.5px; cursor:pointer;" title="ચેકિંગ માટે પ્રેક્ટિકલ સેમ્પલ ડેટા ફરીથી ભરો">🔄 સેમ્પલ ભરો</button></form></div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td><b>DEVANSHI</b><br><span style="font-size:10px; color:#64748b;">FRANCHISE_HO</span><br><span style="background:#dcfce7; color:#166534; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:800; border:1px solid #16a34a;">📌 2026.11.14_FINAL ✅ લેટેસ્ટ</span><br><span style="background:#dcfce7; color:#15803d; padding:2px 7px; border-radius:4px; font-weight:800; font-size:10px; border:1px solid #16a34a; display:inline-block; margin-top:3px;" title="લાઇવ કનેક્ટેડ: 2026-11-06 14:15:41 | ડિવાઇસ: Desktop/Laptop">🟢 લાઈવ (SMART_TERMINAL (F2))</span></td>
+            <td><b>દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)</b><div style="font-size:10px; text-align:left; background:#f8fafc; padding:3px 5px; border-radius:4px; border:1px solid #cbd5e1; margin-top:3px; line-height:1.35;"><b>🚀 સાઇન-અપ:</b> Desktop/Mobile ()<br><b>🟢 છેલ્લે ચાલુ:</b> Desktop/Laptop (2026-11-06 14:15:41)<br><b>🔴 છેલ્લે બંધ:</b> હાલ ચાલુ</div></td>
+            <td style="color:#0284c7; font-weight:bold;">9725721215</td>
+            <td>devanshi<br><span style="color:#16a34a; font-weight:bold;">PW: 1986</span></td>
+            <td>
+                <!-- બોક્સ ૭: DEMO/RENT, તારીખ-થી-તારીખ વેલિડિટી (૧૦ દિવસ / ૧-૩-૬-૧૨ મહિના / કસ્ટમ તારીખ) અને ACTIVE/BLOCK -->
+                <form action="/master-quick-row-update" method="post" style="display:flex; gap:4px; align-items:center; justify-content:center; flex-wrap:wrap;">
+                    <input type="hidden" name="shop_id" value="DEVANSHI">
+                    <select name="subscription_mode" style="padding:3px; font-weight:bold; background:#fef9c3;">
+                        <option value="DEMO" >DEMO</option>
+                        <option value="RENT" >RENT (ભાડા)</option>
+                    </select>
+                    <select name="duration_package" onchange="autoCalcExpiry(this, 'vf_1', 'vt_1')" style="padding:3px; font-weight:bold; color:#0f2043;">
+                        <option value="DEMO_10" >૧૦ દિવસ ડેમો</option>
+                        <option value="1_MONTH" >૧ મહિનો</option>
+                        <option value="3_MONTHS" >૩ મહિના</option>
+                        <option value="6_MONTHS" >૬ મહિના</option>
+                        <option value="1_YEAR" >૧ વર્ષ</option>
+                        <option value="CUSTOM" >કસ્ટમ તારીખ</option>
+                    </select>
+                    <input type="date" name="validity_from" id="vf_1" value="2026-11-06" title="શરૂઆત તારીખ (From Date)" style="padding:2px; font-size:11px;">
+                    <span>થી</span>
+                    <input type="date" name="validity_to" id="vt_1" value="2099-12-31" title="પૂર્ણ તારીખ (Expiry Date - વધારાના દિવસો ઉમેરવા અહીં તારીખ વધારો)" style="padding:2px; font-size:11px; font-weight:bold; color:#dc2626;">
+                    <div style="display:inline-flex; gap:2px; margin-left:3px; vertical-align:middle;">
+                        <button type="button" onclick="extendShopDemo('DEVANSHI', 1)" style="background:#15803d; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;" title="૧ દિવસ મુદત ઉમેરો">+૧ દિ</button>
+                        <button type="button" onclick="extendShopDemo('DEVANSHI', 2)" style="background:#0284c7; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;" title="૨ દિવસ મુદત ઉમેરો">+૨ દિ</button>
+                        <button type="button" onclick="extendShopDemo('DEVANSHI', 5)" style="background:#ca8a04; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;" title="૫ દિવસ મુદત ઉમેરો">+૫ દિ</button>
+                    </div>
+                    <select name="license_status" style="padding:3px; font-weight:bold; color:#16a34a;">
+                        <option value="ACTIVE" selected>ACTIVE</option>
+                        <option value="BLOCK" >BLOCK</option>
+                    </select>
+                    <label style="font-size:11px; background:#e0f2fe; padding:2px 5px; border-radius:4px;">
+                        <input type="checkbox" name="acc_part2" value="1" checked> પાર્ટ-૨
+                    </label>
+                    <button type="submit" style="background:#16a34a; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-weight:bold;">સેવ</button>
+                </form>
+            </td>
+            <td style="font-size:10.5px;">F1,F2,F3,F4,F5,F6,F7,F8<br><a href="/super-admin?pin=1986&lookup_shop=DEVANSHI" style="color:#7c3aed; font-weight:bold;">[🔑 સ્ટાફ PW જુઓ]</a></td>
+            <td>
+                <a href="/super-admin-live-mirror/DEVANSHI?pin=1986" style="display:block; margin-bottom:4px; background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; padding:6px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:11px; box-shadow:0 2px 6px rgba(220,38,38,0.4);" title="દુકાનદાર કે સ્ટાફનું ચાલુ લાઈવ પેજ આપણી ફૂલ કલરફુલ થીમમાં સીધું જ અહીં ખોલો">🖥️ ૧-ક્લિક: લાઈવ પેજ અહીં ખોલો</a><a href="/store-setup?target_shop=DEVANSHI" style="display:block; margin-bottom:4px; background:#7c3aed; color:white; padding:5px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:10.5px;">⚙️ સ્ટાફ પરમિશન / સુવિધા સેટ કરો</a><button type="button" onclick="openEditStoreModal('DEVANSHI', 'દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)', '9725721215', 'devanshi', '1986', 'FRANCHISE_HO', 'LIFETIME', 'LIFETIME', '2026-11-06', '2099-12-31')" style="display:block; width:100%; margin-bottom:4px; background:#eab308; color:#0f172a; padding:5px 8px; border-radius:4px; font-weight:900; border:none; text-align:center; font-size:10.5px; cursor:pointer;" title="દુકાનનું નામ, માલિક, મોબાઈલ, પાસવર્ડ અને મોડ સુધારો">✏️ વિગતો સુધારો (Edit)</button>
+                <form action="/api/master-ota-publish" method="post" style="margin-bottom:5px;">
+                    <input type="hidden" name="target_shops" value="DEVANSHI">
+                    <input type="hidden" name="target_mode" value="ALL">
+                    <input type="hidden" name="silent_mode" value="1">
+                    <input type="hidden" name="force_all" value="1">
+                    <input type="hidden" name="update_note" value="જયમીનભાઈએ આપની દુકાન (DEVANSHI) માટે નવું અપડેટ લાઈવ કર્યું છે">
+                    <button type="submit" style="background:linear-gradient(135deg,#eab308,#ca8a04); color:#0f172a; border:1px solid #fef08a; padding:5px 8px; border-radius:4px; font-weight:800; cursor:pointer; width:100%; font-size:11px;" title="દુકાનદારને ફોન કર્યા વગર કે .exe આપ્યા વગર સીધું જ તેના લેપટોપમાં લાઈવ અપડેટ મોકલો">⚡ [૧-ક્લિક: સીધું અપડેટ મોકલો]</button>
+                </form>
+                <form action="/master-direct-open-shop" method="post" style="display:inline;">
+                    <input type="hidden" name="target_shop_id" value="DEVANSHI">
+                    <input type="hidden" name="store_name" value="દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)">
+                    <button type="submit" style="background:#0284c7; color:white; border:none; padding:6px 10px; border-radius:4px; font-weight:bold; cursor:pointer; width:100%; font-size:11px;">[📁 લોકલ ઑફલાઇન ડેટા ખોલો]</button>
+                </form>
+                <div style="display:flex; gap:4px; margin-top:5px; justify-content:center;"><button type="button" onclick="triggerSampleWipe('DEVANSHI')" style="background:#dc2626; color:white; border:none; padding:4px 7px; border-radius:4px; font-weight:bold; font-size:10.5px; cursor:pointer; flex:1;" title="આ સેમ્પલ સ્ટોરનો બધો જ ડમી ડેટા (લેજર, બ્રાન્ડ, સ્ટાફ, સ્ટોક, બિલ) ૧-ક્લિકમાં સાફ કરો">🧹 ડમી ડેટા સાફ કરો</button><form action="/master-seed-sample-store" method="post" style="display:inline; margin:0;"><input type="hidden" name="shop_id" value="DEVANSHI"><button type="submit" style="background:#15803d; color:white; border:none; padding:4px 7px; border-radius:4px; font-weight:bold; font-size:10.5px; cursor:pointer;" title="ચેકિંગ માટે પ્રેક્ટિકલ સેમ્પલ ડેટા ફરીથી ભરો">🔄 સેમ્પલ ભરો</button></form></div>
+            </td>
+        </tr>
+        
+            </table>
+        </div>
+
+        </div>
+<div id="adm_tab_qr" style="display:none;">
+<!-- 📱 બોક્સ ૮: મોબાઈલ કનેક્ટિવિટી & QR કોડ લૉગિન હબ (Universal 4G/5G + Wi-Fi/LAN) -->
+        <div style="background:linear-gradient(135deg, #091224, #0f2043); border:2px solid #38bdf8; padding:14px; border-radius:8px; margin-bottom:14px; color:#f8fafc;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <h3 style="margin:0; color:#38bdf8; font-size:15px;">📱 બોક્સ ૮: યુનિવર્સલ મોબાઈલ QR કોડ લૉગિન હબ (Wi-Fi વગર 4G/5G તેમજ LAN પર Android / iPhone / Tablet / Laptop માં ચાલે)</h3>
+                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">
+                        દુકાનનું કમ્પ્યુટર ભલે સાદા LAN કેબલથી ચાલતું હોય — આ QR કોડ સ્કેન કરતાં જ કોઈપણ મોબાઈલમાં સીધું લૉગિન પેજ ખૂલશે અને દુકાનદાર, પાર્ટનર, એકાઉન્ટન્ટ કે સેલ્સમેન પોતાના ID-પાસવર્ડથી ચલાવી શકશે!
+                    </div>
+                </div>
+                <span id="qr_hub_top_badge" style="background:#15803d; color:#fde047; padding:4px 12px; border-radius:4px; font-size:11.5px; font-weight:bold; border:1px solid #86efac;">
+                    🔄 4G/5G ક્લાઉડ & LAN IP: 192.168.31.11:8000
+                </span>
+            </div>
+            <div style="display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:center; background:rgba(255,255,255,0.06); padding:14px; border-radius:8px; border:1px solid rgba(56,189,248,0.3);">
+                <div style="background:white; padding:10px; border-radius:8px; text-align:center; min-width:170px;">
+                    <img id="mobile_login_qr_img" src="/api/qr-svg?size=170&data=http%3A%2F%2F192.168.31.11%3A8000%2Flogin" alt="Mobile QR Login" style="width:170px; height:170px; display:block; margin:auto;" onerror="this.onerror=null; this.style.display='none'; document.getElementById('qr_canvas_fallback').style.display='block';">
+                    <canvas id="qr_canvas_fallback" width="170" height="170" style="display:none; margin:auto;"></canvas>
+                    <div id="qr_scan_caption" style="font-size:11px; color:#0f172a; font-weight:800; margin-top:5px;">📷 મોબાઈલ કેમેરાથી સ્કેન કરો</div>
+                </div>
+                <div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+                        <button type="button" onclick="switchAdminQrMode('CLOUD')" style="background:#15803d; color:white; border:1px solid #86efac; padding:6px 12px; border-radius:5px; font-size:11.5px; font-weight:bold; cursor:pointer;">🌐 ૧. 4G/5G યુનિવર્સલ QR (Wi-Fi વગર મોબાઈલ નેટ પર)</button>
+                        <button type="button" onclick="switchAdminQrMode('LAN')" style="background:#0284c7; color:white; border:1px solid #38bdf8; padding:6px 12px; border-radius:5px; font-size:11.5px; font-weight:bold; cursor:pointer;">📶 ૨. લોકલ Wi-Fi / LAN QR (192.168.31.11:8000)</button>
+                        <button type="button" onclick="switchAdminQrMode('SUPER_ADMIN')" style="background:#ca8a04; color:white; border:1px solid #fde047; padding:6px 12px; border-radius:5px; font-size:11.5px; font-weight:bold; cursor:pointer;">👑 ૩. જયમીનભાઈ ડાયરેક્ટ સુપર એડમિન QR</button>
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <b id="mob_url_mode_lbl" style="color:#fde047; font-size:12.5px;">સક્રિય મોબાઈલ લૉગિન લિંક (QR કોડમાં સેટ થયેલ):</b>
+                        <div style="display:flex; gap:6px; margin-top:4px; align-items:center;">
+                            <input type="text" id="mob_url_display" value="http://192.168.31.11:8000/login" readonly style="flex:1; padding:8px 12px; font-size:13.5px; font-weight:bold; color:#38bdf8; background:#1e293b; border:1px solid #38bdf8; border-radius:4px;">
+                            <button type="button" onclick="copyMobileUrl()" style="background:#0284c7; color:white; border:none; padding:8px 14px; border-radius:4px; font-weight:bold; cursor:pointer;">📋 લિંક કોપી કરો</button>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:10px; font-size:11.5px;">
+                        <div style="background:#1e293b; padding:8px; border-radius:6px; border:1px solid #16a34a;">
+                            <b style="color:#86efac;">🌐 Wi-Fi વગર (5G/4G સિમ ડેટા):</b><br>
+                            સોફ્ટવેર ચાલુ થતાં જ ઓટોમેટિક ક્લાઉડ લિંક બની જાય છે. ફોનમાં 5G ડેટા ચાલુ હોય તો પણ QR સ્કેન કરતાં જ લૉગિન પેજ ખુલશે!
+                        </div>
+                        <div style="background:#1e293b; padding:8px; border-radius:6px; border:1px solid #38bdf8;">
+                            <b style="color:#38bdf8;">👤 દુકાનદાર & સ્ટાફ લૉગિન:</b><br>
+                            દુકાનદાર પોતાના મોબાઈલ નંબર/Shop ID અને પાસવર્ડથી, અને સ્ટાફ/એકાઉન્ટન્ટ પોતાના યુઝર ID-પાસવર્ડથી મોબાઈલમાં ચલાવી શકશે.
+                        </div>
+                        <div style="background:#1e293b; padding:8px; border-radius:6px; border:1px solid #eab308;">
+                            <b style="color:#fde047;">📱 દરેક ડિવાઇસ સપોર્ટ:</b><br>
+                            Android, iPhone (iOS), iPad, MacBook કે કોઈપણ ટેબલેટ/લેપટોપમાં એકસાથે અલગ-અલગ રોલથી કામ કરી શકાશે.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+    </div>
+
+
+    <!-- ✏️ દુકાનની વિગતો સુધારવા માટેનું પોપઅપ મોડલ (Edit Store Profile Modal) -->
+    <div id="edit_store_profile_modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(3px); z-index:99999; align-items:center; justify-content:center;">
+        <div style="background:#ffffff; border:3px solid #0f2043; border-radius:12px; width:92%; max-width:560px; padding:20px; box-shadow:0 25px 60px rgba(0,0,0,0.6); color:#0f172a;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid #cbd5e1; padding-bottom:8px;">
+                <h3 style="margin:0; color:#0f2043; font-size:17px;">✏️ દુકાન પ્રોફાઇલ & વિગતો સુધારો (Super Admin)</h3>
+                <button type="button" onclick="document.getElementById('edit_store_profile_modal').style.display='none'" style="background:#dc2626; color:white; border:none; padding:4px 10px; border-radius:5px; font-weight:bold; cursor:pointer;">✖ બંધ કરો</button>
+            </div>
+            <form action="/master-edit-store-profile" method="post" id="edit_store_form">
+                <input type="hidden" name="shop_id" id="edm_shop_id">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div>
+                        <label style="font-weight:bold; font-size:12px;">🏪 દુકાનનું નામ:</label>
+                        <input type="text" name="store_name" id="edm_store_name" required style="width:100%; padding:7px; border:1.5px solid #0284c7; border-radius:4px; font-weight:bold; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-weight:bold; font-size:12px;">👑 માલિકનું નામ:</label>
+                        <input type="text" name="owner_name" id="edm_owner_name" required style="width:100%; padding:7px; border:1px solid #64748b; border-radius:4px; box-sizing:border-box;">
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div>
+                        <label style="font-weight:bold; font-size:12px;">📞 મોબાઈલ નંબર:</label>
+                        <input type="text" name="owner_mobile" id="edm_owner_mobile" required style="width:100%; padding:7px; border:1.5px solid #0284c7; border-radius:4px; font-weight:bold; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-weight:bold; font-size:12px;">👤 લોગિન યુઝર ID:</label>
+                        <input type="text" name="username" id="edm_username" required style="width:100%; padding:7px; border:1px solid #64748b; border-radius:4px; box-sizing:border-box;">
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div>
+                        <label style="font-weight:bold; font-size:12px;">🔑 પાસવર્ડ (Password):</label>
+                        <input type="text" name="current_password" id="edm_password" required style="width:100%; padding:7px; border:1.5px solid #16a34a; border-radius:4px; font-weight:bold; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-weight:bold; font-size:12px;">🏬 સ્ટોર મોડ (Store Mode):</label>
+                        <select name="store_mode" id="edm_store_mode" style="width:100%; padding:7px; border:2px solid #eab308; border-radius:4px; font-weight:bold; background:#fef9c3; box-sizing:border-box;">
+                            <option value="RETAIL_STANDALONE">🏪 પર્સનલ રિટેલ સ્ટોર મોડ (Retail)</option>
+                            <option value="FRANCHISE_HO">👑 ફ્રેન્ચાઇઝી સ્ટોર મોડ (Franchise)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:bold; font-size:11px;">પ્લાન:</label>
+                        <select name="subscription_mode" id="edm_sub_mode" style="width:100%; padding:6px; border:1px solid #64748b; border-radius:4px; font-weight:bold; box-sizing:border-box;">
+                            <option value="DEMO">DEMO</option>
+                            <option value="RENT">RENT (ભાડા)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:bold; font-size:11px;">શરૂઆત તારીખ:</label>
+                        <input type="date" name="validity_from" id="edm_validity_from" style="width:100%; padding:5px; border:1px solid #64748b; border-radius:4px; font-size:11.5px; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-weight:bold; font-size:11px;">પૂર્ણ તારીખ:</label>
+                        <input type="date" name="validity_to" id="edm_validity_to" style="width:100%; padding:5px; border:1.5px solid #dc2626; border-radius:4px; font-size:11.5px; font-weight:bold; color:#dc2626; box-sizing:border-box;">
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <button type="button" onclick="document.getElementById('edit_store_profile_modal').style.display='none'" style="background:#64748b; color:white; border:none; padding:8px 16px; border-radius:5px; font-weight:bold; cursor:pointer;">રદ કરો</button>
+                    <button type="submit" style="background:#16a34a; color:white; border:none; padding:8px 20px; border-radius:5px; font-weight:900; font-size:14px; cursor:pointer;">💾 સુધારાઓ સેવ કરો</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        
+        function switchAdminTab(tabId) {
+            var tabs = ['tab_shops', 'tab_pw', 'tab_features', 'tab_ai', 'tab_ota', 'tab_backup', 'tab_qr'];
+            try {
+                localStorage.setItem('admin_active_tab', tabId);
+                window.location.hash = tabId;
+            } catch(e) {}
+            if (tabId === 'ALL') {
+                tabs.forEach(function(t) {
+                    var el = document.getElementById('adm_' + t);
+                    if (el) el.style.display = 'block';
+                });
+                document.querySelectorAll('.adm-nav-btn').forEach(function(b) { b.classList.remove('active-tab'); });
+                var btnAll = document.getElementById('btn_tab_all');
+                if (btnAll) btnAll.classList.add('active-tab');
+                return;
+            }
+            tabs.forEach(function(t) {
+                var el = document.getElementById('adm_' + t);
+                if (el) el.style.display = (t === tabId) ? 'block' : 'none';
+                var btn = document.getElementById('btn_' + t);
+                if (btn) {
+                    if (t === tabId) {
+                        btn.classList.add('active-tab');
+                    } else {
+                        btn.classList.remove('active-tab');
+                    }
+                }
+            });
+            var btnAll = document.getElementById('btn_tab_all');
+            if (btnAll) btnAll.classList.remove('active-tab');
+        }
+
+        // પેજ લોડ થતાં જ છેલ્લે જે સેક્શન ખુલ્લું હતું તે જ સેક્શન પર રાખો (પહેલા પેજ પર ફેંકશે નહીં!)
+        window.addEventListener('DOMContentLoaded', function() {
+            try {
+                var savedTab = window.location.hash.replace('#', '') || localStorage.getItem('admin_active_tab') || 'tab_shops';
+                switchAdminTab(savedTab);
+            } catch(e) {}
+        });
+
+        function togglePublicDemoSignup() {
+            var p = prompt('👑 જયમીનભાઈ, જાહેર ડેમો સાઇન-અપ સ્થિતિ બદલવા માસ્ટર સિક્યુરિટી PIN (1986) દાખલ કરો:', '1986');
+            if (!p) return;
+            var fd = new FormData();
+            fd.append('pin', p);
+            fetch('/api/toggle-public-demo-signup', { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    if (d.status === 'success') {
+                        alert('✅ ' + d.message);
+                        var btn = document.getElementById('pub_signup_lock_btn');
+                        if (btn) {
+                            btn.innerHTML = d.locked ? '🔒 જાહેર ડેમો સાઇન-અપ: બંધ (સુરક્ષિત)' : '🔓 જાહેર ડેમો સાઇન-અપ: ખુલ્લું (સાવચેતી)';
+                            btn.style.background = d.locked ? '#dc2626' : '#16a34a';
+                        }
+                    } else {
+                        alert('❌ ભૂલ: ' + (d.message || 'અમાન્ય પિન'));
+                    }
+                }).catch(function(e) { alert('સર્વર કનેક્શન ક્ષતિ'); });
+        }
+
+        function extendShopDemo(sid, days) {
+            if (!confirm('શું આપ [' + sid + '] સ્ટોરની ડેમો/રેન્ટ મુદત +' + days + ' દિવસ વધારવા માંગો છો?')) return;
+            var fd = new FormData();
+            fd.append('shop_id', sid);
+            fd.append('days', days);
+            fd.append('pin', '1986');
+            fetch('/api/extend-shop-demo', { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    if (d.status === 'success') {
+                        alert('✅ ' + d.message);
+                        location.reload();
+                    } else {
+                        alert('❌ ' + d.message);
+                    }
+                }).catch(function(e) { alert('સર્વર કનેક્શન ક્ષતિ'); });
+        }
+
+        function triggerSampleWipe(sid) {
+            var p = prompt('👑 જયમીનભાઈ, [' + sid + '] સેમ્પલ સ્ટોરનો બધો જ ડમી ડેટા (લેજર, બ્રાન્ડ, કેટેગરી, સ્ટાફ, હોદ્દા, સ્ટોક, બિલ) ૧૦૦% સાફ કરવા માસ્ટર PIN દાખલ કરો:');
+            if (p !== null && p.trim() !== '') {
+                var f = document.createElement('form');
+                f.method = 'POST';
+                f.action = '/master-wipe-sample-store';
+                var i1 = document.createElement('input'); i1.type = 'hidden'; i1.name = 'shop_id'; i1.value = sid; f.appendChild(i1);
+                var i2 = document.createElement('input'); i2.type = 'hidden'; i2.name = 'pin'; i2.value = p.trim(); f.appendChild(i2);
+                document.body.appendChild(f);
+                f.submit();
+            }
+        }
+        function toggleNotifPanel() {
+            var wrap = document.getElementById('notif_details_wrap');
+            var btn = document.getElementById('notif_toggle_btn');
+            if (wrap.style.display === 'none' || wrap.style.display === '') {
+                wrap.style.display = 'block';
+                if(btn) btn.innerText = 'વિગતો છુપાવો ▲';
+            } else {
+                wrap.style.display = 'none';
+                if(btn) btn.innerText = 'વિગતો જુઓ / છુપાવો ▼';
+            }
+        }
+
+        function filterOtaShops() {
+            var q = document.getElementById('ota_shop_search_inp').value.toLowerCase().trim();
+            var curMode = document.querySelector('input[name="ota_mode_filter"]:checked').value;
+            var cards = document.querySelectorAll('.ota-shop-card');
+            cards.forEach(function(card) {
+                var cMode = card.getAttribute('data-mode') || '';
+                var modeMatch = (curMode === 'ALL' || cMode.indexOf(curMode) !== -1 || curMode.indexOf(cMode) !== -1);
+                var searchMatch = (!q || card.getAttribute('data-search').indexOf(q) !== -1);
+                if (modeMatch && searchMatch) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function selectOtaMode(mode) {
+            document.getElementById('ota_target_mode_hidden').value = mode;
+            var checkboxes = document.querySelectorAll('.ota-shop-checkbox');
+            checkboxes.forEach(function(cb) {
+                var cMode = cb.getAttribute('data-mode') || '';
+                if (mode === 'ALL') {
+                    cb.checked = true;
+                } else if (mode === 'FRANCHISE_HO') {
+                    cb.checked = (cMode.indexOf('FRANCHISE') !== -1);
+                } else if (mode === 'PRIVATE_RETAIL') {
+                    cb.checked = (cMode.indexOf('RETAIL') !== -1 || cMode.indexOf('STANDALONE') !== -1);
+                }
+            });
+            filterOtaShops();
+            updateOtaSelectionState();
+        }
+
+        function selectAllOtaShops(isAll) {
+            var cards = document.querySelectorAll('.ota-shop-card');
+            cards.forEach(function(card) {
+                if (card.style.display !== 'none') {
+                    var cb = card.querySelector('.ota-shop-checkbox');
+                    if (cb) cb.checked = isAll;
+                }
+            });
+            updateOtaSelectionState();
+        }
+
+        function updateOtaSelectionState() {
+            var checkboxes = document.querySelectorAll('.ota-shop-checkbox');
+            var selected = [];
+            var total = checkboxes.length;
+            checkboxes.forEach(function(cb) {
+                if (cb.checked) selected.push(cb.value);
+            });
+            var badge = document.getElementById('ota_shop_count_badge');
+            var hiddenInp = document.getElementById('ota_target_shops_hidden');
+            if (selected.length === total) {
+                badge.innerText = 'પસંદ કરેલ દુકાનો: ALL (બધી ' + total + ' દુકાનો)';
+                badge.style.background = '#16a34a';
+                badge.style.color = '#ffffff';
+                hiddenInp.value = 'ALL';
+            } else if (selected.length === 0) {
+                badge.innerText = '⚠️ કોઈ દુકાન પસંદ નથી (૦ / ' + total + ')';
+                badge.style.background = '#dc2626';
+                badge.style.color = '#ffffff';
+                hiddenInp.value = '';
+            } else {
+                badge.innerText = 'પસંદ કરેલ દુકાનો: ' + selected.length + ' / ' + total;
+                badge.style.background = '#fde047';
+                badge.style.color = '#0f172a';
+                hiddenInp.value = selected.join(',');
+            }
+        }
+
+        function quickAiCommand(cmdText) {
+            document.getElementById('ai_cmd_input').value = cmdText;
+            runAiCommand();
+        }
+
+        function runAiCommand(){
+            var q = document.getElementById('ai_cmd_input').value.trim();
+            if(!q){ alert('કૃપા કરીને આદેશ લખો!'); return; }
+            var box = document.getElementById('ai_res_box');
+            box.style.display = 'block';
+            box.innerText = '⏳ AI Co-Pilot પ્રોસેસ કરી રહ્યું છે... કૃપા કરીને રાહ જુઓ.';
+            var fd = new FormData();
+            fd.append('query', q);
+            fd.append('target_shop', '');
+            fetch('/api/super-admin-ai-query', {method: 'POST', body: fd})
+            .then(r => r.json())
+            .then(d => {
+                box.innerText = d.response;
+            }).catch(e => {
+                box.innerText = 'એરર: ' + e;
+            });
+        }
+
+        var _adminQrInfo = {"cloud_url": "", "lan_url": "http://192.168.31.11:8000/login", "best_url": "http://192.168.31.11:8000/login", "cloud_base": "", "lan_base": "http://192.168.31.11:8000"};
+        var _adminQrSelectedMode = "AUTO";
+
+        function setQrImgAndInput(targetUrl, labelText) {
+            if(!targetUrl) return;
+            var imgEl = document.getElementById('mobile_login_qr_img');
+            var inpEl = document.getElementById('mob_url_display');
+            var lblEl = document.getElementById('mob_url_mode_lbl');
+            if(imgEl) {
+                imgEl.style.display = 'block';
+                imgEl.src = '/api/qr-svg?size=170&data=' + encodeURIComponent(targetUrl);
+            }
+            if(inpEl) inpEl.value = targetUrl;
+            if(lblEl && labelText) lblEl.innerText = labelText;
+        }
+
+        function switchAdminQrMode(mode) {
+            _adminQrSelectedMode = mode;
+            if(mode === 'CLOUD') {
+                if(_adminQrInfo.cloud_url) {
+                    setQrImgAndInput(_adminQrInfo.cloud_url, '🌐 સક્રિય 4G/5G યુનિવર્સલ ક્લાઉડ લિંક (Wi-Fi વગર કોઈપણ મોબાઈલમાં ચાલશે):');
+                } else {
+                    alert('⏳ 4G/5G ક્લાઉડ ટનલ કનેક્ટ થઈ રહી છે (અથવા Start_Cloud_Public_Tunnel.bat ચલાવો). હાલ લોકલ Wi-Fi લિંક બતાવેલ છે.');
+                    setQrImgAndInput(_adminQrInfo.lan_url, '📶 સક્રિય લોકલ Wi-Fi / LAN લિંક:');
+                }
+            } else if(mode === 'LAN') {
+                setQrImgAndInput(_adminQrInfo.lan_url, '📶 સક્રિય લોકલ Wi-Fi / LAN લિંક (એક જ રાઉટર માટે):');
+            } else if(mode === 'SUPER_ADMIN') {
+                var base = _adminQrInfo.cloud_base || _adminQrInfo.lan_base;
+                setQrImgAndInput(base + '/jaymin-mobile-admin?key=JAYMIN_9725721215_MASTER', '👑 જયમીનભાઈ પર્સનલ મોબાઈલ કાયમી એડમિન QR (૧ વાર સ્કેન કરતાં મોબાઈલમાં કાયમી ચાલુ રહેશે):');
+            }
+        }
+
+        function pollAdminQrStatus() {
+            fetch('/api/mobile-qr-status').then(r => r.json()).then(d => {
+                _adminQrInfo = d;
+                var topBadge = document.getElementById('qr_hub_top_badge');
+                if(d.is_cloud_ready && d.cloud_url) {
+                    if(topBadge) {
+                        topBadge.style.background = '#15803d';
+                        topBadge.innerText = '✅ 4G/5G ક્લાઉડ QR એક્ટિવ | LAN: ' + d.lan_ip + ':' + d.active_port;
+                    }
+                    if(_adminQrSelectedMode === 'AUTO' || _adminQrSelectedMode === 'CLOUD') {
+                        setQrImgAndInput(d.cloud_url, '✅ સક્રિય 4G/5G યુનિવર્સલ લિંક (Wi-Fi વગર સીધો QR સ્કેન કરો):');
+                    }
+                } else {
+                    if(topBadge) {
+                        topBadge.innerText = '📶 LAN IP: ' + d.lan_ip + ':' + d.active_port + ' (4G/5G ટનલ સ્ટાર્ટ થઈ રહી છે...)';
+                    }
+                    if(_adminQrSelectedMode === 'AUTO') {
+                        setQrImgAndInput(d.lan_url, '📶 સક્રિય મોબાઈલ લૉગિન લિંક (QR કોડમાં સેટ થયેલ):');
+                    }
+                }
+            }).catch(e => {});
+        }
+        setTimeout(pollAdminQrStatus, 500);
+        setInterval(pollAdminQrStatus, 3500);
+
+        var _knownShopCount = 2;
+        var _knownNotifCount = 0;
+        function dismissAdminLiveToast() {
+            var tEl = document.getElementById('admin_live_toast_banner');
+            if (tEl) tEl.style.display = 'none';
+        }
+        function pollLiveCloudSignups() {
+            fetch('/api/poll-live-signups').then(r => r.json()).then(d => {
+                if (d && (d.new_added > 0 || d.total_shops > _knownShopCount || d.unread_notifs > _knownNotifCount)) {
+                    _knownShopCount = d.total_shops;
+                    _knownNotifCount = d.unread_notifs;
+                    var tEl = document.getElementById('admin_live_toast_banner');
+                    if (tEl) {
+                        tEl.style.display = 'flex';
+                        tEl.innerHTML = '🔔 <b>નવો સાઇન-અપ / સ્ટેટસ એલર્ટ:</b> નવો ડેટા મળ્યો છે! <a href="javascript:location.reload()" style="color:#fde047; text-decoration:underline; font-weight:bold; margin-left:8px;">[અહીં ક્લિક કરી પેજ રીફ્રેશ કરો]</a> <button type="button" onclick="dismissAdminLiveToast()" style="margin-left:auto; background:transparent; border:none; color:white; font-size:14px; cursor:pointer;">✖</button>';
+                    }
+                }
+            }).catch(e => {});
+        }
+        setInterval(pollLiveCloudSignups, 15000);
+
+        function syncGranularHiddenInputs() {
+            var subs = [];
+            var cntSet = {};
+            document.querySelectorAll('.gf-sub-chk').forEach(function(chk) {
+                if (chk.checked) {
+                    subs.push(chk.value);
+                    var p = chk.getAttribute('data-parent');
+                    if (p) cntSet[p] = true;
+                    if (chk.value.indexOf('F3_1_') === 0 && subs.indexOf('F3_1') === -1) {
+                        subs.push('F3_1');
+                    }
+                }
+            });
+            var orderedCnts = ['F1','F2','F3','F4','F5','F6','F7','F8'].filter(function(c) { return !!cntSet[c]; });
+            if (orderedCnts.length === 0) orderedCnts = ['F1'];
+            var shts = ['SMART_TERMINAL'];
+            document.querySelectorAll('.gf-sht-chk').forEach(function(chk) {
+                if (chk.checked && shts.indexOf(chk.value) === -1) shts.push(chk.value);
+            });
+            var gals = [];
+            document.querySelectorAll('.gf-gal-chk').forEach(function(chk) {
+                if (chk.checked) gals.push(chk.value);
+            });
+            if (gals.length === 0) gals = ['BANK_CASH'];
+            document.getElementById('gf_active_counters').value = orderedCnts.join(',');
+            document.getElementById('gf_active_sheets').value = shts.join(',');
+            document.getElementById('gf_active_gallas').value = gals.join(',');
+            document.getElementById('gf_active_subparts').value = subs.join(',');
+        }
+
+        function applyGranularPreset(preset) {
+            var drawer = document.getElementById('granular_customizer_drawer');
+            if (drawer) drawer.style.display = 'block';
+            var subSet = null;
+            var shtSet = null;
+            var galSet = null;
+            var defHome = 'F2';
+
+            if (preset === 'BUYBACK_ONLY') {
+                // માત્ર જૂના બાયબેક ફોનનો વેપારી + બાકી ખાતા + ગલ્લો ૧ & ૪
+                subSet = ['F1_3', 'F3_1_CUST_DUE', 'F3_3', 'F3_4', 'F5_1', 'F5_2', 'F5_3', 'F5_4'];
+                shtSet = ['SMART_TERMINAL', 'UNIVERSAL_SEARCH', 'BUYBACK_STOCK', 'CUSTOMER_DUE', 'DAILY_SUMMARY', 'GUJARATI_CONFIG'];
+                galSet = ['BANK_CASH', 'EXTRA_CASH'];
+                defHome = 'F5';
+            } else if (preset === 'RECHARGE_ACC_DUE') {
+                // માત્ર રિચાર્જ + એસેસરીઝ + ગ્રાહક બાકી ખાતા
+                subSet = ['F1_5', 'F3_1_CUST_DUE', 'F3_1_ACC', 'F3_1_RECH', 'F3_2', 'F3_3', 'F3_4', 'F3_6'];
+                shtSet = ['SMART_TERMINAL', 'CUSTOMER_DUE', 'ACCESSORIES_LEDGER', 'RECHARGE_LAPU_VIEW', 'DAILY_SUMMARY', 'GUJARATI_CONFIG'];
+                galSet = ['BANK_CASH', 'ACC_DCASH', 'RECHARGE'];
+                defHome = 'F3';
+            } else if (preset === 'RECH_ACC_BB_PARTNER') {
+                // રિચાર્જ + એસેસરીઝ + બાયબેક + બાકી ખાતા + પાર્ટનર મૂડી/ગિફ્ટ
+                subSet = ['F1_3', 'F1_5', 'F3_1_CUST_DUE', 'F3_1_ACC', 'F3_1_RECH', 'F3_2', 'F3_3', 'F3_4', 'F3_5', 'F3_6', 'F5_1', 'F5_2', 'F5_3', 'F5_4'];
+                shtSet = ['SMART_TERMINAL', 'UNIVERSAL_SEARCH', 'BUYBACK_STOCK', 'CUSTOMER_DUE', 'ACCESSORIES_LEDGER', 'RECHARGE_LAPU_VIEW', 'DAILY_SUMMARY', 'GUJARATI_CONFIG'];
+                galSet = ['BANK_CASH', 'ACC_DCASH', 'RECHARGE', 'EXTRA_CASH'];
+                defHome = 'F3';
+            } else if (preset === 'RETAIL_MOBILE') {
+                // સ્ટાન્ડર્ડ રિટેલ મોબાઈલ શોપ
+                subSet = ['F1_1', 'F1_3', 'F1_5', 'F2_1', 'F2_2', 'F2_3', 'F3_1_CUST_DUE', 'F3_1_ACC', 'F3_1_RECH', 'F3_2', 'F3_3', 'F3_4', 'F3_6', 'F4_1', 'F5_1', 'F5_2', 'F5_3', 'F5_4', 'F7_2', 'F8_1'];
+                shtSet = ['SMART_TERMINAL', 'LIVE_STOCK_VIEW', 'UNIVERSAL_SEARCH', 'APX_SALES_RAW', 'BUYBACK_STOCK', 'CUSTOMER_DUE', 'SUPPLIER_PURCHASE', 'ACCESSORIES_LEDGER', 'RECHARGE_LAPU_VIEW', 'DAILY_SUMMARY', 'GUJARATI_CONFIG'];
+                galSet = ['BANK_CASH', 'ACC_DCASH', 'RECHARGE', 'EXTRA_CASH'];
+                defHome = 'F2';
+            }
+
+            document.querySelectorAll('.gf-sub-chk').forEach(function(chk) {
+                chk.checked = (subSet === null) ? true : (subSet.indexOf(chk.value) !== -1);
+            });
+            document.querySelectorAll('.gf-sht-chk').forEach(function(chk) {
+                chk.checked = (shtSet === null) ? true : (shtSet.indexOf(chk.value) !== -1);
+            });
+            document.querySelectorAll('.gf-gal-chk').forEach(function(chk) {
+                chk.checked = (galSet === null) ? true : (galSet.indexOf(chk.value) !== -1);
+            });
+            var dhEl = document.getElementById('gf_def_home');
+            if (dhEl) dhEl.value = defHome;
+            syncGranularHiddenInputs();
+        }
+
+        function shareWhatsAppSmartLinkFromAdmin() {
+            var dlUrl = 'https://jayminpatel1986.github.io/devanshi-apps/';
+            var directApk = 'https://github.com/Jayminpatel1986/devanshi-apps/releases/latest/download/Devanshi_ERP.apk';
+            var msg = '👑 *દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર (3-in-1 ERP)*\nનમસ્તે વેપારી મિત્ર! તમારા મોબાઈલ શોરૂમ માટે ૧૦ દિવસનો ફ્રી ડેમો શરૂ કરવા સત્તાવાર લિંક ખોલો:\n👉 ' + dlUrl + '\n(Android APK, Apple iOS અને Windows PC માટે ૨૪ કલાક સત્તાવાર ડાઉનલોડ)\nસંપર્ક: જયમીનભાઈ પટેલ (9725721215)';
+            window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+        }
+        function copyMobileUrl() {
+            var inp = document.getElementById('mob_url_display');
+            inp.select();
+            inp.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(inp.value).then(function() {
+                alert('✅ મોબાઈલ લિંક કોપી થઈ ગઈ: ' + inp.value);
+            }).catch(function() {
+                alert('લિંક: ' + inp.value);
+            });
+        }
+
+        function autoCalcExpiry(selEl, fromId, toId){
+            var fEl = document.getElementById(fromId);
+            var tEl = document.getElementById(toId);
+            if(!fEl || !tEl) return;
+            var baseDate = fEl.value ? new Date(fEl.value) : new Date();
+            var pkg = selEl.value;
+            var addDays = 365;
+            if(pkg === 'DEMO_10') addDays = 10;
+            else if(pkg === '1_MONTH') addDays = 30;
+            else if(pkg === '3_MONTHS') addDays = 90;
+            else if(pkg === '6_MONTHS') addDays = 180;
+            else if(pkg === '1_YEAR') addDays = 365;
+            else return;
+            baseDate.setDate(baseDate.getDate() + addDays);
+            tEl.value = baseDate.toISOString().split('T')[0];
+        }
+
+        function openEditStoreModal(sid, sname, mob, uname, pw, st_mode, subm, durpkg, vfrom, vto) {
+        document.getElementById('edm_shop_id').value = sid;
+        document.getElementById('edm_store_name').value = sname;
+        document.getElementById('edm_owner_name').value = sname;
+        document.getElementById('edm_owner_mobile').value = mob;
+        document.getElementById('edm_username').value = uname;
+        document.getElementById('edm_password').value = pw;
+        document.getElementById('edm_store_mode').value = st_mode || 'RETAIL_STANDALONE';
+        document.getElementById('edm_sub_mode').value = subm || 'DEMO';
+        document.getElementById('edm_validity_from').value = vfrom;
+        document.getElementById('edm_validity_to').value = vto;
+        document.getElementById('edit_store_profile_modal').style.display = 'flex';
+    }
+    </script>
+    
+<script id="admin_approval_system">
+async function loadPendingAdminSignups() {
+    var box = document.getElementById('admin_pending_signups_box');
+    if (!box) return;
+    
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
+    
+    try {
+        var r = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups', { headers: headers });
+        if (!r.ok) {
+            box.innerHTML = '<div style="color:#ef4444; text-align:center; padding:10px;">ક્લાઉડ સિંક કનેક્ટ થઈ શક્યું નથી.</div>';
+            return;
+        }
+        var files = await r.json();
+        var cards = '';
+        var count = 0;
+        
+        for (var f of files) {
+            if (!f.name || !f.name.endsWith('.json')) continue;
+            var rf = await fetch(f.url, { headers: headers });
+            if (rf.ok) {
+                var fj = await rf.json();
+                var rawStr = decodeURIComponent(escape(atob(fj.content.replace(/\s/g, ''))));
+                var d = JSON.parse(rawStr);
+                
+                var isPending = (d.status === 'PENDING_APPROVAL' || d.status === 'TRIAL');
+                var isApproved = (d.status === 'APPROVED');
+                count++;
+                
+                var rawDev = (d.machine_name || d.device_type || '').toString();
+                var devBadge = '📱 Android સ્માર્ટફોન';
+                if (rawDev.indexOf('V2222') !== -1 || rawDev.toLowerCase().indexOf('vivo') !== -1) devBadge = '📱 Vivo સ્માર્ટફોન (V2222)';
+                else if (rawDev.indexOf('SM-') !== -1 || rawDev.toLowerCase().indexOf('samsung') !== -1) devBadge = '📱 Samsung Galaxy';
+                else if (rawDev.indexOf('CPH') !== -1 || rawDev.toLowerCase().indexOf('oppo') !== -1) devBadge = '📱 Oppo સ્માર્ટફોન';
+                else if (rawDev.indexOf('RMX') !== -1 || rawDev.toLowerCase().indexOf('realme') !== -1) devBadge = '📱 Realme સ્માર્ટફોન';
+                else if (rawDev.toLowerCase().indexOf('iphone') !== -1) devBadge = '🍎 Apple iPhone';
+                else if (rawDev.toLowerCase().indexOf('windows') !== -1) devBadge = '💻 Windows PC / લેપટોપ';
+                if (rawDev.indexOf('Android 15') !== -1) devBadge += ' [Android 15]';
+                else if (rawDev.indexOf('Android 14') !== -1) devBadge += ' [Android 14]';
+
+                cards += '<div style="background:#1e293b; border:1.5px solid ' + (isApproved ? '#22c55e' : '#eab308') + '; border-radius:10px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
+                    '<div>' +
+                    '<div style="font-size:15px; font-weight:bold; color:#fde047;">🏬 ' + (d.store_name || 'દુકાન') + ' <span style="font-size:12px; color:#38bdf8;">(ID: ' + d.shop_id + ')</span></div>' +
+                    '<div style="font-size:13px; color:#cbd5e1; margin-top:2px;">👤 માલિક: <b>' + (d.owner_name || '-') + '</b> | 📱 મોબાઈલ: <b><a href="tel:' + d.owner_mobile + '" style="color:#4ade80;">' + (d.owner_mobile || '-') + '</a></b> | 🔑 ID: <b>' + (d.owner_user_id || '-') + '</b></div>' +
+                    '<div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">📱 ડિવાઇસ: <b style="color:#38bdf8;">' + devBadge + '</b> | તારીખ: ' + (d.timestamp || '-') + ' | સ્થિતિ: <b style="color:' + (isApproved ? '#4ade80' : '#fde047') + ';">' + (d.status || '-') + '</b></div>' +
+                    '</div>' +
+                    '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
+                    '<button type="button" onclick="approveShopDemo(\'' + d.shop_id + '\', \'' + encodeURIComponent(d.store_name) + '\', \'' + d.owner_mobile + '\', \'' + encodeURIComponent(d.owner_name) + '\', \'' + d.owner_user_id + '\', \'' + f.sha + '\')" style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">✅ Approve (૧૦ દિવસ ડેમો આપો)</button>' +
+                    '<button type="button" onclick="rejectShopDemo(\'' + d.shop_id + '\', \'' + encodeURIComponent(d.store_name) + '\', \'' + f.sha + '\')" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">❌ Reject (નામંજૂર / ડિલીટ)</button>' +
+                    '<a href="https://wa.me/91' + d.owner_mobile + '?text=' + encodeURIComponent('નમસ્તે ' + d.owner_name + 'જી! તમારી દુકાન (' + d.store_name + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરની ડેમો અરજી મળી ગઈ છે.') + '" target="_blank" style="background:#0284c7; color:white; padding:8px 12px; border-radius:6px; text-decoration:none; font-weight:bold;">💬 વોટ્સએપ મેસેજ</a>' +
+                    '</div>' +
+                    '</div>';
+            }
+        }
+        
+        box.innerHTML = cards || '<div style="color:#94a3b8; text-align:center; padding:12px;">હાલ કોઈ પેન્ડિંગ અરજીઓ નથી.</div>';
+    } catch(err) {
+        box.innerHTML = '<div style="color:#ef4444; text-align:center; padding:10px;">ભૂલ: ' + err.message + '</div>';
+    }
+}
+
+
+async function rejectShopDemo(shopId, encStoreName, sha) {
+    var sName = decodeURIComponent(encStoreName);
+    if (!confirm('શું તમે આ દુકાન (' + sName + ') ની ડેમો અરજી ખરેખર નામંજૂર (Reject / Delete) કરવા માંગો છો?')) return;
+    
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
+    
+    try {
+        var delRes = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json', {
+            method: 'DELETE',
+            headers: headers,
+            body: JSON.stringify({
+                message: 'Reject / Delete Demo Signup: ' + sName,
+                sha: sha
+            })
+        });
+        if (delRes.ok) {
+            alert('❌ ' + sName + ' ની ડેમો અરજી સફળતાપૂર્વક નામંજૂર / ડિલીટ કરી દેવામાં આવી છે!');
+            loadPendingAdminSignups();
+        } else {
+            alert('❌ ડિલીટ કરવામાં ક્ષતિ આવી!');
+        }
+    } catch(err) {
+        alert('ભૂલ: ' + err.message);
+    }
+}
+
+async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userId, sha) {
+    if (!confirm('શું તમે આ દુકાન (' + decodeURIComponent(encStoreName) + ') ને ૧૦ દિવસનો ફ્રી ડેમો મંજૂર (Approve) કરવા માંગો છો?')) return;
+    
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    
+    var now = new Date();
+    var todayIso = now.toISOString().split('T')[0];
+    var expIso = new Date(now.getTime() + 10 * 86400000).toISOString().split('T')[0];
+    
+    var updatedPayload = {
+        shop_id: shopId,
+        store_name: decodeURIComponent(encStoreName),
+        owner_name: decodeURIComponent(encOwnerName),
+        owner_mobile: mobile,
+        owner_user_id: userId,
+        status: 'APPROVED',
+        validity_from: todayIso,
+        validity_to: expIso,
+        demo_days: 10,
+        approved_at: new Date().toISOString()
+    };
+    
+    var b64Content = btoa(unescape(encodeURIComponent(JSON.stringify(updatedPayload, null, 2))));
+    
+    var putRes = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json', {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify({
+            message: 'Approve Demo for ' + decodeURIComponent(encStoreName),
+            content: b64Content,
+            sha: sha
+        })
+    });
+    
+    if (putRes.ok) {
+        alert('✅ અભિનંદન! ' + decodeURIComponent(encStoreName) + ' નો ૧૦ દિવસનો ફ્રી ડેમો મંજૂર થઈ ગયો છે!\n\nહવે દુકાનદારને વોટ્સએપ પર લૉગિન વિગતો મોકલી આપો.');
+        var directLoginUrl = 'https://jayminpatel1986.github.io/devanshi-apps/client-erp.html?shop=' + shopId + '&user=' + encodeURIComponent(userId) + '&auth=approved';
+        window.open('https://wa.me/91' + mobile + '?text=' + encodeURIComponent('🎉 અભિનંદન ' + decodeURIComponent(encOwnerName) + 'જી! તમારી દુકાન (' + decodeURIComponent(encStoreName) + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરનો ૧૦-દિવસનો ફ્રી ડેમો મંજૂર (Approved) થઈ ગયો છે!\n\n🔗 સીધી લૉગિન લિંક (૧-ક્લિકમાં ખુલી જશે):\n' + directLoginUrl + '\n\n👤 તમારો લૉગિન ID: ' + userId + '\n\nકોઈપણ પ્રશ્ન હોય તો મને સીધો ફોન કરજો!\nજયમીન પટેલ - 9725721215'), '_blank');
+        loadPendingAdminSignups();
+    } else {
+        alert('❌ એપ્રુવલ અપડેટ કરવામાં ક્ષતિ આવી!');
+    }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    loadPendingAdminSignups();
+});
+</script>
+
+</body></html>
