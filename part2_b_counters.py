@@ -1608,7 +1608,47 @@ def render_smart_terminal(
                             <button type="button" onclick="sendF3WhatsAppReminder()" style="background:#16a34a; color:white; border:none; padding:6px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">📲 WhatsApp રિમાઇન્ડર</button>
                         </div>
                     </div>
-                    <div class="f-row"><div class="lbl" id="f3_rec_amt_lbl">૪. આજે વસૂલ / કુલ વકરા રકમ (₹):</div><input type="number" step="any" name="received_amt" id="f3_rec_amt" value="0" oninput="calcF3LapuTable()" required style="font-weight:800; color:#0284c7; font-size:14px;"></div>
+                    <div class="f-row" id="f3_rec_single_amt_row"><div class="lbl" id="f3_rec_amt_lbl">૪. આજે વસૂલ / કુલ વકરા રકમ (₹):</div><input type="number" step="any" name="received_amt" id="f3_rec_amt" value="0" oninput="calcF3LapuTable()" required style="font-weight:800; color:#0284c7; font-size:14px;"></div>
+
+                    <!-- 💰 સાંજનો લમ્પ-સમ મલ્ટી-MOP વકરો સ્પ્લિટ (Accessories & Recharge Evening Collection) -->
+                    <div id="f3_evening_multisplit_box" style="display:none; background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; padding:12px; margin:10px 0;">
+                        <div style="font-weight:800; color:#166534; font-size:13px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                            <span>💰 સાંજનો લમ્પ-સમ મલ્ટી-MOP વકરો સ્પ્લિટ (ગ્રાઉન્ડ લેવલ રોકડ & ડિજિટલ હિસાબ)</span>
+                            <span style="font-size:11px; color:#15803d; background:#dcfce7; padding:2px 8px; border-radius:4px; font-weight:bold;">૫-માધ્યમ વિભાજન</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <div class="f-row" style="margin:0;">
+                                <div class="lbl" style="width:160px; font-weight:bold; color:#0f2043;">૧. 💵 રોકડ કેશ (ગલ્લો):</div>
+                                <input type="number" step="any" name="split_cash_amt" id="f3_sp_cash" value="0" oninput="calcF3MultiSplit()" style="font-weight:800; color:#15803d; font-size:13.5px;">
+                            </div>
+                            <div class="f-row" style="margin:0;">
+                                <div class="lbl" style="width:160px; font-weight:bold; color:#0369a1;">૨. 📱 ઓનલાઇન UPI / QR:</div>
+                                <input type="number" step="any" name="split_upi_amt" id="f3_sp_upi" value="0" oninput="calcF3MultiSplit()" style="font-weight:800; color:#0369a1; font-size:13.5px;">
+                            </div>
+                            <div class="f-row" style="margin:0;">
+                                <div class="lbl" style="width:160px; font-weight:bold; color:#7c3aed;">૩. 💳 કાર્ડ સ્વાઇપ (POS):</div>
+                                <input type="number" step="any" name="split_card_amt" id="f3_sp_card" value="0" oninput="calcF3MultiSplit()" style="font-weight:800; color:#7c3aed; font-size:13.5px;">
+                            </div>
+                            <div class="f-row" style="margin:0;">
+                                <div class="lbl" style="width:160px; font-weight:bold; color:#b45309;">૪. 🏦 NEFT / બેંક ટ્રાન્સફર:</div>
+                                <input type="number" step="any" name="split_neft_amt" id="f3_sp_neft" value="0" oninput="calcF3MultiSplit()" style="font-weight:800; color:#b45309; font-size:13.5px;">
+                            </div>
+                        </div>
+                        <!-- ૫. ગ્રાહક બાકી ઉધાર (Customer Due) -->
+                        <div style="background:#fffbeb; border:1px solid #fde047; padding:6px 10px; border-radius:6px; margin-top:8px;">
+                            <div style="font-size:11.5px; font-weight:bold; color:#854d0e; margin-bottom:4px;">૫. 📝 ગ્રાહક બાકી ઉધાર (ગ્રાહક ખાતામાં સીધું જશે):</div>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" name="split_baki_customer" id="f3_sp_baki_cust" placeholder="ગ્રાહકનું નામ & વિગત..." style="flex:1;">
+                                <input type="text" name="split_baki_phone" id="f3_sp_baki_phone" maxlength="10" placeholder="૧૦-અંક મોબાઈલ" style="max-width:130px;">
+                                <input type="number" step="any" name="split_baki_amt" id="f3_sp_baki_amt" value="0" oninput="calcF3MultiSplit()" placeholder="બાકી રકમ ₹" style="max-width:130px; font-weight:800; color:#dc2626;">
+                            </div>
+                        </div>
+                        <!-- કુલ લમ્પ-સમ સરવાળો -->
+                        <div style="background:#dcfce7; border:1.5px solid #16a34a; padding:6px 12px; border-radius:6px; margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:800; color:#15803d; font-size:13px;">📊 આજનો કુલ સાંજનો વકરો (Cash + UPI + Card + NEFT + Baki):</span>
+                            <span id="f3_sp_total_badge" style="font-weight:900; color:#166534; font-size:16px;">₹0</span>
+                        </div>
+                    </div>
 
                     <!-- 📱 રિચાર્જ લમ્પ-સમ વકરો સિલેક્ટ થાય ત્યારે દેખાતું ૩-લાપુ બેલેન્સ (Airtel, VI, Jio) બોક્સ -->
                     <div id="f3_recharge_lapu_box" style="display:none; background:#faf5ff; border:2px solid #9333ea; border-radius:8px; padding:10px; margin:8px 0;">
@@ -1641,7 +1681,7 @@ def render_smart_terminal(
                         </div>
                     </div>
 
-                    <div class="f-row"><div class="lbl">૫. ચૂકવણી પદ્ધતિ (MOP):</div>
+                    <div class="f-row" id="f3_rec_single_mop_row"><div class="lbl">૫. ચૂકવણી પદ્ધતિ (MOP):</div>
                         <select name="pay_mode" onchange="document.getElementById('f3_rec_galla_row').style.display=(this.value.indexOf('રોકડ')!==-1?'flex':'none')">
                             <option value="રોકડ (Cash)">૧. રોકડ (Cash)</option>
                             <option value="ઓનલાઈન UPI / QR">૨. ઓનલાઈન UPI / QR</option>
@@ -1860,26 +1900,45 @@ def render_smart_terminal(
                 var amtLbl = document.getElementById('f3_rec_amt_lbl');
                 var noteInp = document.getElementById('f3_rec_note_inp');
                 var gSel = document.querySelector('#f3_sub_receive select[name="galla_name"]');
+                var splitBox = document.getElementById('f3_evening_multisplit_box');
+                var singleMopRow = document.getElementById('f3_rec_single_mop_row');
+                var singleGallaRow = document.getElementById('f3_rec_galla_row');
+                var singleAmtRow = document.getElementById('f3_rec_single_amt_row');
+
                 if(rt === 'CUST_DUE'){{
                     if(custRows) custRows.style.display = 'block';
                     if(lapuBox) lapuBox.style.display = 'none';
+                    if(splitBox) splitBox.style.display = 'none';
+                    if(singleMopRow) singleMopRow.style.display = 'flex';
+                    if(singleGallaRow) singleGallaRow.style.display = 'flex';
+                    if(singleAmtRow) singleAmtRow.style.display = 'flex';
                     if(dueSel) dueSel.required = true;
                     if(amtLbl) amtLbl.innerText = '૪. આજે વસૂલ રકમ (₹):';
                     if(gSel) gSel.value = 'BANK_CASH';
                 }} else if(rt === 'ACC_INCOME'){{
                     if(custRows) custRows.style.display = 'none';
                     if(lapuBox) lapuBox.style.display = 'none';
+                    if(splitBox) splitBox.style.display = 'block';
+                    if(singleMopRow) singleMopRow.style.display = 'none';
+                    if(singleGallaRow) singleGallaRow.style.display = 'none';
+                    if(singleAmtRow) singleAmtRow.style.display = 'none';
                     if(dueSel) dueSel.required = false;
                     if(amtLbl) amtLbl.innerText = '૪. સાંજનો એસેસરીઝ લમ્પ-સમ વકરો (₹):';
                     if(noteInp && !noteInp.value) noteInp.value = 'એસેસરીઝ દૈનિક લમ્પ-સમ વકરો';
                     if(gSel) gSel.value = 'ACC_DCASH';
+                    calcF3MultiSplit();
                 }} else if(rt === 'RECH_INCOME'){{
                     if(custRows) custRows.style.display = 'none';
                     if(lapuBox) lapuBox.style.display = 'block';
+                    if(splitBox) splitBox.style.display = 'block';
+                    if(singleMopRow) singleMopRow.style.display = 'none';
+                    if(singleGallaRow) singleGallaRow.style.display = 'none';
+                    if(singleAmtRow) singleAmtRow.style.display = 'none';
                     if(dueSel) dueSel.required = false;
                     if(amtLbl) amtLbl.innerText = '૪. સાંજનો રિચાર્જ લમ્પ-સમ વકરો (₹):';
                     if(noteInp && !noteInp.value) noteInp.value = 'રિચાર્જ આખા દિવસનો લમ્પ-સમ વકરો';
                     if(gSel) gSel.value = 'RECHARGE';
+                    calcF3MultiSplit();
                     calcF3LapuTable();
                 }}
             }}
@@ -1904,6 +1963,19 @@ def render_smart_terminal(
                     if (lapuBox) lapuBox.style.display = 'none';
                     if (amtLbl) amtLbl.innerText = '૩. ખર્ચ / વકરાની રકમ (₹):';
                 }}
+            }}
+            function calcF3MultiSplit() {{
+                var c = parseFloat(document.getElementById('f3_sp_cash')?.value || 0) || 0;
+                var u = parseFloat(document.getElementById('f3_sp_upi')?.value || 0) || 0;
+                var cd = parseFloat(document.getElementById('f3_sp_card')?.value || 0) || 0;
+                var n = parseFloat(document.getElementById('f3_sp_neft')?.value || 0) || 0;
+                var b = parseFloat(document.getElementById('f3_sp_baki_amt')?.value || 0) || 0;
+                var tot = c + u + cd + n + b;
+                var badge = document.getElementById('f3_sp_total_badge');
+                if (badge) badge.innerText = '₹' + tot.toLocaleString('en-IN');
+                var mainAmt = document.getElementById('f3_rec_amt');
+                if (mainAmt) mainAmt.value = tot;
+                if (typeof calcF3LapuTable === 'function') calcF3LapuTable();
             }}
             function calcF3LapuTable(){{
                 var rows = document.querySelectorAll('.f3-lapu-row');
