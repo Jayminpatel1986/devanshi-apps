@@ -444,7 +444,8 @@ def render_smart_terminal(
                     <option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash - ગલ્લામાંથી)</option>
                     <option value="ઓનલાઈન UPI / QR">📱 ૨. ઓનલાઈન UPI / QR (બેંક ખાતામાંથી)</option>
                     <option value="બેંક ટ્રાન્સફર (NEFT/IMPS)">🏦 ૩. બેંક ટ્રાન્સફર (NEFT/RTGS/IMPS)</option>
-                    <option value="ક્રેડિટ/ડેબિટ કાર્ડ">💳 ૪. ક્રેડિટ / ડેબિટ કાર્ડ</option>
+                    <option value="ક્રેડિટ/ડેબિટ કાર્ડ">💳 ૪. ક્રેડિટ કાર્ડ (પાર્ટનર / સ્ટાફ કાર્ડ સ્વાઇપ)</option>
+                    <option value="પાર્ટનર અંગત ખિસ્સામાંથી">💼 ૫. પાર્ટનર અંગત ખિસ્સામાંથી (Personal Pocket Cash/UPI)</option>
                 </select>
                 <select name="paid_from_galla" id="f1_paid_galla" style="font-weight:bold; color:#0f2043; flex:1;">
                     <option value="BANK_CASH" selected>૧. બેંક કેશ (ગલ્લો ૧)</option>
@@ -452,6 +453,40 @@ def render_smart_terminal(
                     <option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>
                     <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
                 </select>
+            </div>
+            <div id="f1_cc_partner_box" style="display:none; background:#fef2f2; border:1.5px dashed #ef4444; border-radius:6px; padding:8px; margin:6px 0;">
+                <div style="font-weight:bold; color:#b91c1c; margin-bottom:5px; font-size:12px;">
+                    💳 પાર્ટનર / સ્ટાફ ક્રેડિટ કાર્ડ અથવા અંગત ચુકવણી વિગત (Tally Prime શૈલી લેણદાર/રિઇમ્બર્સમેન્ટ ટ્રેકિંગ):
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    <div style="flex:1; min-width:180px;">
+                        <label style="font-size:11px; color:#475569; display:block; font-weight:bold;">૧. કાર્ડધારક / ચૂકવનાર પાર્ટનર:</label>
+                        <select name="f1_payer_name" id="f1_payer_name" style="width:100%; padding:4px; font-weight:bold; border:1px solid #cbd5e1; border-radius:4px; color:#0f2043;">
+                            <option value="જયમીનભાઈ પટેલ (દુકાનદાર - Owner)" selected>જયમીનભાઈ પટેલ (મુખ્ય માલિક / પાર્ટનર ૧)</option>
+                            <option value="પાર્ટનર ૨ (અન્ય ભાગીદાર)">પાર્ટનર ૨ (અન્ય ભાગીદાર)</option>
+                            <option value="પાર્ટનર ૩ (અન્ય ભાગીદાર)">પાર્ટનર ૩ (અન્ય ભાગીદાર)</option>
+                            <option value="જયમીન (એકાઉન્ટન્ટ)">જયમીન (એકાઉન્ટન્ટ)</option>
+                            <option value="સંકેત (SANKET)">સંકેત (SANKET - સ્ટાફ)</option>
+                            <option value="અજય (AJAY)">અજય (AJAY - સ્ટાફ)</option>
+                            <option value="કૌશલ (KAUSHAL)">કૌશલ (KAUSHAL - સ્ટાફ)</option>
+                        </select>
+                    </div>
+                    <div style="flex:1; min-width:180px;">
+                        <label style="font-size:11px; color:#475569; display:block; font-weight:bold;">૨. ક્રેડિટ કાર્ડ / બેંક નામ (દા.ત. HDFC, SBI):</label>
+                        <input type="text" name="f1_card_details" id="f1_card_details" placeholder="દા.ત. HDFC Millennia ક્રેડિટ કાર્ડ, SBI કાર્ડ..." style="width:100%; padding:4px; border:1px solid #cbd5e1; border-radius:4px; font-weight:bold;">
+                    </div>
+                    <div style="flex:1; min-width:180px;">
+                        <label style="font-size:11px; color:#475569; display:block; font-weight:bold;">૩. દુકાન દ્વારા વળતર / પરત ચૂકવણી:</label>
+                        <select name="f1_reimburse_status" id="f1_reimburse_status" style="width:100%; padding:4px; font-weight:bold; color:#b91c1c; border:1px solid #f87171; border-radius:4px; background:#fff;">
+                            <option value="PENDING" selected>⏳ પરત ચૂકવણી બાકી (દુકાન પાછળથી ચૂકવશે - ગલ્લા/બેંકમાંથી ₹0 કપાશે)</option>
+                            <option value="SETTLED_CASH">✅ રોકડ ગલ્લામાંથી તરત પરત ચૂકતે (ગલ્લામાંથી બાદ થશે)</option>
+                            <option value="SETTLED_BANK">✅ દુકાન બેંકમાંથી તરત પરત ચૂકતે (બેંકમાંથી બાદ થશે)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="font-size:11px; color:#64748b; margin-top:4px;">
+                    ℹ️ Tally Prime નિયમ: જો <b>'પરત ચૂકવણી બાકી'</b> રાખશો તો ગલ્લા કે બેંકમાંથી <b>₹0</b> કપાશે અને પાર્ટનર/સ્ટાફના લેણદાર ખાતામાં રકમ જમા બોલશે જેથી કાર્ડ બિલ ભરતી વખતે હિસાબ ચૂકવી શકાય.
+                </div>
             </div>
             <div class="f-row" style="background:#e0f2fe; padding:5px; border-radius:4px;">
                 <div class="lbl">૧૪. બિલ / આધાર / ફોન ફોટા અપલોડ:</div>
@@ -467,6 +502,28 @@ def render_smart_terminal(
                 var gallaEl = (typeof gallaElId === 'string') ? document.getElementById(gallaElId) : gallaElId;
                 if (!mopEl || !gallaEl) return;
                 var mop = (mopEl.value || '').trim();
+                
+                var isCardPartner = (
+                    mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1 ||
+                    mop.indexOf('ખિસ્સા') !== -1 || mop.indexOf('પાર્ટનર') !== -1
+                );
+                var f1CcBox = document.getElementById('f1_cc_partner_box');
+                if (f1CcBox) {{
+                    f1CcBox.style.display = isCardPartner ? 'block' : 'none';
+                }}
+                var f3ExpCcBox = document.getElementById('f3_exp_cc_box');
+                if (f3ExpCcBox) {{
+                    f3ExpCcBox.style.display = isCardPartner ? 'block' : 'none';
+                }}
+
+                if (isCardPartner && (gallaElId === 'f1_paid_galla' || gallaElId === 'f3_exp_galla')) {{
+                    gallaEl.innerHTML = '<option value="PARTNER_CC" selected>💳 પાર્ટનર ક્રેડિટ કાર્ડ / અંગત ચુકવણી (ગલ્લો અપ્રભાવિત)</option>';
+                    gallaEl.style.background = '#fef2f2';
+                    gallaEl.style.borderColor = '#ef4444';
+                    gallaEl.style.color = '#b91c1c';
+                    return;
+                }}
+
                 var isDigital = (
                     mop.indexOf('UPI') !== -1 || mop.indexOf('બેંક') !== -1 || mop.indexOf('Bank') !== -1 ||
                     mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1 || mop.indexOf('NEFT') !== -1 ||
@@ -1567,7 +1624,10 @@ def render_smart_terminal(
                 </td>
             </tr>
             """
-        c.execute("SELECT COALESCE(SUM(CASE WHEN tx_type IN ('CAPITAL_IN','GIFT_IN') THEN amount ELSE 0 END), 0), COALESCE(SUM(CASE WHEN tx_type IN ('DRAWING_OUT','CAPITAL_OUT') THEN amount ELSE 0 END), 0) FROM partner_capital_ledger")
+        c.execute("""SELECT 
+            COALESCE(SUM(CASE WHEN tx_type IN ('CAPITAL_IN','GIFT_IN','PARTNER_GIFT','CC_PURCHASE_PAYABLE','PERSONAL_EXP_PAYABLE') THEN amount ELSE 0 END), 0), 
+            COALESCE(SUM(CASE WHEN tx_type IN ('DRAWING_OUT','CAPITAL_OUT','CC_REIMBURSE_PAID') THEN amount ELSE 0 END), 0) 
+            FROM partner_capital_ledger""")
         _p_in_tot, _p_out_tot = c.fetchone() or (0.0, 0.0)
         _p_in_tot = float(_p_in_tot or 0.0)
         _p_out_tot = float(_p_out_tot or 0.0)
@@ -1744,9 +1804,19 @@ def render_smart_terminal(
                         <select name="payout_target_type" id="f3_po_type" onchange="toggleF3PayoutTarget()" style="max-width:210px;">
                             <option value="SUPPLIER">વેપારી / સપ્લાયર પેમેન્ટ</option>
                             <option value="STAFF">સ્ટાફ ઉપાડ / પગાર / કમિશન</option>
+                            <option value="PARTNER">🤝 ભાગીદાર / ક્રેડિટ કાર્ડ વળતર ચૂકવણી (Partner CC Reimbursement)</option>
                         </select>
                         <select name="supplier_name" id="f3_po_supp" style="flex:1;">{party_opts_html}</select>
                         <select name="staff_name" id="f3_po_staff" style="flex:1; display:none;">{staff_opts_html}</select>
+                        <select name="partner_name" id="f3_po_partner" style="flex:1; display:none; font-weight:bold;">
+                            <option value="જયમીનભાઈ પટેલ (દુકાનદાર - Owner)" selected>જયમીનભાઈ પટેલ (મુખ્ય માલિક / પાર્ટનર ૧)</option>
+                            <option value="પાર્ટનર ૨ (અન્ય ભાગીદાર)">પાર્ટનર ૨ (અન્ય ભાગીદાર)</option>
+                            <option value="પાર્ટનર ૩ (અન્ય ભાગીદાર)">પાર્ટનર ૩ (અન્ય ભાગીદાર)</option>
+                            <option value="જયમીન (એકાઉન્ટન્ટ)">જયમીન (એકાઉન્ટન્ટ)</option>
+                            <option value="સંકેત (SANKET)">સંકેત (SANKET - સ્ટાફ)</option>
+                            <option value="અજય (AJAY)">અજય (AJAY - સ્ટાફ)</option>
+                            <option value="કૌશલ (KAUSHAL)">કૌશલ (KAUSHAL - સ્ટાફ)</option>
+                        </select>
                     </div>
                                         <div class="f-row" id="f3_po_staff_head_row" style="display:none; background:#fefce8; padding:6px; border-radius:5px; border:1.5px solid #ca8a04;">
                         <div class="lbl" style="color:#854d0e; font-weight:800;">૨(ખ). સ્ટાફ વ્યવહાર પ્રકાર (૪ અલગ હેડ):</div>
@@ -1798,6 +1868,8 @@ def render_smart_terminal(
                             <option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash)</option>
                             <option value="ઓનલાઈન UPI">📱 ૨. ઓનલાઈન UPI</option>
                             <option value="ઓનલાઈન / બેંક">🏦 ૩. ઓનલાઈન / બેંક</option>
+                            <option value="ક્રેડિટ/ડેબિટ કાર્ડ">💳 ૪. ક્રેડિટ કાર્ડ (પાર્ટનર / સ્ટાફ કાર્ડ સ્વાઇપ)</option>
+                            <option value="પાર્ટનર અંગત ખિસ્સામાંથી">💼 ૫. પાર્ટનર અંગત ખિસ્સામાંથી (Personal Pocket Cash/UPI)</option>
                         </select>
                     </div>
                     <div class="f-row"><div class="lbl">૫. કયા ગલ્લામાંથી ખર્ચ ચૂકવ્યો (૪-ગલ્લા):</div>
@@ -1807,6 +1879,37 @@ def render_smart_terminal(
                             <option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>
                             <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
                         </select>
+                    </div>
+                    <div id="f3_exp_cc_box" style="display:none; background:#fef2f2; border:1.5px dashed #ef4444; border-radius:6px; padding:8px; margin:6px 0;">
+                        <div style="font-weight:bold; color:#b91c1c; margin-bottom:5px; font-size:12px;">
+                            💳 ખર્ચ પેટે પાર્ટનર / સ્ટાફ ક્રેડિટ કાર્ડ અથવા અંગત ચુકવણી વિગત (રિઇમ્બર્સમેન્ટ ટ્રેકિંગ):
+                        </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                            <div style="flex:1; min-width:180px;">
+                                <label style="font-size:11px; color:#475569; display:block; font-weight:bold;">૧. ચૂકવનાર પાર્ટનર / સ્ટાફ:</label>
+                                <select name="exp_payer_name" id="exp_payer_name" style="width:100%; padding:4px; font-weight:bold; border:1px solid #cbd5e1; border-radius:4px; color:#0f2043;">
+                                    <option value="જયમીનભાઈ પટેલ (દુકાનદાર - Owner)" selected>જયમીનભાઈ પટેલ (મુખ્ય માલિક / પાર્ટનર ૧)</option>
+                                    <option value="પાર્ટનર ૨ (અન્ય ભાગીદાર)">પાર્ટનર ૨ (અન્ય ભાગીદાર)</option>
+                                    <option value="પાર્ટનર ૩ (અન્ય ભાગીદાર)">પાર્ટનર ૩ (અન્ય ભાગીદાર)</option>
+                                    <option value="જયમીન (એકાઉન્ટન્ટ)">જયમીન (એકાઉન્ટન્ટ)</option>
+                                    <option value="સંકેત (SANKET)">સંકેત (SANKET - સ્ટાફ)</option>
+                                    <option value="અજય (AJAY)">અજય (AJAY - સ્ટાફ)</option>
+                                    <option value="કૌશલ (KAUSHAL)">કૌશલ (KAUSHAL - સ્ટાફ)</option>
+                                </select>
+                            </div>
+                            <div style="flex:1; min-width:180px;">
+                                <label style="font-size:11px; color:#475569; display:block; font-weight:bold;">૨. ક્રેડિટ કાર્ડ / બેંક વિગત:</label>
+                                <input type="text" name="exp_card_details" id="exp_card_details" placeholder="દા.ત. HDFC ક્રેડિટ કાર્ડ, SBI કાર્ડ..." style="width:100%; padding:4px; border:1px solid #cbd5e1; border-radius:4px; font-weight:bold;">
+                            </div>
+                            <div style="flex:1; min-width:180px;">
+                                <label style="font-size:11px; color:#475569; display:block; font-weight:bold;">૩. દુકાન દ્વારા વળતર:</label>
+                                <select name="exp_reimburse_status" id="exp_reimburse_status" style="width:100%; padding:4px; font-weight:bold; color:#b91c1c; border:1px solid #f87171; border-radius:4px; background:#fff;">
+                                    <option value="PENDING" selected>⏳ પરત ચૂકવણી બાકી (દુકાન પાછળથી ચૂકવશે - ગલ્લા/બેંકમાંથી ₹0 કપાશે)</option>
+                                    <option value="SETTLED_CASH">✅ રોકડ ગલ્લામાંથી તરત પરત ચૂકતે (ગલ્લામાંથી બાદ થશે)</option>
+                                    <option value="SETTLED_BANK">✅ દુકાન બેંકમાંથી તરત પરત ચૂકતે (બેંકમાંથી બાદ થશે)</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="f-row"><div class="lbl">૬. વિગતવાર નોંધ / રિમાર્ક:</div><input type="text" name="remarks" placeholder="હાથેથી વિગતવાર ખર્ચ નોંધ લખો..."></div>
                     <div class="btn-wrap"><button type="submit" class="btn-save" id="f3_exp_submit_btn" style="background:#b45309;">૭. [ દૈનિક દુકાન ખર્ચ સેવ કરો (Enter) ]</button></div>
@@ -1954,6 +2057,28 @@ def render_smart_terminal(
                 var gallaEl = (typeof gallaElId === 'string') ? document.getElementById(gallaElId) : gallaElId;
                 if (!mopEl || !gallaEl) return;
                 var mop = (mopEl.value || '').trim();
+                
+                var isCardPartner = (
+                    mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1 ||
+                    mop.indexOf('ખિસ્સા') !== -1 || mop.indexOf('પાર્ટનર') !== -1
+                );
+                var f1CcBox = document.getElementById('f1_cc_partner_box');
+                if (f1CcBox) {{
+                    f1CcBox.style.display = isCardPartner ? 'block' : 'none';
+                }}
+                var f3ExpCcBox = document.getElementById('f3_exp_cc_box');
+                if (f3ExpCcBox) {{
+                    f3ExpCcBox.style.display = isCardPartner ? 'block' : 'none';
+                }}
+
+                if (isCardPartner && (gallaElId === 'f1_paid_galla' || gallaElId === 'f3_exp_galla')) {{
+                    gallaEl.innerHTML = '<option value="PARTNER_CC" selected>💳 પાર્ટનર ક્રેડિટ કાર્ડ / અંગત ચુકવણી (ગલ્લો અપ્રભાવિત)</option>';
+                    gallaEl.style.background = '#fef2f2';
+                    gallaEl.style.borderColor = '#ef4444';
+                    gallaEl.style.color = '#b91c1c';
+                    return;
+                }}
+
                 var isDigital = (
                     mop.indexOf('UPI') !== -1 || mop.indexOf('બેંક') !== -1 || mop.indexOf('Bank') !== -1 ||
                     mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1 || mop.indexOf('NEFT') !== -1 ||
@@ -2163,6 +2288,8 @@ def render_smart_terminal(
                 var t = document.getElementById('f3_po_type').value;
                 document.getElementById('f3_po_supp').style.display = (t === 'SUPPLIER') ? 'inline-block' : 'none';
                 document.getElementById('f3_po_staff').style.display = (t === 'STAFF') ? 'inline-block' : 'none';
+                var pPart = document.getElementById('f3_po_partner');
+                if (pPart) pPart.style.display = (t === 'PARTNER') ? 'inline-block' : 'none';
                 var sHead = document.getElementById('f3_po_staff_head_row');
                 if (sHead) sHead.style.display = (t === 'STAFF') ? 'flex' : 'none';
             }}
