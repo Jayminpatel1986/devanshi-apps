@@ -3497,6 +3497,11 @@ def init_db_for_path(target_db_path=None, target_sid=None):
         remarks TEXT DEFAULT '',
         doc_path TEXT DEFAULT ''
     )""")
+    add_col_if_missing(conn, "partner_capital_ledger", "card_details", "TEXT DEFAULT ''")
+    add_col_if_missing(conn, "partner_capital_ledger", "reimburse_status", "TEXT DEFAULT 'PENDING'")
+    add_col_if_missing(conn, "partner_capital_ledger", "settled_date", "TEXT DEFAULT ''")
+    add_col_if_missing(conn, "partner_capital_ledger", "settled_galla", "TEXT DEFAULT ''")
+    add_col_if_missing(conn, "partner_capital_ledger", "bill_ref", "TEXT DEFAULT ''")
 
     # Fix 20: Inter-Galla Borrowed Payment & 5-Day Cash Inflow Trigger Table
     c.execute("""CREATE TABLE IF NOT EXISTS inter_galla_debt_ledger (
