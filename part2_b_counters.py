@@ -440,13 +440,18 @@ def render_smart_terminal(
 
             <div class="f-row" style="background:#f0fdf4; padding:4px; border:1px solid #86efac; border-radius:4px;">
                 <div class="lbl" style="color:#15803d;">૧૩. ચૂકવણી પદ્ધતિ (MOP) & રોકડ ગલ્લો:</div>
-                <select name="pay_mode" id="f1_pay_mode" onchange="document.getElementById('f1_galla_wrap').style.display=(this.value.indexOf('રોકડ')!==-1?'flex':'none')" style="max-width:230px; font-weight:bold; color:#0f2043;">
-                    <option value="રોકડ (Cash)">૧. રોકડ (Cash - ગલ્લામાંથી)</option>
-                    <option value="ઓનલાઈન UPI / QR">૨. ઓનલાઈન UPI / QR (બેંક ખાતામાંથી)</option>
-                    <option value="બેંક ટ્રાન્સફર (NEFT/IMPS)">૩. બેંક ટ્રાન્સફર (NEFT/RTGS/IMPS)</option>
-                    <option value="ક્રેડિટ/ડેબિટ કાર્ડ">૪. ક્રેડિટ / ડેબિટ કાર્ડ</option>
+                <select name="pay_mode" id="f1_pay_mode" onchange="syncUniversalMopGalla(this, 'f1_paid_galla')" style="max-width:230px; font-weight:bold; color:#0f2043;">
+                    <option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash - ગલ્લામાંથી)</option>
+                    <option value="ઓનલાઈન UPI / QR">📱 ૨. ઓનલાઈન UPI / QR (બેંક ખાતામાંથી)</option>
+                    <option value="બેંક ટ્રાન્સફર (NEFT/IMPS)">🏦 ૩. બેંક ટ્રાન્સફર (NEFT/RTGS/IMPS)</option>
+                    <option value="ક્રેડિટ/ડેબિટ કાર્ડ">💳 ૪. ક્રેડિટ / ડેબિટ કાર્ડ</option>
                 </select>
-                <div id="f1_galla_wrap" style="display:flex; flex:1;">{galla_sel_g1}</div>
+                <select name="paid_from_galla" id="f1_paid_galla" style="font-weight:bold; color:#0f2043; flex:1;">
+                    <option value="BANK_CASH" selected>૧. બેંક કેશ (ગલ્લો ૧)</option>
+                    <option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option>
+                    <option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>
+                    <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
+                </select>
             </div>
             <div class="f-row" style="background:#e0f2fe; padding:5px; border-radius:4px;">
                 <div class="lbl">૧૪. બિલ / આધાર / ફોન ફોટા અપલોડ:</div>
@@ -457,6 +462,40 @@ def render_smart_terminal(
 
         <script>
             setTimeout(function(){{ if(typeof toggleF1Mode === 'function') toggleF1Mode(); }}, 20);
+            
+            function syncUniversalMopGalla(mopEl, gallaElId) {{
+                var gallaEl = (typeof gallaElId === 'string') ? document.getElementById(gallaElId) : gallaElId;
+                if (!mopEl || !gallaEl) return;
+                var mop = (mopEl.value || '').trim();
+                var isDigital = (
+                    mop.indexOf('UPI') !== -1 || mop.indexOf('બેંક') !== -1 || mop.indexOf('Bank') !== -1 ||
+                    mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1 || mop.indexOf('NEFT') !== -1 ||
+                    mop.indexOf('RTGS') !== -1 || mop.indexOf('IMPS') !== -1 || mop.indexOf('ઓનલાઇન') !== -1 ||
+                    mop.indexOf('ઓનલાઈન') !== -1 || mop.indexOf('ચેક') !== -1 || mop.indexOf('Cheque') !== -1
+                );
+                if (isDigital) {{
+                    var desc = (mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1) ? 'કાર્ડ સ્વાઇપ POS' :
+                               (mop.indexOf('UPI') !== -1 ? 'UPI QR કોડ' : 'બેંક ખાતું');
+                    gallaEl.innerHTML = '<option value="ONLINE_BANK" selected>🏦 ડિજિટલ બેંક એકાઉન્ટ (' + desc + ' - સીધા ખાતામાં)</option>';
+                    gallaEl.style.background = '#e0f2fe';
+                    gallaEl.style.borderColor = '#0284c7';
+                    gallaEl.style.color = '#0369a1';
+                }} else {{
+                    var pref = 'BANK_CASH';
+                    if (gallaElId.indexOf('lapu') !== -1 || gallaElId.indexOf('rech') !== -1) pref = 'RECHARGE';
+                    else if (gallaElId.indexOf('acc') !== -1) pref = 'ACC_DCASH';
+                    else if (gallaElId.indexOf('extra') !== -1) pref = 'EXTRA_CASH';
+                    gallaEl.innerHTML = '<option value="BANK_CASH"' + (pref === 'BANK_CASH' ? ' selected' : '') + '>૧. બેંક કેશ (ગલ્લો ૧)</option>' +
+                                        '<option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option>' +
+                                        '<option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>' +
+                                        '<option value="EXTRA_CASH"' + (pref === 'EXTRA_CASH' ? ' selected' : '') + '>૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>';
+                    gallaEl.style.background = '#ffffff';
+                    gallaEl.style.borderColor = '#15803d';
+                    gallaEl.style.color = '#0f2043';
+                }}
+            }}
+            window.syncUniversalMopGalla = syncUniversalMopGalla;
+            window.syncF7MopGalla = syncUniversalMopGalla;
             function toggleF1Mode(){{
                 var v = document.getElementById('f1_tx').value;
                 document.getElementById('f1_supplier_block').style.display = (v === 'PURCHASE' || v === 'CONSUMER_PURCHASE') ? 'block' : 'none';
@@ -1720,14 +1759,21 @@ def render_smart_terminal(
                     </div>
 <div class="f-row"><div class="lbl">૩. ચૂકવેલ રકમ (₹):</div><input type="number" step="any" name="amount" value="0" required style="font-weight:bold; color:#dc2626;"></div>
                     <div class="f-row"><div class="lbl">૪. પેમેન્ટ મોડ:</div>
-                        <select name="pay_mode">
-                            <option value="રોકડ (Cash)">રોકડ (Cash)</option>
-                            <option value="ચેક (Cheque)">ચેક (Cheque)</option>
-                            <option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option>
-                            <option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option>
+                        <select name="pay_mode" id="f3_out_mop" onchange="syncUniversalMopGalla(this, 'f3_out_galla')" style="font-weight:bold;">
+                            <option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash)</option>
+                            <option value="ઓનલાઈન UPI">📱 ૨. ઓનલાઈન UPI</option>
+                            <option value="બેંક ટ્રાન્સફર">🏦 ૩. બેંક ટ્રાન્સફર</option>
+                            <option value="ચેક (Cheque)">📑 ૪. ચેક (Cheque)</option>
                         </select>
                     </div>
-                    <div class="f-row"><div class="lbl">૫. ચૂકવણી ગલ્લો (૪-ગલ્લા):</div>{galla_f3_out}</div>
+                    <div class="f-row"><div class="lbl">૫. ચૂકવણી ગલ્લો (૪-ગલ્લા):</div>
+                        <select name="paid_from_galla" id="f3_out_galla" style="font-weight:bold; color:#0f2043; flex:1;">
+                            <option value="BANK_CASH" selected>૧. બેંક કેશ (ગલ્લો ૧)</option>
+                            <option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option>
+                            <option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>
+                            <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
+                        </select>
+                    </div>
                     <div class="f-row"><div class="lbl">૬. પર્ચેસ બિલ નંબર / રેફરન્સ / નોંધ:</div><input type="text" name="remarks" placeholder="બિલ નંબર અથવા રેફરન્સ નોંધ..."></div>
                     <div class="btn-wrap"><button type="submit" class="btn-save" style="background:#991b1b;">૭. [ પેમેન્ટ આઉટ સેવ કરો (Enter) ]</button></div>
                 </form>
@@ -1748,9 +1794,20 @@ def render_smart_terminal(
                         <input type="number" step="any" name="amount" id="f3_exp_total_amt" value="0" required style="font-weight:800; color:#b45309; font-size:14px;">
                     </div>
                     <div class="f-row"><div class="lbl">૪. ચૂકવણી પદ્ધતિ (MOP):</div>
-                        <select name="pay_mode"><option value="રોકડ">રોકડ (Cash)</option><option value="ઓનલાઈન / બેંક">ઓનલાઈન / બેંક</option></select>
+                        <select name="pay_mode" id="f3_exp_mop" onchange="syncUniversalMopGalla(this, 'f3_exp_galla')" style="font-weight:bold;">
+                            <option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash)</option>
+                            <option value="ઓનલાઈન UPI">📱 ૨. ઓનલાઈન UPI</option>
+                            <option value="ઓનલાઈન / બેંક">🏦 ૩. ઓનલાઈન / બેંક</option>
+                        </select>
                     </div>
-                    <div class="f-row"><div class="lbl">૫. કયા ગલ્લામાંથી ખર્ચ ચૂકવ્યો (૪-ગલ્લા):</div>{galla_f3_exp}</div>
+                    <div class="f-row"><div class="lbl">૫. કયા ગલ્લામાંથી ખર્ચ ચૂકવ્યો (૪-ગલ્લા):</div>
+                        <select name="galla_name" id="f3_exp_galla" style="font-weight:bold; color:#0f2043; flex:1;">
+                            <option value="BANK_CASH" selected>૧. બેંક કેશ (ગલ્લો ૧)</option>
+                            <option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option>
+                            <option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>
+                            <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
+                        </select>
+                    </div>
                     <div class="f-row"><div class="lbl">૬. વિગતવાર નોંધ / રિમાર્ક:</div><input type="text" name="remarks" placeholder="હાથેથી વિગતવાર ખર્ચ નોંધ લખો..."></div>
                     <div class="btn-wrap"><button type="submit" class="btn-save" id="f3_exp_submit_btn" style="background:#b45309;">૭. [ દૈનિક દુકાન ખર્ચ સેવ કરો (Enter) ]</button></div>
                 </form>
@@ -1864,16 +1921,16 @@ def render_smart_terminal(
                         <span id="f3_lp_comm_badge" style="background:#dcfce7; border:1px solid #16a34a; color:#166534; padding:5px 10px; border-radius:4px; font-weight:800; font-size:12px;">કમિશન / બાકી: ₹0</span>
                     </div>
                     <div class="f-row"><div class="lbl">૫.૧. પેમેન્ટ પદ્ધતિ (Payment Mode):</div>
-                        <select name="pay_mode" id="lapu_pay_mode_sel" style="font-weight:bold;">
-                            <option value="CASH">૧. રોકડ (Cash)</option>
-                            <option value="UPI">૨. ઓનલાઈન UPI / QR</option>
-                            <option value="CHEQUE">૩. બેંક ચેક (Cheque)</option>
-                            <option value="NEFT">૪. NEFT / RTGS / નેટબેંકિંગ</option>
+                        <select name="pay_mode" id="lapu_pay_mode_sel" onchange="syncUniversalMopGalla(this, 'lapu_paid_galla')" style="font-weight:bold;">
+                            <option value="CASH">💵 ૧. રોકડ (Cash)</option>
+                            <option value="UPI">📱 ૨. ઓનલાઈન UPI / QR</option>
+                            <option value="CHEQUE">📑 ૩. બેંક ચેક (Cheque)</option>
+                            <option value="NEFT">🏦 ૪. NEFT / RTGS / નેટબેંકિંગ</option>
                         </select>
                     </div>
                     <div class="f-row"><div class="lbl">૬. પેમેન્ટ કયા ગલ્લામાંથી ચૂકવ્યું:</div>
-                        <select name="paid_from_galla" style="font-weight:bold;">
-                            <option value="RECHARGE">૩. રિચાર્જ કેશ ગલ્લો (RECHARGE)</option>
+                        <select name="paid_from_galla" id="lapu_paid_galla" style="font-weight:bold; color:#0f2043; flex:1;">
+                            <option value="RECHARGE" selected>૩. રિચાર્જ કેશ ગલ્લો (RECHARGE)</option>
                             <option value="BANK_CASH">૧. બેંક કેશ ગલ્લો (BANK_CASH)</option>
                             <option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ ગલ્લો (ACC_DCASH)</option>
                             <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ ગલ્લો (EXTRA_CASH)</option>
@@ -1892,6 +1949,40 @@ def render_smart_terminal(
                 if(typeof switchF3SubForm === 'function') switchF3SubForm();
                 if(typeof onF3ReceiveTypeChange === 'function') onF3ReceiveTypeChange();
             }}, 25);
+            
+            function syncUniversalMopGalla(mopEl, gallaElId) {{
+                var gallaEl = (typeof gallaElId === 'string') ? document.getElementById(gallaElId) : gallaElId;
+                if (!mopEl || !gallaEl) return;
+                var mop = (mopEl.value || '').trim();
+                var isDigital = (
+                    mop.indexOf('UPI') !== -1 || mop.indexOf('બેંક') !== -1 || mop.indexOf('Bank') !== -1 ||
+                    mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1 || mop.indexOf('NEFT') !== -1 ||
+                    mop.indexOf('RTGS') !== -1 || mop.indexOf('IMPS') !== -1 || mop.indexOf('ઓનલાઇન') !== -1 ||
+                    mop.indexOf('ઓનલાઈન') !== -1 || mop.indexOf('ચેક') !== -1 || mop.indexOf('Cheque') !== -1
+                );
+                if (isDigital) {{
+                    var desc = (mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1) ? 'કાર્ડ સ્વાઇપ POS' :
+                               (mop.indexOf('UPI') !== -1 ? 'UPI QR કોડ' : 'બેંક ખાતું');
+                    gallaEl.innerHTML = '<option value="ONLINE_BANK" selected>🏦 ડિજિટલ બેંક એકાઉન્ટ (' + desc + ' - સીધા ખાતામાં)</option>';
+                    gallaEl.style.background = '#e0f2fe';
+                    gallaEl.style.borderColor = '#0284c7';
+                    gallaEl.style.color = '#0369a1';
+                }} else {{
+                    var pref = 'BANK_CASH';
+                    if (gallaElId.indexOf('lapu') !== -1 || gallaElId.indexOf('rech') !== -1) pref = 'RECHARGE';
+                    else if (gallaElId.indexOf('acc') !== -1) pref = 'ACC_DCASH';
+                    else if (gallaElId.indexOf('extra') !== -1) pref = 'EXTRA_CASH';
+                    gallaEl.innerHTML = '<option value="BANK_CASH"' + (pref === 'BANK_CASH' ? ' selected' : '') + '>૧. બેંક કેશ (ગલ્લો ૧)</option>' +
+                                        '<option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option>' +
+                                        '<option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>' +
+                                        '<option value="EXTRA_CASH"' + (pref === 'EXTRA_CASH' ? ' selected' : '') + '>૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>';
+                    gallaEl.style.background = '#ffffff';
+                    gallaEl.style.borderColor = '#15803d';
+                    gallaEl.style.color = '#0f2043';
+                }}
+            }}
+            window.syncUniversalMopGalla = syncUniversalMopGalla;
+            window.syncF7MopGalla = syncUniversalMopGalla;
             function onF3ReceiveTypeChange(){{
                 var rt = (document.getElementById('f3_rec_type_sel') || {{}}).value || 'CUST_DUE';
                 var custRows = document.getElementById('f3_rec_cust_due_rows');
@@ -2142,7 +2233,7 @@ def render_smart_terminal(
     # =========================================================================
     elif mode == "F4":
         if st_mode == "FRANCHISE_HO":
-            tx_type_opts = '<option value="DEPOSIT">૧. બેંક ડિપોઝિટ (Bank Deposit - ફ્રેન્ચાઇઝી HO મોડમાં માત્ર ડિપોઝિટ)</option>'
+            tx_type_opts = '<option value="DEPOSIT">૧. બેંક ડિપોઝિટ (Bank Deposit)</option><option value="WITHDRAWAL">૨. બેંક વિડ્રોલ (રોકડ ઉપાડ)</option>'
         else:
             tx_type_opts = '<option value="DEPOSIT">૧. બેંક ડિપોઝિટ (Bank Deposit)</option><option value="WITHDRAWAL">૨. બેંક વિડ્રોલ (રોકડ ઉપાડ)</option>'
 
