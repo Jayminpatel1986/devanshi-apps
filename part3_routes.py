@@ -616,8 +616,8 @@ def save_f5_bb_return_route(
 def save_f7_extra_profit_route(
     entry_date: str = Form(""), profit_type: str = Form("FINANCE_EXTRA_DP"),
     ref_bill_customer: str = Form(""), net_profit_amt: float = Form(0),
-    galla_name: str = Form("EXTRA_CASH"), salesman: str = Form(""),
-    staff_comm_amt: float = Form(0), remarks: str = Form("")
+    pay_mode: str = Form("રોકડ (Cash)"), galla_name: str = Form("EXTRA_CASH"),
+    salesman: str = Form(""), staff_comm_amt: float = Form(0), remarks: str = Form("")
 ):
     now_dt = datetime.datetime.now()
     d_str = entry_date.strip() or now_dt.strftime("%Y-%m-%d")
@@ -626,67 +626,209 @@ def save_f7_extra_profit_route(
     conn = sqlite3.connect(get_active_db_file(), timeout=60.0)
     c = conn.cursor()
 
+    is_cash = ("રોકડ" in pay_mode or "CASH" in pay_mode.upper()) and not any(k in pay_mode.upper() for k in ["UPI", "ONLINE", "BANK", "કાર્ડ", "NEFT"])
+    eff_galla = galla_name if (is_cash and galla_name in ("EXTRA_CASH", "BANK_CASH", "ACC_DCASH", "RECHARGE")) else "ONLINE_BANK"
+
     c.execute("""INSERT INTO direct_extra_profit_log
         (store_id, entry_date, entry_time, profit_type, ref_bill_customer, net_profit_amt, galla_name, salesman, staff_comm_amt, remarks)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        (sid, d_str, t_str, profit_type, ref_bill_customer, net_profit_amt, galla_name, salesman, staff_comm_amt, remarks))
+        (sid, d_str, t_str, profit_type, ref_bill_customer, net_profit_amt, eff_galla if is_cash else f"ડિજિટલ બેંક ({pay_mode})", salesman, staff_comm_amt, remarks))
 
     if net_profit_amt > 0:
-        c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
-                  (d_str, galla_name, net_profit_amt, f"[F7] એક્સ્ટ્રા પ્રોફિટ ({profit_type}): {ref_bill_customer} {remarks}", sid))
+        if is_cash:
+            # રોકડ આવક -> ભૌતિક લાકડાનો ગલ્લો
+            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
+                      (d_str, eff_galla, net_profit_amt, f"[F7] એક્સ્ટ્રા પ્રોફિટ ({profit_type}): {ref_bill_customer} {remarks}", sid))
+        else:
+            # ડિજિટલ UPI / કાર્ડ / NEFT -> સીધું બેંક ખાતામાં જમા (ગલ્લામાં રોકડ નહીં!)
+            c.execute("""INSERT INTO bank_deposit_log
+                (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                VALUES (?, 'બેંક એકાઉન્ટ (Digital)', ?, ?, 'ONLINE_BANK', ?, ?, ?)""",
+                (d_str, net_profit_amt, pay_mode, salesman, f"[F7 એક્સ્ટ્રા પ્રોફિટ]: {ref_bill_customer} ({profit_type})", sid))
 
     if staff_comm_amt > 0 and salesman:
         c.execute("""INSERT INTO staff_commission_ledger
             (date, staff_name, entry_type, remarks, comm_earned, cc_swipe_amt, paid_amt, galla_name, bill_ref)
             VALUES (?, ?, 'F7_EXTRA_PROFIT_COMM', ?, ?, 0, 0, ?, ?)""",
-            (d_str, salesman, f"{profit_type}: {ref_bill_customer}", staff_comm_amt, galla_name, ref_bill_customer or "F7-PROF"))
+            (d_str, salesman, f"{profit_type}: {ref_bill_customer}", staff_comm_amt, eff_galla, ref_bill_customer or "F7-PROF"))
 
     c.execute("""INSERT INTO live_terminal_grid
         (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id)
         VALUES (?, 'EXT-PROF', ?, ?, '-', ?, 'F7_EXTRA_PROFIT', ?, 0, 0, ?, ?)""",
-        (f"{d_str} {t_str}", ref_bill_customer or profit_type, remarks or profit_type, galla_name, net_profit_amt, salesman, sid))
+        (f"{d_str} {t_str}", ref_bill_customer or profit_type, f"{remarks} ({pay_mode})" if not is_cash else remarks, eff_galla, net_profit_amt, salesman, sid))
 
     conn.commit()
     conn.close()
-    return redir(f"💎 [F7] એક્સ્ટ્રા પ્રોફિટ ₹{net_profit_amt:,.0f} ({galla_name}) અને P&L નફામાં જમા થયો!", "SMART_TERMINAL", "F7")
+    dest_lbl = f"ગલ્લો ૪ ({eff_galla})" if is_cash else f"🏦 બેંક એકાઉન્ટ ({pay_mode})"
+    return redir(f"💎 [F7] એક્સ્ટ્રા પ્રોફિટ ₹{net_profit_amt:,.0f} સફળતાપૂર્વક {dest_lbl} અને P&L માં જમા થયો!", "SMART_TERMINAL", "F7")
 
 # --- [F4 / F3] ઉધાર વસૂલાત (૪-ગલ્લા સિલેક્શન સાથે) ---
 @app.post("/save-f4")
 def save_f4_route(
-    rec_date: str = Form(""), due_id: int = Form(...), received_amt: float = Form(0),
-    pay_mode: str = Form("રોકડ (Cash)"), galla_name: str = Form("BANK_CASH"),
-    remarks: str = Form(""), extra_note: str = Form("")
+    rec_date: str = Form(""),
+    receive_type: str = Form("CUST_DUE"),
+    due_id: Optional[int] = Form(None),
+    received_amt: float = Form(0),
+    pay_mode: str = Form("રોકડ (Cash)"),
+    galla_name: str = Form("BANK_CASH"),
+    remarks: str = Form(""),
+    extra_note: str = Form(""),
+    split_cash_amt: float = Form(0),
+    split_upi_amt: float = Form(0),
+    split_card_amt: float = Form(0),
+    split_neft_amt: float = Form(0),
+    split_baki_amt: float = Form(0),
+    split_baki_customer: str = Form(""),
+    split_baki_phone: str = Form(""),
+    lapu_companies: List[str] = Form(default=[]),
+    lapu_openings: List[str] = Form(default=[]),
+    lapu_topups: List[str] = Form(default=[]),
+    lapu_closings: List[str] = Form(default=[]),
+    lapu_used_sales: List[str] = Form(default=[])
 ):
-    use_galla = galla_name if galla_name in ("BANK_CASH", "ACC_DCASH", "RECHARGE", "EXTRA_CASH") else "BANK_CASH"
     now_dt = datetime.datetime.now()
     d_str = rec_date.strip() or now_dt.strftime("%Y-%m-%d")
     t_str = now_dt.strftime("%Y-%m-%d %H:%M")
     sid = STORE_CFG.get("shop_id", "DEVANSHI")
     conn = sqlite3.connect(get_active_db_file(), timeout=60.0)
     c = conn.cursor()
-    c.execute("SELECT customer_name, bill_no, salesman FROM customer_due_ledger WHERE id=?", (due_id,))
-    r = c.fetchone() or ("ગ્રાહક", "-", "-")
-    c.execute("UPDATE customer_due_ledger SET received_amt = received_amt + ? WHERE id=?", (received_amt, due_id))
-    if received_amt > 0 and "રોકડ" in pay_mode:
-        c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
-                  (d_str, use_galla, received_amt, f"ઉધાર વસૂલાત: {r[0]} ({r[1]}) {remarks} {extra_note}", sid))
-    c.execute("""INSERT INTO live_terminal_grid
-        (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id)
-        VALUES (?, ?, ?, 'ઉધાર વસૂલાત જમા', '-', ?, 'F4_DUE_REC', ?, 0, 0, ?, ?)""",
-        (t_str, r[1], r[0], use_galla, received_amt, remarks or r[2], sid))
-    staff_rec = (remarks or r[2] or "").strip()
-    if staff_rec:
-        try:
-            c.execute("""INSERT INTO staff_location_trail
-                (store_id, staff_name, log_date, log_time, activity_type, details, latitude, longitude, address, photo_path)
-                VALUES (?, ?, ?, ?, 'DUE_RECOVERY', ?, 0, 0, 'ઉધાર વસૂલાત (F3)', '')""",
-                (sid, staff_rec, d_str, now_dt.strftime("%I:%M %p"),
-                 f"ગ્રાહક ઉધાર વસૂલાત: {r[0]} (બિલ: {r[1]}) | વસૂલ: ₹{received_amt:,.0f} ({pay_mode})"))
-        except Exception:
-            pass
-    conn.commit()
-    conn.close()
-    return redir(f"✅ [F3] ગ્રાહક ઉધાર વસૂલાત ₹{received_amt:,.0f} ({use_galla}) માં જમા થઈ!", "SMART_TERMINAL", "F3")
+
+    if receive_type in ("ACC_INCOME", "RECH_INCOME"):
+        target_g = "ACC_DCASH" if receive_type == "ACC_INCOME" else "RECHARGE"
+        target_label = "એક્સેસરીઝ" if receive_type == "ACC_INCOME" else "રિચાર્જ"
+        
+        c_amt = float(split_cash_amt or 0)
+        u_amt = float(split_upi_amt or 0)
+        card_amt = float(split_card_amt or 0)
+        neft_amt = float(split_neft_amt or 0)
+        baki_amt = float(split_baki_amt or 0)
+        tot_split = c_amt + u_amt + card_amt + neft_amt + baki_amt
+        
+        # જો યુઝરે સીધી કુલ રકમ ભરી હોય અને સ્પ્લિટ ખાનાં 0 હોય
+        if tot_split == 0 and received_amt > 0:
+            if "રોકડ" in pay_mode:
+                c_amt = received_amt
+            else:
+                u_amt = received_amt
+            tot_split = received_amt
+
+        # ૧. રોકડ હિસ્સો -> સીધો ભૌતિક લાકડાના ગલ્લામાં (Galla 2 અથવા 3)
+        if c_amt > 0:
+            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
+                      (d_str, target_g, c_amt, f"સાંજનો {target_label} રોકડ વકરો: {extra_note or remarks}", sid))
+
+        # ૨. ઓનલાઇન UPI હિસ્સો -> સીધો બેંક રજીસ્ટરમાં (બેંક ખાતામાં જમા, ગલ્લામાં રોકડ નહીં!)
+        if u_amt > 0:
+            c.execute("""INSERT INTO bank_deposit_log
+                (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                VALUES (?, 'UPI QR એકાઉન્ટ (Digital)', ?, 'ઓનલાઇન UPI / QR', 'ONLINE_BANK', ?, ?, ?)""",
+                (d_str, u_amt, remarks or "-", f"સાંજનો {target_label} UPI/QR વકરો: {extra_note or remarks}", sid))
+
+        # ૩. કાર્ડ સ્વાઇપ હિસ્સો -> સીધો બેંક રજીસ્ટરમાં (POS મશીન દ્વારા જમા)
+        if card_amt > 0:
+            c.execute("""INSERT INTO bank_deposit_log
+                (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                VALUES (?, 'POS કાર્ડ સ્વાઇપ એકાઉન્ટ', ?, 'કાર્ડ સ્વાઇપ', 'ONLINE_BANK', ?, ?, ?)""",
+                (d_str, card_amt, remarks or "-", f"સાંજનો {target_label} કાર્ડ સ્વાઇપ વકરો: {extra_note or remarks}", sid))
+
+        # ૪. NEFT / બેંક ટ્રાન્સફર હિસ્સો -> સીધો બેંક રજીસ્ટરમાં
+        if neft_amt > 0:
+            c.execute("""INSERT INTO bank_deposit_log
+                (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                VALUES (?, 'નેટ બેંકિંગ / NEFT', ?, 'નેટ બેંકિંગ / NEFT', 'ONLINE_BANK', ?, ?, ?)""",
+                (d_str, neft_amt, remarks or "-", f"સાંજનો {target_label} NEFT વકરો: {extra_note or remarks}", sid))
+
+        # ૫. ગ્રાહક બાકી ઉધાર હિસ્સો -> સીધો ગ્રાહક બાકી ખાતાવહીમાં (Customer Due Ledger)
+        if baki_amt > 0:
+            baki_cust_name = (split_baki_customer or f"{target_label} બાકી ગ્રાહક").strip()
+            c.execute("""INSERT INTO customer_due_ledger
+                (date, salesman, customer_name, phone, bill_no, due_amt, received_amt, due_date, store_id)
+                VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)""",
+                (d_str, remarks or "કાઉન્ટર", baki_cust_name, split_baki_phone or "-", f"{target_g[:3]}-DUE", baki_amt, d_str, sid))
+
+        # ૬. લાઇવ ટર્મિનલ ગ્રીડ & ડે-બુક માટે દૈનિક લમ્પ-સમ નોંધ
+        desc_parts = []
+        if c_amt > 0: desc_parts.append(f"રોકડ ₹{c_amt:,.0f}")
+        if u_amt > 0: desc_parts.append(f"UPI ₹{u_amt:,.0f}")
+        if card_amt > 0: desc_parts.append(f"કાર્ડ ₹{card_amt:,.0f}")
+        if neft_amt > 0: desc_parts.append(f"NEFT ₹{neft_amt:,.0f}")
+        if baki_amt > 0: desc_parts.append(f"બાકી ₹{baki_amt:,.0f}")
+        desc_str = " | ".join(desc_parts) or f"₹{tot_split:,.0f}"
+
+        c.execute("""INSERT INTO live_terminal_grid
+            (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id)
+            VALUES (?, 'LUMP-SUM', ?, ?, '-', ?, ?, ?, 0, ?, ?, ?)""",
+            (t_str, f"સાંજનો {target_label} વકરો", desc_str, target_g, receive_type, tot_split, baki_amt, remarks or "-", sid))
+
+        # ૭. જો રિચાર્જ હોય તો લાપુ (LAPU) બેલેન્સ ઓડિટ તાળો અપડેટ કરો
+        if receive_type == "RECH_INCOME" and lapu_companies:
+            for idx_l, comp_nm in enumerate(lapu_companies):
+                c_clean = (comp_nm or "").strip()
+                if not c_clean:
+                    continue
+                def _pf(lst, i):
+                    try:
+                        v = str(lst[i]).strip()
+                        return float(v) if v != "" else None
+                    except Exception:
+                        return None
+                op_v = _pf(lapu_openings, idx_l) or 0.0
+                top_v = _pf(lapu_topups, idx_l) or 0.0
+                cls_v = _pf(lapu_closings, idx_l)
+                use_v = max(0.0, op_v + top_v - cls_v) if cls_v is not None else (_pf(lapu_used_sales, idx_l) or 0.0)
+                if cls_v is not None:
+                    c.execute("""INSERT OR REPLACE INTO recharge_lapu_company_balances
+                        (company, opening_balance, today_topup, today_sales, current_demo_balance, pending_distributor_due, last_updated)
+                        VALUES (?, ?, ?, ?, ?, COALESCE((SELECT pending_distributor_due FROM recharge_lapu_company_balances WHERE company=?), 0), ?)""",
+                        (c_clean, op_v, top_v, use_v, cls_v, c_clean, d_str))
+                    c.execute("""INSERT INTO recharge_operator_ledger
+                        (store_id, entry_date, operator_name, opening_bal, topup_purchased, comm_pct, comm_amt, today_sales, closing_bal, galla_name, remarks)
+                        VALUES (?, ?, ?, ?, ?, 0, 0, ?, ?, 'RECHARGE', ?)""",
+                        (sid, d_str, f"{c_clean} LAPU", op_v, top_v, use_v, cls_v, f"સાંજનો લમ્પ-સમ વકરો (₹{tot_split:,.0f}) ક્લોઝિંગ"))
+
+        conn.commit()
+        conn.close()
+        return redir(f"✅ [F3] સાંજનો {target_label} વકરો ₹{tot_split:,.0f} સફળતાપૂર્વક નોંધાયો! ({desc_str})", "SMART_TERMINAL", "F3")
+
+    else:
+        # સ્ટાન્ડર્ડ ગ્રાહક બાકી ઉધાર વસૂલાત (CUST_DUE)
+        use_galla = galla_name if galla_name in ("BANK_CASH", "ACC_DCASH", "RECHARGE", "EXTRA_CASH") else "BANK_CASH"
+        r = ("ગ્રાહક", "-", "-")
+        if due_id:
+            c.execute("SELECT customer_name, bill_no, salesman FROM customer_due_ledger WHERE id=?", (due_id,))
+            r = c.fetchone() or ("ગ્રાહક", "-", "-")
+            c.execute("UPDATE customer_due_ledger SET received_amt = received_amt + ? WHERE id=?", (received_amt, due_id))
+        
+        is_cash_rec = ("રોકડ" in pay_mode or "CASH" in pay_mode.upper()) and not any(k in pay_mode.upper() for k in ["UPI", "ONLINE", "BANK", "કાર્ડ", "NEFT"])
+        if received_amt > 0:
+            if is_cash_rec:
+                c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
+                          (d_str, use_galla, received_amt, f"ઉધાર વસૂલાત: {r[0]} ({r[1]}) {remarks} {extra_note}", sid))
+            else:
+                c.execute("""INSERT INTO bank_deposit_log
+                    (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                    VALUES (?, 'બેંક એકાઉન્ટ (Digital)', ?, ?, 'ONLINE_BANK', ?, ?, ?)""",
+                    (d_str, received_amt, pay_mode, remarks or r[2], f"ઉધાર વસૂલાત ઓનલાઇન: {r[0]} ({r[1]})", sid))
+
+        c.execute("""INSERT INTO live_terminal_grid
+            (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id)
+            VALUES (?, ?, ?, 'ઉધાર વસૂલાત જમા', '-', ?, 'F4_DUE_REC', ?, 0, 0, ?, ?)""",
+            (t_str, r[1], r[0], use_galla if is_cash_rec else "ONLINE_BANK", received_amt, remarks or r[2], sid))
+        
+        staff_rec = (remarks or r[2] or "").strip()
+        if staff_rec:
+            try:
+                c.execute("""INSERT INTO staff_location_trail
+                    (store_id, staff_name, log_date, log_time, activity_type, details, latitude, longitude, address, photo_path)
+                    VALUES (?, ?, ?, ?, 'DUE_RECOVERY', ?, 0, 0, 'ઉધાર વસૂલાત (F3)', '')""",
+                    (sid, staff_rec, d_str, now_dt.strftime("%I:%M %p"),
+                     f"ગ્રાહક ઉધાર વસૂલાત: {r[0]} (બિલ: {r[1]}) | વસૂલ: ₹{received_amt:,.0f} ({pay_mode})"))
+            except Exception:
+                pass
+        conn.commit()
+        conn.close()
+        dest_str = f"ગલ્લો ૧ ({use_galla})" if is_cash_rec else f"🏦 બેંક એકાઉન્ટ ({pay_mode})"
+        return redir(f"✅ [F3] ગ્રાહક ઉધાર વસૂલાત ₹{received_amt:,.0f} {dest_str} માં સફળતાપૂર્વક જમા થઈ!", "SMART_TERMINAL", "F3")
 
 # --- [F5] સ્ટાફ ઉપાડ / CC સ્વાઇપ ---
 @app.post("/save-f5")
@@ -3554,10 +3696,10 @@ def get_daily_profit_summary_api(date_str: str = ""):
 def save_f7_out_repair_split_route(
     entry_date: str = Form(""), customer_name: str = Form(...), customer_phone: str = Form(""),
     model_and_issue: str = Form(...), technician_name: str = Form(""),
-    spare_part_cost: float = Form(0), part_paid_galla: str = Form("BANK_CASH"),
+    spare_part_cost: float = Form(0), part_pay_mode: str = Form("રોકડ (Cash)"), part_paid_galla: str = Form("BANK_CASH"),
     customer_charge: float = Form(0), net_repair_profit: float = Form(0),
     tech_share_pct: float = Form(50.0), tech_share_amt: float = Form(0),
-    owner_share_amt: float = Form(0), profit_galla: str = Form("EXTRA_CASH")
+    owner_share_amt: float = Form(0), pay_mode: str = Form("રોકડ (Cash)"), profit_galla: str = Form("EXTRA_CASH")
 ):
     now_dt = datetime.datetime.now()
     d_str = entry_date.strip() or now_dt.strftime("%Y-%m-%d")
@@ -3568,6 +3710,12 @@ def save_f7_out_repair_split_route(
     t_pct = float(tech_share_pct or 0)
     t_amt = round((net_prof * t_pct) / 100.0, 2)
     o_amt = round(net_prof - t_amt, 2)
+
+    is_part_cash = ("રોકડ" in part_pay_mode or "CASH" in part_pay_mode.upper()) and not any(k in part_pay_mode.upper() for k in ["UPI", "ONLINE", "BANK", "કાર્ડ", "NEFT"])
+    eff_part_galla = part_paid_galla if (is_part_cash and part_paid_galla in ("BANK_CASH", "ACC_DCASH", "RECHARGE", "EXTRA_CASH")) else "ONLINE_BANK"
+
+    is_prof_cash = ("રોકડ" in pay_mode or "CASH" in pay_mode.upper()) and not any(k in pay_mode.upper() for k in ["UPI", "ONLINE", "BANK", "કાર્ડ", "NEFT"])
+    eff_prof_galla = profit_galla if (is_prof_cash and profit_galla in ("BANK_CASH", "ACC_DCASH", "RECHARGE", "EXTRA_CASH")) else "ONLINE_BANK"
 
     conn = sqlite3.connect(get_active_db_file(), timeout=60.0)
     c = conn.cursor()
@@ -3582,30 +3730,44 @@ def save_f7_out_repair_split_route(
          owner_share_amt, profit_galla, effective_rule_date)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (sid, d_str, t_str, customer_name, customer_phone, model_and_issue, technician_name,
-         spare_part_cost, part_paid_galla, customer_charge, net_prof, t_pct, t_amt, o_amt, profit_galla, d_str))
+         spare_part_cost, eff_part_galla if is_part_cash else f"બેંક ({part_pay_mode})",
+         customer_charge, net_prof, t_pct, t_amt, o_amt, eff_prof_galla if is_prof_cash else f"બેંક ({pay_mode})", d_str))
 
+    # સ્પેરપાર્ટ ખર્ચ
     if spare_part_cost > 0:
-        c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
-                  (d_str, part_paid_galla, spare_part_cost, f"[F7 રિપેરિંગ સ્પેરપાર્ટ ખર્ચ]: {model_and_issue} ({customer_name})", sid))
+        if is_part_cash:
+            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                      (d_str, eff_part_galla, spare_part_cost, f"[F7 રિપેરિંગ સ્પેરપાર્ટ ખર્ચ]: {model_and_issue} ({customer_name})", sid))
+        else:
+            c.execute("""INSERT INTO bank_deposit_log (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                         VALUES (?, 'બેંક એકાઉન્ટ (Digital)', ?, ?, 'ONLINE_BANK', ?, ?, ?)""",
+                      (d_str, -spare_part_cost, part_pay_mode, technician_name, f"સ્પેરપાર્ટ ખર્ચ ડેબિટ: {model_and_issue} ({customer_name})", sid))
 
+    # દુકાનદાર ચોખ્ખો નફો
     if o_amt > 0:
-        c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
-                  (d_str, profit_galla, o_amt, f"[F7 બારોબાર રિપેરિંગ દુકાનદાર નફો]: {customer_name} - {model_and_issue}", sid))
+        if is_prof_cash:
+            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
+                      (d_str, eff_prof_galla, o_amt, f"[F7 બારોબાર રિપેરિંગ દુકાનદાર નફો]: {customer_name} - {model_and_issue}", sid))
+        else:
+            c.execute("""INSERT INTO bank_deposit_log (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                         VALUES (?, 'બેંક એકાઉન્ટ (Digital)', ?, ?, 'ONLINE_BANK', ?, ?, ?)""",
+                      (d_str, o_amt, pay_mode, technician_name, f"રિપેરિંગ દુકાનદાર નફો ઓનલાઇન: {customer_name}", sid))
 
     if t_amt > 0 and technician_name:
         c.execute("""INSERT INTO staff_commission_ledger
             (date, staff_name, entry_type, remarks, comm_earned, cc_swipe_amt, paid_amt, galla_name, bill_ref)
             VALUES (?, ?, 'REPAIR_TECH_SHARE', ?, ?, 0, 0, ?, 'F7-REP')""",
-            (d_str, technician_name, f"રિપેરિંગ ભાગ ({t_pct:.0f}%): {model_and_issue} ({customer_name})", t_amt, profit_galla))
+            (d_str, technician_name, f"રિપેરિંગ ભાગ ({t_pct:.0f}%): {model_and_issue} ({customer_name})", t_amt, eff_prof_galla))
 
     c.execute("""INSERT INTO live_terminal_grid
         (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id)
         VALUES (?, 'OUT-REP', ?, ?, '-', ?, 'F7_OUT_REPAIR', ?, 0, 0, ?, ?)""",
-        (f"{d_str} {t_str}", customer_name, f"{model_and_issue} (નફો ₹{o_amt:,.0f})", profit_galla, customer_charge, technician_name, sid))
+        (f"{d_str} {t_str}", customer_name, f"{model_and_issue} (નફો ₹{o_amt:,.0f} - {pay_mode})", eff_prof_galla, customer_charge, technician_name, sid))
 
     conn.commit()
     conn.close()
-    return redir(f"🛠️ [F7] બારોબાર રિપેરિંગ સેવ! કુલ નફો: ₹{net_prof:,.0f} -> કારીગર ભાગ ({t_pct:.0f}%): ₹{t_amt:,.0f} | દુકાનદાર ચોખ્ખો નફો: ₹{o_amt:,.0f} ({profit_galla} માં જમા)!", "SMART_TERMINAL", "F7")
+    dest_lbl = f"ગલ્લો ૪ ({eff_prof_galla})" if is_prof_cash else f"🏦 બેંક એકાઉન્ટ ({pay_mode})"
+    return redir(f"🛠️ [F7] બારોબાર રિપેરિંગ સેવ! કુલ નફો: ₹{net_prof:,.0f} -> કારીગર ભાગ ({t_pct:.0f}%): ₹{t_amt:,.0f} | દુકાનદાર નફો: ₹{o_amt:,.0f} ({dest_lbl})!", "SMART_TERMINAL", "F7")
 
 @app.post("/carry-forward-f8-daily-closing")
 def carry_forward_f8_daily_closing_route():
@@ -4066,14 +4228,20 @@ def clear_admin_notifications_route(notif_id: str = Form("ALL")):
 def save_f7_simple_repair_route(
     entry_date: str = Form(""), customer_name: str = Form(...), customer_phone: str = Form(""),
     model_and_issue: str = Form(...), technician_name: str = Form(""),
-    spare_part_cost: float = Form(0), part_paid_galla: str = Form("BANK_CASH"),
-    customer_charge: float = Form(0), received_galla: str = Form("EXTRA_CASH")
+    spare_part_cost: float = Form(0), part_pay_mode: str = Form("રોકડ (Cash)"), part_paid_galla: str = Form("BANK_CASH"),
+    customer_charge: float = Form(0), rec_pay_mode: str = Form("રોકડ (Cash)"), received_galla: str = Form("EXTRA_CASH")
 ):
     now_dt = datetime.datetime.now()
     d_str = entry_date.strip() or now_dt.strftime("%Y-%m-%d")
     t_str = now_dt.strftime("%H:%M")
     sid = STORE_CFG.get("shop_id", "DEVANSHI")
     net_prof = max(0.0, float(customer_charge or 0) - float(spare_part_cost or 0))
+
+    is_part_cash = ("રોકડ" in part_pay_mode or "CASH" in part_pay_mode.upper()) and not any(k in part_pay_mode.upper() for k in ["UPI", "ONLINE", "BANK", "કાર્ડ", "NEFT"])
+    eff_part_galla = part_paid_galla if (is_part_cash and part_paid_galla in ("BANK_CASH", "ACC_DCASH", "RECHARGE", "EXTRA_CASH")) else "ONLINE_BANK"
+
+    is_rec_cash = ("રોકડ" in rec_pay_mode or "CASH" in rec_pay_mode.upper()) and not any(k in rec_pay_mode.upper() for k in ["UPI", "ONLINE", "BANK", "કાર્ડ", "NEFT"])
+    eff_rec_galla = received_galla if (is_rec_cash and received_galla in ("BANK_CASH", "ACC_DCASH", "RECHARGE", "EXTRA_CASH")) else "ONLINE_BANK"
 
     conn = sqlite3.connect(get_active_db_file(), timeout=60.0)
     c = conn.cursor()
@@ -4083,22 +4251,36 @@ def save_f7_simple_repair_route(
          owner_share_amt, profit_galla, effective_rule_date)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?, ?)""",
         (sid, d_str, t_str, customer_name, customer_phone, model_and_issue, technician_name,
-         spare_part_cost, part_paid_galla, customer_charge, net_prof, net_prof, received_galla, d_str))
+         spare_part_cost, eff_part_galla if is_part_cash else f"બેંક ({part_pay_mode})",
+         customer_charge, net_prof, net_prof, eff_rec_galla if is_rec_cash else f"બેંક ({rec_pay_mode})", d_str))
 
+    # સ્પેરપાર્ટ ખર્ચ (ચુકવણી)
     if spare_part_cost > 0:
-        c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
-                  (d_str, part_paid_galla, spare_part_cost, f"[F7 સાદું રિપેરિંગ પાર્ટ ખર્ચ]: {model_and_issue} ({customer_name})", sid))
+        if is_part_cash:
+            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, 0, ?, ?, ?)",
+                      (d_str, eff_part_galla, spare_part_cost, f"[F7 સાદું રિપેરિંગ પાર્ટ ખર્ચ]: {model_and_issue} ({customer_name})", sid))
+        else:
+            c.execute("""INSERT INTO bank_deposit_log (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                         VALUES (?, 'બેંક એકાઉન્ટ (Digital)', ?, ?, 'ONLINE_BANK', ?, ?, ?)""",
+                      (d_str, -spare_part_cost, part_pay_mode, technician_name, f"સ્પેરપાર્ટ ખર્ચ ડેબિટ: {model_and_issue} ({customer_name})", sid))
+
+    # ગ્રાહક ચાર્જ (આવક)
     if customer_charge > 0:
-        c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
-                  (d_str, received_galla, customer_charge, f"[F7 સાદું રિપેરિંગ આવક]: {customer_name} - {model_and_issue}", sid))
+        if is_rec_cash:
+            c.execute("INSERT INTO galla_ledger (date, galla_name, in_amt, out_amt, remarks, store_id) VALUES (?, ?, ?, 0, ?, ?)",
+                      (d_str, eff_rec_galla, customer_charge, f"[F7 સાદું રિપેરિંગ આવક]: {customer_name} - {model_and_issue}", sid))
+        else:
+            c.execute("""INSERT INTO bank_deposit_log (entry_date, bank_name, deposit_amt, mop, galla_source, staff_name, remarks, store_id)
+                         VALUES (?, 'બેંક એકાઉન્ટ (Digital)', ?, ?, 'ONLINE_BANK', ?, ?, ?)""",
+                      (d_str, customer_charge, rec_pay_mode, technician_name, f"રિપેરિંગ ગ્રાહક ઓનલાઇન જમા: {customer_name} ({model_and_issue})", sid))
 
     c.execute("""INSERT INTO live_terminal_grid
         (entry_time, bill_no, customer_name, model_name, imei, galla_name, entry_type, total_padtar, gift_amt, due_amt, salesman, store_id)
         VALUES (?, 'SIMPLE-REP', ?, ?, '-', ?, 'F7_SIMPLE_REPAIR', ?, 0, 0, ?, ?)""",
-        (f"{d_str} {t_str}", customer_name, f"{model_and_issue} (નફો ₹{net_prof:,.0f})", received_galla, customer_charge, technician_name, sid))
+        (f"{d_str} {t_str}", customer_name, f"{model_and_issue} (નફો ₹{net_prof:,.0f} - {rec_pay_mode})", eff_rec_galla, customer_charge, technician_name, sid))
     conn.commit()
     conn.close()
-    return redir(f"✅ [F7] ગ્રાહક રિપેરિંગ એન્ટ્રી સેવ થઈ! ગ્રાહક ચાર્જ: ₹{customer_charge:,.0f} | સ્પેરપાર્ટ ખર્ચ: ₹{spare_part_cost:,.0f} | ચોખ્ખો નફો: ₹{net_prof:,.0f} ({received_galla})", "SMART_TERMINAL", "F7")
+    return redir(f"✅ [F7] ગ્રાહક રિપેરિંગ એન્ટ્રી સેવ થઈ! ગ્રાહક ચાર્જ: ₹{customer_charge:,.0f} ({rec_pay_mode}) | સ્પેરપાર્ટ ખર્ચ: ₹{spare_part_cost:,.0f} ({part_pay_mode}) | ચોખ્ખો નફો: ₹{net_prof:,.0f}", "SMART_TERMINAL", "F7")
 
 
 @app.post("/save-lapu-demo-closing")
