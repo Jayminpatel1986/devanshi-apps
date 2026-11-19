@@ -119,7 +119,6 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <span>મોડ: [F5] બાય-બેક (જૂના ફોન), રિપેરિંગ પડતર, વેચાણ (Resale - નફો ગલ્લા ૪ માં) & ભાગ ૪: બાય-બેક રિટર્ન અને કેશ રિફંડ</span>
             <a href="/police-verification-form" target="_blank" style="background:#fde047; color:#0f2043; padding:3px 10px; border-radius:4px; text-decoration:none; font-weight:800; font-size:11.5px;">👮 પોલીસ વેરિફિકેશન વૉલ્ટ ખોલો</a>
         </div>
-
         <!-- MASTER ERP SUB-SECTIONS STRIP (F5 ૧ થી ૫ લાઈનબદ્ધ પેટા વિભાગો) -->
         <div class="tally-subparts-bar">
             <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
@@ -129,9 +128,158 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <button type="button" class="tally-sub-btn" id="f5_sub_btn_PART3" onclick="setSubpartF5('PART3')">૪. ભાગ ૩: જૂના ફોન વેચાણ</button>
             <button type="button" class="tally-sub-btn" id="f5_sub_btn_PART4" onclick="setSubpartF5('PART4')">૫. ભાગ ૪: રિટર્ન & રિફંડ</button>
         </div>
+        <script>
+        function setSubpartF5(val) {{
+            var sel = document.getElementById('f5_part_sel');
+            if (sel) {{
+                sel.value = val;
+                switchF5Part(val);
+            }}
+            document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b) {{
+                b.classList.remove('active');
+            }});
+            var btn = document.getElementById('f5_sub_btn_' + val);
+            if (btn) btn.classList.add('active');
+        }}
+        </script>
+
 
         <div class="term-form">
-            <input type="hidden" id="f5_part_sel" value="ALL_4_GRID">
+            <div class="f-row" style="display:none;" style="background:#0f2043; color:white; padding:6px 10px; border-radius:6px; margin-bottom:10px;">
+                <div class="lbl" style="color:#fde047; width:240px;">F5 બાય-બેક વિભાગ પસંદ કરો (૪ ભાગ):</div>
+                <select id="f5_part_sel" onchange="switchF5Part(this.value)" style="font-weight:800; font-size:13px; background:#fef08a; color:#0f2043; flex:1;">
+                    <option value="ALL_4_GRID">📋 ચારેય ભાગ એકસાથે જુઓ (ભાગ ૧: ખરીદી | ભાગ ૨: રિપેરિંગ | ભાગ ૩: વેચાણ | ભાગ ૪: રિટર્ન & રિફંડ)</option>
+                    <option value="PART1">ભાગ ૧: જૂનો ફોન ઇનવર્ડ / બાય-બેક ખરીદી (Buyback Inward - ૭ ખાનાં)</option>
+                    <option value="PART2">ભાગ ૨: જૂના ફોનમાં રિપેરિંગ પડતર ઉમેરો (Repairing Cost Add - ૫ ખાનાં)</option>
+                    <option value="PART3">ભાગ ૩: જૂના ફોનનું સીધું વેચાણ (Old Phone Resale - પડતર ગલ્લા ૧ માં, નફો ગલ્લા ૪ માં - ૬ ખાનાં)</option>
+                    <option value="PART4">ભાગ ૪: બાય-બેક રિટર્ન અને કેશ રિફંડ ફોર્મ (Buyback Return & Cash Refund - ૯ ખાનાં)</option>
+                    
+                </select>
+            </div>
+
+            <style>#f5_grid_container .f-row {{ display:flex; align-items:center; gap:5px; flex-wrap:wrap; width:100%; box-sizing:border-box; }} #f5_grid_container .f-row .lbl {{ width:135px !important; min-width:120px !important; font-size:11.5px; flex-shrink:0; }} #f5_grid_container input, #f5_grid_container select {{ min-width:0 !important; max-width:100% !important; box-sizing:border-box !important; }} #f5_grid_container input[type="file"] {{ max-width:145px !important; font-size:10.5px !important; }}</style>
+            <div id="f5_grid_container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:10px; width:100%; box-sizing:border-box;">
+                <!-- ભાગ ૧: જૂનો ફોન ઇનવર્ડ / બાય-બેક ખરીદી (૮ કંડિશન + ગ્રાહક ફોટો + ડુપ્લિકેટ IMEI લોક) -->
+                <div id="f5_box_p1" data-sub-allowed="{'1' if 'F5_1' in active_subparts else '0'}" style="display:{'block' if 'F5_1' in active_subparts else 'none'}; background:#f8fafc; border:2px solid #0284c7; border-radius:6px; padding:10px; min-width:0; overflow:hidden; box-sizing:border-box;">
+                    <h4 style="margin:0 0 8px 0; color:#0369a1;">📥 ભાગ ૧: જૂનો ફોન ઇનવર્ડ / બાય-બેક ખરીદી (ડુપ્લિકેટ IMEI લોક સાથે)</h4>
+                    <form class="f-enter-form" action="/save-f1" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="tx_type" value="DIRECT_BB">
+                        <input type="hidden" name="return_mode" value="F5">
+                        <div class="f-row"><div class="lbl" style="width:135px;">૧. તારીખ & સમય:</div><input type="date" name="entry_date" value="{today_str}"></div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૨. ગ્રાહક નામ & ૧૦-અંક મોબાઈલ:</div>
+                            <input type="text" name="customer_name" placeholder="વેચનાર ગ્રાહકનું નામ..." required style="flex:1;">
+                            <input type="text" name="customer_phone" maxlength="10" placeholder="૧૦-અંક મોબાઈલ" style="max-width:125px;">
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૩. બ્રાન્ડ, મોડેલ & ૧૫-અંક IMEI:</div>
+                            <div style="display:flex; gap:3px; align-items:center; max-width:185px;">
+    <select name="bb_brand" id="f5_bb_brand_sel" style="flex:1; font-weight:bold;">{brand_opts_html}</select>
+    <button type="button" onclick="openInlineQuickCreateModal('BRAND', 'f5_bb_brand_sel')" style="background:#0284c7; color:white; border:none; padding:3px 6px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;" title="નવી બ્રાન્ડ ઉમેરો (Alt+C)">[+ નવી બ્રાન્ડ]</button>
+</div>
+                            <input type="text" name="bb_model" placeholder="મોડેલ નામ" style="flex:1;" required>
+                            <input type="text" name="bb_imei" maxlength="15" placeholder="૧૫-અંક IMEI" style="max-width:140px;" required>
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૪. ફોન કંડિશન (૮ વિકલ્પો):</div>
+                            <select name="bb_condition" style="font-weight:bold;">
+                                <option value="૧. બિલ + બોક્સ + ઓરિજિનલ ચાર્જર સાથે (Full Kit)">૧. બિલ + બોક્સ + ઓરિજિનલ ચાર્જર સાથે (Full Kit)</option>
+                                <option value="૨. માત્ર પાકું બિલ અને બોક્સ સાથે (Bill + Box)">૨. માત્ર પાકું બિલ અને બોક્સ સાથે (Bill + Box)</option>
+                                <option value="૩. માત્ર ઓરિજિનલ બિલ સાથે (Bill Only)">૩. માત્ર ઓરિજિનલ બિલ સાથે (Bill Only)</option>
+                                <option value="૪. માત્ર બોક્સ અને ચાર્જર સાથે (Box + Charger)">૪. માત્ર બોક્સ અને ચાર્જર સાથે (Box + Charger)</option>
+                                <option value="૫. માત્ર ફોન - આધારકાર્ડ અને લાઈવ ફોટો પ્રૂફ સાથે">૫. માત્ર ફોન - આધારકાર્ડ અને લાઈવ ફોટો પ્રૂફ સાથે</option>
+                                <option value="૬. કંપની વોરંટી ચાલુ ફોન (In-Warranty Mint)">૬. કંપની વોરંટી ચાલુ ફોન (In-Warranty Mint)</option>
+                                <option value="૭. ગ્લાસ તૂટેલો / માઈનોર સ્ક્રેચ વાળો ફોન">૭. ગ્લાસ તૂટેલો / માઈનોર સ્ક્રેચ વાળો ફોન</option>
+                                <option value="૮. ડિસ્પ્લે / બેટરી રિપેરિંગ જરૂરી ફોન">૮. ડિસ્પ્લે / બેટરી રિપેરિંગ જરૂરી ફોન</option>
+                            </select>
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૫. બાય-બેક ખરીદ પડતર (₹):</div><input type="number" step="any" name="bb_cost" value="0" required style="font-weight:bold; color:#dc2626;"></div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૬. ચૂકવણી પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option><option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option></select>{galla_bb_in}</div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૭. આધાર/બિલ & ગ્રાહક ફોટો:</div>
+                            <input type="file" name="bb_photo" accept=".pdf,image/*" title="આધાર/બિલ પ્રૂફ" style="flex:1;">
+                            <input type="file" name="customer_face_photo" accept="image/*" capture="user" title="ગ્રાહકનો ફોટો" style="flex:1;">
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૮. ખરીદનાર સ્ટાફ નામ:</div><select name="salesman">{staff_opts_html}</select></div>
+                        <button type="submit" style="width:100%; background:#0284c7; color:white; border:none; padding:8px; border-radius:4px; font-weight:800; cursor:pointer; margin-top:4px;">[ ભાગ ૧: જૂનો ફોન સ્ટોકમાં સાચવો (Enter) ]</button>
+                    </form>
+                </div>
+
+                <!-- ભાગ ૨: જૂના ફોનમાં રિપેરિંગ પડતર ઉમેરો (૫ ખાનાં) -->
+                <div id="f5_box_p2" data-sub-allowed="{'1' if 'F5_2' in active_subparts else '0'}" style="display:{'block' if 'F5_2' in active_subparts else 'none'}; background:#fffbeb; border:2px solid #d97706; border-radius:6px; padding:10px; min-width:0; overflow:hidden; box-sizing:border-box;">
+                    <h4 style="margin:0 0 8px 0; color:#b45309;">🛠️ ભાગ ૨: જૂના ફોનમાં રિપેરિંગ પડતર / અપડેટ (૫ ખાનાં)</h4>
+                    <form class="f-enter-form" action="/save-f3" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="f3_action" value="BB_REPAIR">
+                        <div class="f-row"><div class="lbl" style="width:135px;">૧. હાજર (In-Stock) ફોન સિલેક્ટ:</div>
+                            <select name="bb_imei" id="f5_p2_imei" onchange="calcF5P2NewCost()" required style="flex:1; font-weight:bold;">{bb_instock_opts}</select>
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૨. રિપેરિંગ / સ્પેરપાર્ટ ખર્ચ (₹):</div>
+                            <input type="number" step="any" name="repair_cost" id="f5_p2_rep" value="0" oninput="calcF5P2NewCost()" required style="font-weight:bold; color:#b45309;">
+                            <span id="f5_p2_new_cost_badge" style="font-size:11.5px; font-weight:800; color:#0f2043; background:#fef08a; padding:4px 8px; border-radius:4px;">નવી કુલ પડતર: ₹0</span>
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૩. ચૂકવણી પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option><option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option></select>{galla_bb_rep}</div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૪. રિપેરિંગ વિગત & ફોટો/બિલ:</div>
+                            <input type="text" name="remarks" placeholder="ડિસ્પ્લે, બેટરી કે રિપેરિંગ નોંધ..." style="flex:1;">
+                            <input type="file" name="bb_doc" accept=".pdf,image/*" style="max-width:170px;">
+                        </div>
+                        <button type="submit" style="width:100%; background:#d97706; color:white; border:none; padding:8px; border-radius:4px; font-weight:800; cursor:pointer; margin-top:4px;">૫. [ ભાગ ૨: રિપેરિંગ પડતર ઉમેરો & અપડેટ કરો (Enter) ]</button>
+                    </form>
+                </div>
+
+                <!-- ભાગ ૩: જૂના ફોનનું સીધું વેચાણ (Resale - ૬ ખાનાં) -->
+                <div id="f5_box_p3" data-sub-allowed="{'1' if 'F5_3' in active_subparts else '0'}" style="display:{'block' if 'F5_3' in active_subparts else 'none'}; background:#f0fdf4; border:2px solid #16a34a; border-radius:6px; padding:10px; min-width:0; overflow:hidden; box-sizing:border-box;">
+                    <h4 style="margin:0 0 8px 0; color:#15803d;">💰 ભાગ ૩: જૂના ફોનનું સીધું વેચાણ (Old Phone Resale - ૬ ખાનાં)</h4>
+                    <form class="f-enter-form" action="/save-f3" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="f3_action" value="BB_SALE">
+                        <div class="f-row"><div class="lbl" style="width:135px;">૧. વેચવા માટે ફોન (In-Stock):</div>
+                            <select name="bb_imei" id="f5_p3_imei" onchange="calcF5P3Split()" required style="flex:1; font-weight:bold;">{bb_instock_opts}</select>
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૨. વેચાણ કિંમત (Sale Price ₹):</div>
+                            <input type="number" step="any" name="sale_price" id="f5_p3_sale" value="0" oninput="calcF5P3Split()" required style="font-weight:bold; color:#15803d; font-size:13.5px;">
+                        </div>
+                        <div id="f5_p3_split_hint" style="background:#dcfce7; border:1px solid #86efac; padding:5px 8px; border-radius:4px; font-size:11.5px; font-weight:bold; color:#166534; margin-bottom:6px;">
+                            💡 ઓટો-પ્રોફિટ સ્પ્લિટ: મૂળ કુલ પડતર પસંદ કરેલા ગલ્લામાં (ગલ્લો ૧) અને ઉપરનો ચોખ્ખો નફો સીધો ગલ્લો ૪ (તિજોરી) અને P&L માં જમા થશે!
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૩. ખરીદનાર ગ્રાહક નામ & મોબાઈલ:</div>
+                            <input type="text" name="customer_name" placeholder="ગ્રાહકનું નામ" required style="flex:1;">
+                            <input type="text" name="phone" placeholder="૧૦-અંક મોબાઈલ" style="max-width:135px;">
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૪. સેલ્સમેન નામ:</div><select name="salesman">{staff_opts_html}</select></div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૫. પ્રાપ્તિ પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option><option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option></select>{galla_bb_sale}</div>
+                        <button type="submit" style="width:100%; background:#15803d; color:white; border:none; padding:8px; border-radius:4px; font-weight:800; cursor:pointer; margin-top:4px;">૬. [ ભાગ ૩: જૂનો ફોન વેચાણ સેવ કરો (ઓટો-પ્રોફિટ સ્પ્લિટ) ]</button>
+                    </form>
+                </div>
+
+                <!-- ભાગ ૪: બાય-બેક રિટર્ન અને કેશ રિફંડ ફોર્મ (૯ ખાનાં) -->
+                <div id="f5_box_p4" data-sub-allowed="{'1' if 'F5_4' in active_subparts else '0'}" style="display:{'block' if 'F5_4' in active_subparts else 'none'}; background:#fef2f2; border:2px solid #dc2626; border-radius:6px; padding:10px; min-width:0; overflow:hidden; box-sizing:border-box;">
+                    <h4 style="margin:0 0 8px 0; color:#991b1b;">🔄 ભાગ ૪: બાય-બેક રિટર્ન અને કેશ રિફંડ ફોર્મ (૯ ખાનાં)</h4>
+                    <form class="f-enter-form" action="/save-f5-bb-return" method="post">
+                        <div class="f-row"><div class="lbl" style="width:135px;">૧. વેચાયેલ (SOLD) ફોન / IMEI:</div>
+                            <select name="imei" id="f5_p4_imei" onchange="onF5SoldSelect()" required style="flex:1; font-weight:bold;">{bb_sold_opts}</select>
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૨. ગ્રાહક, મોડેલ & વેચાણ તારીખ:</div>
+                            <input type="text" name="customer_name" id="f5_p4_cust" placeholder="ગ્રાહક નામ" style="flex:1;">
+                            <input type="text" name="model" id="f5_p4_model" placeholder="મોડેલ" style="max-width:120px;">
+                            <input type="text" name="orig_sale_date" id="f5_p4_date" placeholder="તારીખ" style="max-width:100px;">
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૩. મૂળ વેચાણ કિંમત (₹) [Auto]:</div>
+                            <input type="number" step="any" name="orig_sale_price" id="f5_p4_orig" value="0" oninput="calcF5Refund()" required style="font-weight:bold;">
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૪. કાપવાની રકમ / ઘસારો (₹):</div>
+                            <input type="number" step="any" name="deduction_amt" id="f5_p4_ded" value="0" oninput="calcF5Refund()" style="font-weight:bold; color:#15803d;">
+                        </div>
+                        <div class="f-row" style="background:#fee2e2; padding:3px; border-radius:4px;">
+                            <div class="lbl" style="width:195px; color:#991b1b;">૫. પરત કરવાની ચોખ્ખી રકમ (₹):</div>
+                            <input type="number" step="any" name="net_refund_amt" id="f5_p4_net" value="0" readonly style="font-weight:800; color:#dc2626; font-size:13.5px;">
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૬. ચૂકવણી મોડ:</div>
+                            <select name="pay_mode"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="UPI">UPI</option><option value="ઓનલાઈન ટ્રાન્સફર">ઓનલાઈન ટ્રાન્સફર</option></select>
+                        </div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૭. કેશ રિફંડ ગલ્લો (Vault Out):</div>{galla_bb_ret}</div>
+                        <div class="f-row"><div class="lbl" style="width:135px;">૮. સ્ટાફ નામ & રિટર્નનું કારણ:</div>
+                            <select name="staff_name" style="max-width:150px;">{staff_opts_html}</select>
+                            <input type="text" name="reason" placeholder="રિટર્નનું કારણ..." style="flex:1;">
+                        </div>
+                        <button type="submit" style="width:100%; background:#dc2626; color:white; border:none; padding:8px; border-radius:4px; font-weight:800; cursor:pointer; margin-top:4px;">૯. [ રિટર્ન સેવ કરો & રિફંડ આપો (IMEI પાછો In-Stock થશે) ]</button>
+                    </form>
+                </div>
+            </div>
 
             <!-- બાય-બેક લાઈવ સ્ટોક અને વેચાણ રજીસ્ટર -->
             <div style="margin-top:12px; background:white; border:1px solid #cbd5e1; border-radius:6px; padding:10px; width:100%; box-sizing:border-box; overflow-x:auto;">
@@ -144,48 +292,7 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
         </div>
 
         <script>
-            function syncUniversalMopGalla(mopEl, gallaElId) {{
-                var gallaEl = (typeof gallaElId === 'string') ? document.getElementById(gallaElId) : gallaElId;
-                if (!mopEl || !gallaEl) return;
-                var mop = (mopEl.value || '').trim();
-                var isDigital = (
-                    mop.indexOf('UPI') !== -1 || mop.indexOf('બેંક') !== -1 || mop.indexOf('Bank') !== -1 ||
-                    mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1 || mop.indexOf('NEFT') !== -1 ||
-                    mop.indexOf('RTGS') !== -1 || mop.indexOf('IMPS') !== -1 || mop.indexOf('ઓનલાઇન') !== -1 ||
-                    mop.indexOf('ઓનલાઈન') !== -1 || mop.indexOf('ચેક') !== -1 || mop.indexOf('Cheque') !== -1
-                );
-                if (isDigital) {{
-                    var desc = (mop.indexOf('કાર્ડ') !== -1 || mop.indexOf('Card') !== -1) ? 'કાર્ડ સ્વાઇપ POS' :
-                               (mop.indexOf('UPI') !== -1 ? 'UPI QR કોડ' : 'બેંક ખાતું');
-                    gallaEl.innerHTML = '<option value="ONLINE_BANK" selected>🏦 ડિજિટલ બેંક એકાઉન્ટ (' + desc + ' - સીધા ખાતામાં)</option>';
-                    gallaEl.style.background = '#e0f2fe';
-                    gallaEl.style.borderColor = '#0284c7';
-                    gallaEl.style.color = '#0369a1';
-                }} else {{
-                    var pref = (gallaElId.indexOf('p2') !== -1 || gallaElId.indexOf('extra') !== -1) ? 'EXTRA_CASH' : 'BANK_CASH';
-                    gallaEl.innerHTML = '<option value="BANK_CASH"' + (pref === 'BANK_CASH' ? ' selected' : '') + '>૧. બેંક કેશ (ગલ્લો ૧)</option>' +
-                                        '<option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option>' +
-                                        '<option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>' +
-                                        '<option value="EXTRA_CASH"' + (pref === 'EXTRA_CASH' ? ' selected' : '') + '>૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>';
-                    gallaEl.style.background = '#ffffff';
-                    gallaEl.style.borderColor = '#15803d';
-                    gallaEl.style.color = '#0f2043';
-                }}
-            }}
-            window.syncUniversalMopGalla = syncUniversalMopGalla;
-            window.syncF7MopGalla = syncUniversalMopGalla;
-            function setSubpartF5(val){{
-                var sel = document.getElementById('f5_part_sel');
-                if (sel) sel.value = val;
-                switchF5Part(val);
-            }}
-
             function switchF5Part(val){{
-                document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
-                    b.classList.remove('active');
-                }});
-                var curBtn = document.getElementById('f5_sub_btn_' + val);
-                if (curBtn) curBtn.classList.add('active');
                 var p1 = document.getElementById('f5_box_p1');
                 var p2 = document.getElementById('f5_box_p2');
                 var p3 = document.getElementById('f5_box_p3');
@@ -359,35 +466,6 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <span>મોડ: [F6] આંતરિક ગલ્લા ટ્રાન્સફર ટેબલ (Vault-to-Vault Transfer - ૭ ખાનાં)</span>
             <span style="font-size:11.5px;">ઇમરજન્સીમાં એક ગલ્લામાંથી બીજા ગલ્લામાં લીધેલી રોકડ પાછી મૂળ ગલ્લામાં જમા કરવા માટે</span>
         </div>
-
-        <!-- MASTER ERP SUB-SECTIONS STRIP (F6 ૧ થી ૩ લાઈનબદ્ધ પેટા વિભાગો) -->
-        <div class="tally-subparts-bar">
-            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
-            <button type="button" class="tally-sub-btn active" id="f6_sub_btn_ALL" onclick="setSubpartF6('ALL')">૧. બંને બોક્સ સાથે જુઓ</button>
-            <button type="button" class="tally-sub-btn" id="f6_sub_btn_INTRA" onclick="setSubpartF6('INTRA')">૨. આંતરિક ગલ્લા કેશ ટ્રાન્સફર</button>
-            <button type="button" class="tally-sub-btn" id="f6_sub_btn_STOCK" onclick="setSubpartF6('STOCK')">૩. સ્ટોક ચલણ ટ્રાન્સફર</button>
-        </div>
-        <script>
-        function setSubpartF6(val) {{
-            document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
-                b.classList.remove('active');
-            }});
-            var curBtn = document.getElementById('f6_sub_btn_' + val);
-            if (curBtn) curBtn.classList.add('active');
-            var gSec = document.getElementById('f6_galla_section');
-            var sSec = document.getElementById('f6_stock_section');
-            if (val === 'INTRA') {{
-                if (gSec) gSec.style.display = 'block';
-                if (sSec) sSec.style.display = 'none';
-            }} else if (val === 'STOCK') {{
-                if (gSec) gSec.style.display = 'none';
-                if (sSec) sSec.style.display = 'block';
-            }} else {{
-                if (gSec) gSec.style.display = 'block';
-                if (sSec) sSec.style.display = 'block';
-            }}
-        }}
-        </script>
         {cross_alert_html}
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
@@ -740,43 +818,9 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <span style="font-size:11.5px;">ડાબું બોક્સ: ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ | જમણું બોક્સ: ગ્રાહક રિપેરિંગ & કારીગર નફા વહેંચણી</span>
         </div>
 
-        <!-- MASTER ERP SUB-SECTIONS STRIP (F7 ૧ થી ૩ લાઈનબદ્ધ પેટા વિભાગો) -->
-        <div class="tally-subparts-bar">
-            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
-            <button type="button" class="tally-sub-btn active" id="f7_sub_btn_ALL" onclick="setSubpartF7('ALL')">૧. બંને બોક્સ સાથે જુઓ (Side-by-Side)</button>
-            <button type="button" class="tally-sub-btn" id="f7_sub_btn_PROFIT" onclick="setSubpartF7('PROFIT')">૨. ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ (ગલ્લો ૪ & P&L - Full Width)</button>
-            <button type="button" class="tally-sub-btn" id="f7_sub_btn_REPAIR" onclick="setSubpartF7('REPAIR')">૩. ગ્રાહક રિપેરિંગ & કારીગર સ્પ્લિટ (Full Width)</button>
-        </div>
-        <script>
-        function setSubpartF7(val) {{
-            document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
-                b.classList.remove('active');
-            }});
-            var curBtn = document.getElementById('f7_sub_btn_' + val);
-            if (curBtn) curBtn.classList.add('active');
-            var gGrid = document.getElementById('f7_boxes_grid');
-            var bProfit = document.getElementById('f7_box_profit');
-            var bRepair = document.getElementById('f7_box_repair');
-            if (!gGrid || !bProfit || !bRepair) return;
-            if (val === 'PROFIT') {{
-                bProfit.style.display = 'block';
-                bRepair.style.display = 'none';
-                gGrid.style.gridTemplateColumns = '1fr';
-            }} else if (val === 'REPAIR') {{
-                bProfit.style.display = 'none';
-                bRepair.style.display = 'block';
-                gGrid.style.gridTemplateColumns = '1fr';
-            }} else {{
-                bProfit.style.display = 'block';
-                bRepair.style.display = 'block';
-                gGrid.style.gridTemplateColumns = '1fr 1fr';
-            }}
-        }}
-        </script>
-
-        <div id="f7_boxes_grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
             <!-- ડાબું બોક્સ (Box 1): [F7] ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ સેટઅપ -->
-            <div id="f7_box_profit" style="display:{'block' if 'F7_1' in active_subparts else 'none'}; background:#fffbeb; border:2px solid #b45309; border-radius:6px; padding:12px;">
+            <div style="display:{'block' if 'F7_1' in active_subparts else 'none'}; background:#fffbeb; border:2px solid #b45309; border-radius:6px; padding:12px;">
                 <h4 style="margin:0 0 10px 0; color:#b45309;">💎 ૧. [F7] ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ સેટઅપ (સીધો ગલ્લા ૪ અને P&L માં જમા)</h4>
                 <form class="term-form f-enter-form" action="/save-f7-extra-profit" method="post">
                     <div class="f-row"><div class="lbl" style="width:190px;">૧. તારીખ:</div><input type="date" name="entry_date" value="{today_str}"></div>
@@ -791,7 +835,7 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                     </div>
                     <div class="f-row"><div class="lbl" style="width:190px;">૩. સંદર્ભ બિલ / ગ્રાહક નામ:</div><input type="text" name="ref_bill_customer" placeholder="બિલ નંબર અથવા ગ્રાહકનું નામ..."></div>
                     <div class="f-row"><div class="lbl" style="width:190px;">૪. ચોખ્ખો નફો રકમ (₹):</div><input type="number" step="any" name="net_profit_amt" value="0" required style="font-weight:800; color:#15803d; font-size:14px;"></div>
-                    <div class="f-row"><div class="lbl" style="width:190px;">૫. પ્રાપ્તિ પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" id="f7_b1_mop" onchange="syncF7MopGalla(this, 'f7_b1_galla')" style="max-width:145px; font-weight:bold;"><option value="રોકડ (Cash)">💵 ૧. રોકડ (Cash)</option><option value="ઓનલાઇન UPI / QR">📱 ૨. ઓનલાઇન UPI / QR</option><option value="કાર્ડ સ્વાઇપ">💳 ૩. કાર્ડ સ્વાઇપ</option><option value="નેટ બેંકિંગ / NEFT">🏦 ૪. NEFT / બેંક</option></select><select name="galla_name" id="f7_b1_galla" style="font-weight:bold; color:#0f2043; flex:1;"><option value="EXTRA_CASH" selected>૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option><option value="BANK_CASH">૧. બેંક કેશ (ગલ્લો ૧)</option><option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option><option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option></select></div>
+                    <div class="f-row"><div class="lbl" style="width:190px;">૫. પ્રાપ્તિ પદ્ધતિ (MOP) & ગલ્લો:</div><select name="pay_mode" style="max-width:140px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option><option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option></select>{galla_f7_prof}</div>
                     <div class="f-row"><div class="lbl" style="width:190px;">૬. સેલ્સમેન & કમિશન (₹):</div>
                         <select name="salesman" style="flex:1;">{staff_opts_html}</select>
                         <input type="number" step="any" name="staff_comm_amt" value="0" placeholder="સ્ટાફ કમિશન ₹" style="max-width:120px;">
@@ -802,7 +846,7 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             </div>
 
             <!-- જમણું બોક્સ (Box 2): 🛠️ બારોબાર ગ્રાહક રિપેરિંગ અને કારીગર પ્રોફિટ સ્પ્લિટ (૧૧ ખાનાં) -->
-            <div id="f7_box_repair" style="display:{'block' if ('F7_2' in active_subparts or 'F7_3' in active_subparts) else 'none'}; background:#f0fdf4; border:2px solid #16a34a; border-radius:6px; padding:12px;">
+            <div style="display:{'block' if ('F7_2' in active_subparts or 'F7_3' in active_subparts) else 'none'}; background:#f0fdf4; border:2px solid #16a34a; border-radius:6px; padding:12px;">
                 <h4 style="margin:0 0 8px 0; color:#166534;">🛠️ ૨. બારોબાર ગ્રાહક રિપેરિંગ & કારીગર પ્રોફિટ સ્પ્લિટ બોક્સ</h4>
                 
                 <div style="background:#fefce8; border:1px solid #fde047; padding:6px 10px; border-radius:4px; margin-bottom:10px;">
@@ -829,32 +873,30 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                         </div>
                         <div class="f-row"><div class="lbl" style="width:190px;">૫. સ્પેરપાર્ટ ખરીદ પડતર (₹):</div>
                             <input type="number" step="any" name="spare_part_cost" value="0" style="max-width:85px; font-weight:bold; color:#dc2626;">
-                            <select name="part_pay_mode" id="f7_sp_pmode" onchange="syncF7MopGalla(this, 'f7_sp_pgalla')" style="max-width:130px; font-weight:bold;">
+                            <select name="part_pay_mode" style="max-width:125px; font-weight:bold;">
                                 <option value="રોકડ (Cash)">💵 રોકડ (Cash)</option>
                                 <option value="ઓનલાઈન UPI / QR">📱 ઓનલાઈન UPI</option>
                                 <option value="કાર્ડ સ્વાઇપ (Card Swipe)">💳 કાર્ડ સ્વાઇપ</option>
                                 <option value="નેટ બેંકિંગ (NEFT/RTGS)">🏦 NEFT / બેંક</option>
+                                <option value="ચેક (Cheque)">📑 ચેક</option>
                             </select>
-                            <select name="part_paid_galla" id="f7_sp_pgalla" style="font-weight:bold; color:#0f2043; flex:1;">
+                            <select name="part_paid_galla" style="font-weight:bold; color:#0f2043; flex:1;">
                                 <option value="BANK_CASH">૧. બેંક કેશ (ગલ્લો ૧)</option>
                                 <option value="ACC_DCASH">૨. એક્સેસરીઝ D-Cash (ગલ્લો ૨)</option>
                                 <option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>
                                 <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
+                                <option value="ONLINE_BANK">૫. બેંક એકાઉન્ટ (ઓનલાઇન / NEFT)</option>
+                                <option value="CARD_SWIPE">૬. કાર્ડ સ્વાઇપ POS મશીન</option>
                             </select>
                         </div>
                         <div class="f-row"><div class="lbl" style="width:190px;">૬. ગ્રાહક પાસેથી લીધા (₹):</div>
                             <input type="number" step="any" name="customer_charge" value="0" required style="max-width:95px; font-weight:bold; color:#15803d;">
-                            <select name="rec_pay_mode" id="f7_sp_rmode" onchange="syncF7MopGalla(this, 'f7_sp_rgalla')" style="max-width:130px; font-weight:bold;">
-                                <option value="રોકડ (Cash)">💵 રોકડ (Cash)</option>
-                                <option value="ઓનલાઈન UPI / QR">📱 ઓનલાઈન UPI</option>
-                                <option value="કાર્ડ સ્વાઇપ">💳 કાર્ડ સ્વાઇપ</option>
-                                <option value="નેટ બેંકિંગ / NEFT">🏦 NEFT / બેંક</option>
-                            </select>
-                            <select name="received_galla" id="f7_sp_rgalla" style="font-weight:bold; color:#15803d; flex:1;">
-                                <option value="EXTRA_CASH" selected>૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
-                                <option value="BANK_CASH">૧. બેંક કેશ (ગલ્લો ૧)</option>
-                                <option value="ACC_DCASH">૨. એક્સેસરીઝ (ગલ્લો ૨)</option>
-                                <option value="RECHARGE">૩. રિચાર્જ (ગલ્લો ૩)</option>
+                            <select name="rec_pay_mode" style="max-width:110px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">UPI</option><option value="બેંક ટ્રાન્સફર">બેંક</option></select>
+                            <select name="received_galla" style="font-weight:bold; color:#15803d;">
+                                <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ</option>
+                                <option value="BANK_CASH">૧. બેંક કેશ</option>
+                                <option value="ACC_DCASH">૨. એક્સેસરીઝ</option>
+                                <option value="RECHARGE">૩. રિચાર્જ</option>
                             </select>
                         </div>
                         <button type="submit" style="width:100%; background:#15803d; color:white; border:none; padding:9px; border-radius:4px; font-weight:800; margin-top:8px; cursor:pointer;">[ સાચવો ગ્રાહક રિપેરિંગ એન્ટ્રી (Enter) ]</button>
@@ -879,17 +921,19 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                         </div>
                         <div class="f-row"><div class="lbl" style="width:190px;">૫. સ્પેરપાર્ટ ખર્ચ (₹) & ગલ્લો:</div>
                             <input type="number" step="any" name="spare_part_cost" id="f7_rep_cost" value="0" oninput="calcF7RepairSplit()" required style="max-width:85px; font-weight:bold; color:#dc2626;">
-                            <select name="part_pay_mode" id="f7_spl_pmode" onchange="syncF7MopGalla(this, 'f7_spl_pgalla')" style="max-width:130px; font-weight:bold;">
-                                <option value="રોકડ (Cash)">💵 રોકડ (Cash)</option>
+                            <select name="part_pay_mode" style="max-width:125px; font-weight:bold;">
+                                <option value="રોકડ (Cash)">💵 રોકડ</option>
                                 <option value="ઓનલાઈન UPI / QR">📱 UPI</option>
                                 <option value="કાર્ડ સ્વાઇપ (Card Swipe)">💳 કાર્ડ સ્વાઇપ</option>
                                 <option value="નેટ બેંકિંગ (NEFT/RTGS)">🏦 NEFT</option>
                             </select>
-                            <select name="part_paid_galla" id="f7_spl_pgalla" style="font-weight:bold; flex:1;">
-                                <option value="BANK_CASH">૧. બેંક કેશ (ગલ્લો ૧)</option>
-                                <option value="ACC_DCASH">૨. D-Cash (ગલ્લો ૨)</option>
-                                <option value="RECHARGE">૩. રિચાર્જ (ગલ્લો ૩)</option>
-                                <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
+                            <select name="part_paid_galla" style="font-weight:bold; flex:1;">
+                                <option value="BANK_CASH">૧. બેંક કેશ</option>
+                                <option value="ACC_DCASH">૨. D-Cash</option>
+                                <option value="RECHARGE">૩. રિચાર્જ</option>
+                                <option value="EXTRA_CASH">૪. એક્સ્ટ્રા કેશ</option>
+                                <option value="ONLINE_BANK">૫. બેંક એકાઉન્ટ</option>
+                                <option value="CARD_SWIPE">૬. કાર્ડ સ્વાઇપ POS</option>
                             </select>
                         </div>
                         <div class="f-row"><div class="lbl" style="width:190px;">૬. ગ્રાહક ચાર્જ (₹):</div>
@@ -908,18 +952,8 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                             <input type="number" step="any" name="owner_share_amt" id="f7_owner_amt" value="0" readonly style="font-weight:800; color:#15803d; font-size:13.5px;">
                         </div>
                         <div class="f-row"><div class="lbl" style="width:190px;">૧૦. પ્રાપ્તિ પદ્ધતિ (MOP) & જમા ગલ્લો:</div>
-                            <select name="pay_mode" id="f7_spl_rmode" onchange="syncF7MopGalla(this, 'f7_spl_rgalla')" style="max-width:130px; font-weight:bold;">
-                                <option value="રોકડ (Cash)">💵 રોકડ (Cash)</option>
-                                <option value="ઓનલાઈન UPI">📱 ઓનલાઈન UPI</option>
-                                <option value="કાર્ડ સ્વાઇપ">💳 કાર્ડ સ્વાઇપ</option>
-                                <option value="નેટ બેંકિંગ / NEFT">🏦 NEFT / બેંક</option>
-                            </select>
-                            <select name="profit_galla" id="f7_spl_rgalla" style="font-weight:bold; color:#b45309; flex:1;">
-                                <option value="EXTRA_CASH" selected>૪. તિજોરી / એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
-                                <option value="BANK_CASH">૧. બેંક કેશ (ગલ્લો ૧)</option>
-                                <option value="ACC_DCASH">૨. એક્સેસરીઝ (ગલ્લો ૨)</option>
-                                <option value="RECHARGE">૩. રિચાર્જ (ગલ્લો ૩)</option>
-                            </select>
+                            <select name="pay_mode" style="max-width:130px; font-weight:bold;"><option value="રોકડ (Cash)">રોકડ (Cash)</option><option value="ઓનલાઈન UPI">ઓનલાઈન UPI</option><option value="બેંક ટ્રાન્સફર">બેંક ટ્રાન્સફર</option></select>
+                            <select name="profit_galla" style="font-weight:bold; color:#b45309;"><option value="EXTRA_CASH">૪. તિજોરી / એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option><option value="BANK_CASH">૧. બેંક કેશ (ગલ્લો ૧)</option><option value="ACC_DCASH">૨. એક્સેસરીઝ (ગલ્લો ૨)</option><option value="RECHARGE">૩. રિચાર્જ (ગલ્લો ૩)</option></select>
                         </div>
                         <button type="submit" style="width:100%; background:#16a34a; color:white; border:none; padding:9px; border-radius:4px; font-weight:800; margin-top:6px; cursor:pointer;">૧૧. [ નફા વહેંચણી સેવ કરો (દુકાનદાર નફો -> ગલ્લો ૪ & કારીગર ભાગ -> સ્ટાફ) ]</button>
                     </form>
@@ -947,31 +981,6 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             function toggleF7RepairSubmode(val){{
                 document.getElementById('f7_rep_simple_wrap').style.display = (val === 'SIMPLE') ? 'block' : 'none';
                 document.getElementById('f7_rep_split_wrap').style.display = (val === 'SPLIT') ? 'block' : 'none';
-            }}
-            function syncF7MopGalla(mopEl, gallaElId) {{
-                var gallaEl = (typeof gallaElId === 'string') ? document.getElementById(gallaElId) : gallaElId;
-                if (!mopEl || !gallaEl) return;
-                var mop = (mopEl.value || '').trim();
-                var isCash = (mop.indexOf('રોકડ') !== -1 || mop.toUpperCase().indexOf('CASH') !== -1) && 
-                             mop.indexOf('UPI') === -1 && mop.indexOf('બેંક') === -1 && mop.indexOf('કાર્ડ') === -1 && mop.indexOf('NEFT') === -1;
-                if (isCash) {{
-                    var isExtra = (gallaElId.indexOf('rec') !== -1 || gallaElId.indexOf('rgalla') !== -1 || gallaElId.indexOf('b1') !== -1);
-                    gallaEl.innerHTML = `
-                        <option value="EXTRA_CASH"` + (isExtra ? ' selected' : '') + `>૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪)</option>
-                        <option value="BANK_CASH"` + (!isExtra ? ' selected' : '') + `>૧. બેંક કેશ (ગલ્લો ૧)</option>
-                        <option value="ACC_DCASH">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨)</option>
-                        <option value="RECHARGE">૩. રિચાર્જ કેશ (ગલ્લો ૩)</option>
-                    `;
-                    gallaEl.style.background = '#ffffff';
-                    gallaEl.style.borderColor = '#15803d';
-                }} else {{
-                    var desc = mop.indexOf('કાર્ડ') !== -1 ? 'કાર્ડ સ્વાઇપ POS' : (mop.indexOf('UPI') !== -1 ? 'UPI QR કોડ' : 'બેંક ખાતું');
-                    gallaEl.innerHTML = `
-                        <option value="ONLINE_BANK" selected>🏦 ડિજિટલ બેંક એકાઉન્ટ (` + desc + ` - ખાતામાં સીધા જમા/ચુકવણી)</option>
-                    `;
-                    gallaEl.style.background = '#e0f2fe';
-                    gallaEl.style.borderColor = '#0284c7';
-                }}
             }}
             function calcF7RepairSplit(){{
                 var cost = parseFloat(document.getElementById('f7_rep_cost').value) || 0;
@@ -1231,7 +1240,7 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
                     <div style="font-weight:bold; color:#0f2043; border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-bottom:8px; font-size:12.5px;">૧. HO ચોપડે ચૂકવવાપાત્ર કુલ કેશ (HO Book Cash Due):</div>
                     <table style="width:100%; font-size:12px;">
                         <tr><td>અગાઉની અણભરેલ કેશ લાયાબિલિટી:</td><td style="text-align:right; font-weight:bold;">₹{l12_ho_closing:,.0f}</td></tr>
-                        <tr><td>આજનું સેલ્સ પોર્ટલ કેશ બિલિંગ (+):</td><td style="text-align:right; color:#15803d; font-weight:bold;">+ ₹{l10_apx_day_cash:,.0f}</td></tr>
+                        <tr><td>આજનું APX પોર્ટલ કેશ બિલિંગ (+):</td><td style="text-align:right; color:#15803d; font-weight:bold;">+ ₹{l10_apx_day_cash:,.0f}</td></tr>
                         <tr><td>સીધા HO બેંકમાં ભરેલ રકમ [F4] (-):</td><td style="text-align:right; color:#dc2626; font-weight:bold;">- ₹{l4_today_bank_dep:,.0f}</td></tr>
                         <tr style="background:#eff6ff; font-weight:bold; border-top:1px solid #93c5fd;"><td style="padding:6px 0;">કુલ HO ચોપડે બોલતી બાકી કેશ:</td><td style="text-align:right; color:#1d4ed8; font-size:13.5px;">₹{(l12_ho_closing + l10_apx_day_cash - l4_today_bank_dep):,.0f}</td></tr>
                     </table>
@@ -1262,40 +1271,15 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <button type="submit" onclick="return confirm('શું આજની ક્લોઝિંગ બેલેન્સ સેવ કરીને આવતીકાલની ઓપનિંગ બેલેન્સ તરીકે કેરી-ફોરવર્ડ કરવી છે?')" style="background:#15803d; color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:11.5px;">🔄 આજની ક્લોઝિંગ -> આવતીકાલની ઓપનિંગમાં કેરી-ફોરવર્ડ કરો</button>
         </form>
     </div>
-
-    <!-- MASTER ERP SUB-SECTIONS STRIP (F8 ૧ થી ૪ લાઈનબદ્ધ પેટા વિભાગો) -->
-    <div class="tally-subparts-bar">
-        <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
-        <button type="button" class="tally-sub-btn active" id="f8_sub_btn_ALL" onclick="setSubpartF8('ALL')">૧. તમામ ઓડિટ ટેબલ સાથે જુઓ</button>
-        <button type="button" class="tally-sub-btn" id="f8_sub_btn_AUDIT" onclick="setSubpartF8('AUDIT')">૨. ૪-ગલ્લા નોટ ગણતરી (Audit Log)</button>
-        <button type="button" class="tally-sub-btn" id="f8_sub_btn_RECON" onclick="setSubpartF8('RECON')">૩. ૧૨-લાઇન મેળવણી (Reconciliation)</button>
-        <button type="button" class="tally-sub-btn" id="f8_sub_btn_VAULT" onclick="setSubpartF8('VAULT')">૪. વૉલ્ટ કેરી-ફોરવર્ડ</button>
-    </div>
-    <script>
-    function setSubpartF8(val) {{
-        document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
-            b.classList.remove('active');
-        }});
-        var curBtn = document.getElementById('f8_sub_btn_' + val);
-        if (curBtn) curBtn.classList.add('active');
-        var bAudit = document.getElementById('f8_audit_tables_wrap');
-        var bRecon = document.getElementById('f8_recon_wrap');
-        if (val === 'AUDIT' && bAudit) {{
-            bAudit.scrollIntoView({{ behavior:'smooth' }});
-        }} else if (val === 'RECON' && bRecon) {{
-            bRecon.scrollIntoView({{ behavior:'smooth' }});
-        }}
-    }}
-    </script>
     {f8_mode_banner}
-    <div id="f8_audit_tables_wrap" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
         {tbl1_html}
         {tbl2_html}
     </div>
 
     {ho_recon_block}
 
-    <div id="f8_recon_wrap" style="padding:0 8px 12px;">
+    <div style="padding:0 8px 12px;">
         <div style="background:white; border:2px solid #0f2043; border-radius:6px; padding:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <h4 style="margin:0; color:#0f2043; font-size:13.5px;">📊 ૧. ૪-ગલ્લા સ્વતંત્ર ૧૨-લાઈન દૈનિક રિકોન્સિલેશન (Four-Vault Independent Cash Reconciliation)</h4>
