@@ -1,0 +1,14 @@
+{
+  "shop_id": "9898123456",
+  "store_name": "શ્રી ગણેશ મોબાઈલ",
+  "owner_name": "રમેશભાઈ પટેલ",
+  "owner_mobile": "9898123456",
+  "owner_user_id": "ramesh_ganesh",
+  "password": "1234",
+  "city": "બેચરાજી",
+  "shop_type": "FRANCHISE_HO",
+  "created_date": "2026-11-19",
+  "valid_until": "2026-11-29",
+  "status": "DEMO_10_DAYS",
+  "is_approved": true
+}
