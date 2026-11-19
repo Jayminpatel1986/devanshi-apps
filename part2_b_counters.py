@@ -99,10 +99,20 @@ def render_smart_terminal(
             </div>
 
         <div class="mode-banner">
-            <span>મોડ: [F1] ખરીદી મોડ્યુલ (AI ઓટો-રીડિંગ + ભાવ તફાવત એલર્ટ + ૫ ડ્રોપ-ડાઉન વિકલ્પો)</span>
+            <span>મોડ: [F1] ખરીદી મોડ્યુલ (AI ઓટો-રીડિંગ + ભાવ તફાવત એલર્ટ + ૫ વિકલ્પો)</span>
             <div>
                 <button type="button" onclick="document.getElementById('stock_import_file').click()" style="background:#0284c7; color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:11.5px;">📥 ખરીદી બિલ PDF / Excel / ફોટો AI ઇમ્પોર્ટ</button>
             </div>
+        </div>
+
+        <!-- TALLY PRIME SUB-SECTIONS STRIP (F1 ૧ થી ૫ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <div class="tally-subparts-bar">
+            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
+            <button type="button" class="tally-sub-btn active" id="f1_sub_btn_PURCHASE" onclick="setSubpartF1('PURCHASE')">૧. નવો હેન્ડસેટ સ્ટોક (૧૫ ખાનાં)</button>
+            <button type="button" class="tally-sub-btn" id="f1_sub_btn_CONSUMER_PURCHASE" onclick="setSubpartF1('CONSUMER_PURCHASE')">૨. ટીવી / એસી / લેપટોપ</button>
+            <button type="button" class="tally-sub-btn" id="f1_sub_btn_DIRECT_BB" onclick="setSubpartF1('DIRECT_BB')">૩. ડાયરેક્ટ એક્સચેન્જ/બાયબેક</button>
+            <button type="button" class="tally-sub-btn" id="f1_sub_btn_ACC_PURCHASE" onclick="setSubpartF1('ACC_PURCHASE')">૪. એસેસરીઝ ખરીદી</button>
+            <a href="/?sheet=PARTY_LEDGER" class="tally-sub-btn" id="f1_sub_btn_CN">૫. વેપારી ક્રેડિટ નોટ / સ્કીમ ↗</a>
         </div>
 
         <!-- ચાલુ ટેબલે [+ નવો વેપારી] ઉમેરવાનું બોક્સ -->
@@ -553,8 +563,26 @@ def render_smart_terminal(
             }}
             window.syncUniversalMopGalla = syncUniversalMopGalla;
             window.syncF7MopGalla = syncUniversalMopGalla;
+            function setSubpartF1(val){{
+                var sel = document.getElementById('f1_tx');
+                if (sel) {{
+                    sel.value = val;
+                    toggleF1Mode();
+                }}
+                document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                    b.classList.remove('active');
+                }});
+                var btn = document.getElementById('f1_sub_btn_' + val);
+                if (btn) btn.classList.add('active');
+            }}
+
             function toggleF1Mode(){{
                 var v = document.getElementById('f1_tx').value;
+                document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                    b.classList.remove('active');
+                }});
+                var curBtn = document.getElementById('f1_sub_btn_' + v);
+                if (curBtn) curBtn.classList.add('active');
                 document.getElementById('f1_supplier_block').style.display = (v === 'PURCHASE' || v === 'CONSUMER_PURCHASE') ? 'block' : 'none';
                 document.getElementById('f1_bb_block').style.display = (v === 'DIRECT_BB') ? 'block' : 'none';
                 
@@ -786,6 +814,14 @@ def render_smart_terminal(
         <div class="mode-banner">
             <span>મોડ: [F2] વેચાણ અને પેમેન્ટ સ્પ્લિટ મોડ્યુલ (૩ ડાયનેમિક કન્ડિશનલ ફોર્મ્સ: ૧. રોકડ બિલ | ૨. ઉધાર બિલ | ૩. ફાઇનાન્સ બિલ)</span>
             <span style="font-size:11.5px; color:#0f2043;">Enter = આગળ વધો | છેલ્લે Accept? [Yes/No]</span>
+        </div>
+
+        <!-- TALLY PRIME SUB-SECTIONS STRIP (F2 ૧ થી ૩ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <div class="tally-subparts-bar">
+            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
+            <button type="button" class="tally-sub-btn active" id="f2_sub_btn_CASH_BILL" onclick="setSubpartF2('CASH_BILL')">૧. રોકડ બિલ (Cash Bill - ૧૫ ખાનાં)</button>
+            <button type="button" class="tally-sub-btn" id="f2_sub_btn_CREDIT_BILL" onclick="setSubpartF2('CREDIT_BILL')">૨. ઉધાર બિલ (Credit Bill - ૧૮ ખાનાં)</button>
+            <button type="button" class="tally-sub-btn" id="f2_sub_btn_FINANCE_BILL" onclick="setSubpartF2('FINANCE_BILL')">૩. ફાઇનાન્સ બિલ & DO (Finance Bill - ૨૨ ખાનાં)</button>
         </div>
 
         <form class="term-form f-enter-form" action="/save-f2" method="post" enctype="multipart/form-data">
@@ -1122,8 +1158,26 @@ def render_smart_terminal(
             }}
 
             setTimeout(function(){{ if(typeof switchF2DynamicForm === 'function') switchF2DynamicForm(); }}, 20);
+            function setSubpartF2(val){{
+                var sel = document.getElementById('f2_bill_type');
+                if (sel) {{
+                    sel.value = val;
+                    switchF2DynamicForm();
+                }}
+                document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                    b.classList.remove('active');
+                }});
+                var btn = document.getElementById('f2_sub_btn_' + val);
+                if (btn) btn.classList.add('active');
+            }}
+
             function switchF2DynamicForm(){{
                 var bt = document.getElementById('f2_bill_type').value;
+                document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                    b.classList.remove('active');
+                }});
+                var curBtn = document.getElementById('f2_sub_btn_' + bt);
+                if (curBtn) curBtn.classList.add('active');
                 var finTop = document.getElementById('f2_finance_only_top');
                 var finLoan = document.getElementById('f2_finance_loan_block');
                 var doWrap = document.getElementById('f2_do_drop_wrap');
@@ -1661,6 +1715,17 @@ def render_smart_terminal(
         <div class="mode-banner">
             <span>મોડ: [F3] ઓલ-ઇન-વન લેજર અને ખર્ચા (૧. પેમેન્ટ રિસીવ | ૨. પેમેન્ટ આઉટ | ૩. દૈનિક સ્ટોર ખર્ચા)</span>
             <span style="font-size:11.5px;">એક જ ડ્રોપ-ડાઉનથી ત્રણેય કામ | ૪-ગલ્લા સિલેક્શન</span>
+        </div>
+
+        <!-- TALLY PRIME SUB-SECTIONS STRIP (F3 ૧ થી ૬ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <div class="tally-subparts-bar">
+            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
+            <button type="button" class="tally-sub-btn active" id="f3_sub_btn_PAY_RECEIVE" onclick="setSubpartF3('PAY_RECEIVE')">૧. પેમેન્ટ રિસીવ (ગ્રાહક બાકી / વકરો)</button>
+            <button type="button" class="tally-sub-btn" id="f3_sub_btn_PAY_OUT" onclick="setSubpartF3('PAY_OUT')">૨. પેમેન્ટ આઉટ (વેપારી / પગાર)</button>
+            <button type="button" class="tally-sub-btn" id="f3_sub_btn_STORE_EXPENSE" onclick="setSubpartF3('STORE_EXPENSE')">૩. દૈનિક સ્ટોર ખર્ચા (૧૪ ખર્ચ)</button>
+            <button type="button" class="tally-sub-btn" id="f3_sub_btn_DIRECT_UDHAR" onclick="setSubpartF3('DIRECT_UDHAR')">૪. ડાયરેક્ટ ઉધાર નોંધ</button>
+            <button type="button" class="tally-sub-btn" id="f3_sub_btn_PARTNER_CAPITAL" onclick="setSubpartF3('PARTNER_CAPITAL')">૫. પાર્ટનર મૂડી / ઉપાડ</button>
+            <button type="button" class="tally-sub-btn" id="f3_sub_btn_LAPU_PURCHASE" onclick="setSubpartF3('LAPU_PURCHASE')">૬. લાપુ બેલેન્સ ખરીદી / હિસાબ</button>
         </div>
 
         <div class="term-form">
@@ -2265,8 +2330,26 @@ def render_smart_terminal(
                     else alert(d.msg || 'એરર');
                 }});
             }}
+            function setSubpartF3(val){{
+                var sel = document.getElementById('f3_master_mode');
+                if (sel) {{
+                    sel.value = val;
+                    switchF3SubForm();
+                }}
+                document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                    b.classList.remove('active');
+                }});
+                var btn = document.getElementById('f3_sub_btn_' + val);
+                if (btn) btn.classList.add('active');
+            }}
+
             function switchF3SubForm(){{
                 var m = document.getElementById('f3_master_mode').value;
+                document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                    b.classList.remove('active');
+                }});
+                var curBtn = document.getElementById('f3_sub_btn_' + m);
+                if (curBtn) curBtn.classList.add('active');
                 document.getElementById('f3_sub_receive').style.display = (m === 'PAY_RECEIVE') ? 'block' : 'none';
                 document.getElementById('f3_sub_payout').style.display = (m === 'PAY_OUT') ? 'block' : 'none';
                 document.getElementById('f3_sub_expense').style.display = (m === 'STORE_EXPENSE') ? 'block' : 'none';
@@ -2376,6 +2459,26 @@ def render_smart_terminal(
             <span>મોડ: [F4] બેંક ડિપોઝિટ & વિડ્રોલ લોગ (૫-સ્ત્રોત મલ્ટી-ગલ્લા સ્પ્લિટ - ૯ ખાનાં)</span>
             <span style="font-size:11.5px;">નોંધ: ગ્રાહક બાકી ઉધાર વસૂલાત [F3] વિકલ્પ (૧) માં છે; અહીં માત્ર શુદ્ધ બેંક ડિપોઝિટ અને વિડ્રોલ લોગ રહેશે</span>
         </div>
+
+        <!-- TALLY PRIME SUB-SECTIONS STRIP (F4 ૧ થી ૨ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <div class="tally-subparts-bar">
+            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
+            <button type="button" class="tally-sub-btn active" id="f4_sub_btn_DEPOSIT" onclick="setSubpartF4('DEPOSIT')">૧. બેંક ડિપોઝિટ (Bank Deposit)</button>
+            <button type="button" class="tally-sub-btn" id="f4_sub_btn_WITHDRAWAL" onclick="setSubpartF4('WITHDRAWAL')">૨. બેંક વિડ્રોલ (રોકડ ઉપાડ)</button>
+        </div>
+        <script>
+        function setSubpartF4(val) {{
+            var sel = document.querySelector('select[name="tx_type"]');
+            if (sel) {{
+                sel.value = val;
+            }}
+            document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                b.classList.remove('active');
+            }});
+            var btn = document.getElementById('f4_sub_btn_' + val);
+            if (btn) btn.classList.add('active');
+        }}
+        </script>
 
         <div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:12px; padding:8px;">
             <!-- ડાબો ભાગ: [F4] બેંક ડિપોઝિટ અને વિડ્રોલ લોગ (૫-સ્ત્રોત મલ્ટી-ગલ્લા સ્પ્લિટ) -->
