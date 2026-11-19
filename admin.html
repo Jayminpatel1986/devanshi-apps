@@ -86,7 +86,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
     actionBox.innerHTML = '<div style="font-size:20px; font-weight:bold; color:#38bdf8;">⏳ ૧-ક્લિક WhatsApp એક્શન પ્રોસેસ થઈ રહી છે... (દુકાન: ' + shopId + ')</div>';
     
     try {
-        var fileUrl = 'https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json';
+        var fileUrl = 'https://api.github.com/repos/Jayminpatel1986/devanshi-apps/contents/cloud_signups/' + shopId + '.json';
         var getRes = await fetch(fileUrl, { headers: headers });
         if (!getRes.ok) {
             actionBox.innerHTML = '<div style="color:#ef4444; font-size:16px; font-weight:bold;">❌ દુકાન (' + shopId + ') નો ડેટા મળ્યો નથી!</div>';
