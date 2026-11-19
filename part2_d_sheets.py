@@ -1187,7 +1187,7 @@ def render_other_sheets(sheet, conn, c, sm_range, from_d, to_d, today_str, dos, 
         trs = ""
         for r in rows:
             sup_doc_u = (r[8] if r[8].startswith("/") else ("/" + r[8])) if r[8] else ""
-            v_inv_b = f"<a href='/view-purchase-invoice?bill_no={urllib.parse.quote(str(r[2] or ''))}&party_name={urllib.parse.quote(str(r[1] or ''))}' target='_blank' style='background:#7c3aed;color:white;padding:2px 7px;border-radius:3px;text-decoration:none;font-size:11px;font-weight:bold;'>🧾 ટેલી બિલ વ્યુ</a> "
+            v_inv_b = f"<a href='/view-purchase-invoice?bill_no={urllib.parse.quote(str(r[2] or ''))}&party_name={urllib.parse.quote(str(r[1] or ''))}' target='_blank' style='background:#7c3aed;color:white;padding:2px 7px;border-radius:3px;text-decoration:none;font-size:11px;font-weight:bold;'>🧾 પ્રોફેશનલ બિલ વ્યુ</a> "
             doc_b = v_inv_b + (f"<a href='{sup_doc_u}' target='_blank' style='background:#0284c7;color:white;padding:2px 6px;border-radius:3px;text-decoration:none;font-size:11px;font-weight:bold;'>📄 અસલ PDF</a> " if sup_doc_u else "")
             del_b = f"""<form action="/api/delete-store-entry-with-pin" method="post" style="display:inline;" onsubmit="var p=prompt('👑 આ ખરીદી બિલ ({r[2]}) રદ કરી તેના તમામ IMEI સ્ટોકમાંથી કાઢવા અને ગલ્લાની રોકડ ૧૦૦% રોલબેક કરવા માસ્ટર PIN (1986) નાખો:'); if(!p) return false; this.pin.value=p; return true;">
                 <input type="hidden" name="entry_type" value="purchase">
@@ -2242,7 +2242,7 @@ def render_other_sheets(sheet, conn, c, sm_range, from_d, to_d, today_str, dos, 
 
 
 
-    # --- TALLY_LEDGER: ટેલી-સ્ટાઇલ ૩-ઇન-૧ માસ્ટર લેજર (Create / Edit / Delete - PIN 1986) ---
+    # --- TALLY_LEDGER: માસ્ટર ૩-ઇન-૧ એકાઉન્ટ્સ લેજર (Create / Edit / Delete - PIN 1986) ---
     c.execute("SELECT id, ledger_name, under_group, mobile, gstin, address, pincode, bank_details, opening_bal, bal_type FROM tally_master_ledgers ORDER BY id DESC LIMIT 60")
     tally_rows = c.fetchall()
     tally_trs = ""
@@ -2286,7 +2286,7 @@ def render_other_sheets(sheet, conn, c, sm_range, from_d, to_d, today_str, dos, 
     return f"""
     <div style="padding:10px;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #cbd5e1; padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-            <h3 style="margin:0; color:#0f2043;">૧૮. માસ્ટર સેટિંગ & ટેલી લેજર (વેપારી, ગ્રાહક, બ્રાન્ડ, સ્ટાફ, હોદ્દા અને કેટેગરી માસ્ટર - Alt+C)</h3>
+            <h3 style="margin:0; color:#0f2043;">૧૮. માસ્ટર સેટિંગ & પ્રોફેશનલ લેજર (વેપારી, ગ્રાહક, બ્રાન્ડ, સ્ટાફ, હોદ્દા અને કેટેગરી માસ્ટર - Alt+C)</h3>
             <div style="display:flex; gap:8px;">
                 <a href="/cloud-backup-upload" style="background:#0284c7; color:white; padding:6px 12px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:12px;">☁️ દુકાનથી ક્લાઉડ બેકઅપ અપલોડ કરો</a>
                 <a href="/cloud-backup-download" style="background:#16a34a; color:white; padding:6px 12px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:12px;">📥 લેપટોપમાં ક્લાઉડ બેકઅપ ડાઉનલોડ કરો</a>
@@ -2344,10 +2344,10 @@ def render_other_sheets(sheet, conn, c, sm_range, from_d, to_d, today_str, dos, 
             </form>
         </div>
 
-        <!-- 🏛️ ટેલી-સ્ટાઇલ ૩-ઇન-૧ માસ્ટર લેજર મેનેજમેન્ટ (Create / Edit / Delete) -->
+        <!-- 🏛️ માસ્ટર ૩-ઇન-૧ એકાઉન્ટ્સ લેજર મેનેજમેન્ટ (Create / Edit / Delete) -->
         <div style="background:#f8fafc; border:2px solid #0f2043; padding:12px; border-radius:8px; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; background:#0f2043; color:white; padding:8px 12px; border-radius:6px; margin-bottom:10px;">
-                <h4 style="margin:0; color:#38bdf8;">🏛️ ટેલી-સ્ટાઇલ ૩-ઇન-૧ માસ્ટર લેજર મેનેજમેન્ટ (૧. નવું લેજર બનાવો | ૨. લેજર સુધારો | ૩. લેજર ડિલીટ)</h4>
+                <h4 style="margin:0; color:#38bdf8;">🏛️ માસ્ટર ૩-ઇન-૧ એકાઉન્ટ્સ લેજર મેનેજમેન્ટ (૧. નવું લેજર બનાવો | ૨. લેજર સુધારો | ૩. લેજર ડિલીટ)</h4>
                 <span style="font-size:11px; color:#fde047;">વેપારી, ગ્રાહક, સ્ટાફ, ખર્ચ કે બેંક ખાતું અહીંથી બનાવો</span>
             </div>
             <form action="/save-tally-ledger" method="post" class="f-enter-form" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px; background:white; padding:10px; border:1px solid #cbd5e1; border-radius:6px;">
