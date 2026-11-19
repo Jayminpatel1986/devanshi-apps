@@ -139,12 +139,8 @@ def root_view(
     allowed_cnt_list = shop_prof.get("active_counters") or ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]
     first_allowed_cnt = allowed_cnt_list[0] if allowed_cnt_list else "F2"
     if not sheet and not mode:
-        if def_home in ("F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"):
-            sheet = "SMART_TERMINAL"
-            mode = def_home if def_home in allowed_cnt_list else first_allowed_cnt
-        else:
-            sheet = def_home
-            mode = first_allowed_cnt
+        sheet = "GATEWAY"
+        mode = ""
     elif sheet in ("F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"):
         mode = sheet if sheet in allowed_cnt_list else first_allowed_cnt
         sheet = "SMART_TERMINAL"
@@ -282,7 +278,65 @@ def root_view(
     </form>
     """
 
-    if sheet == "SMART_TERMINAL":
+    if sheet == "GATEWAY":
+        is_in_counter = False
+        STORE_CFG["last_active_url"] = "/?sheet=GATEWAY"
+        STORE_CFG["last_active_sheet"] = "GATEWAY"
+        STORE_CFG["last_active_mode"] = ""
+        sheet_content = """
+        <div style="padding:15px; max-width:1150px; margin:0 auto; font-family:sans-serif;">
+            <div style="background:#0f172a; color:#fde047; padding:12px 18px; border-radius:8px; border:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+                <div>
+                    <h2 style="margin:0; font-size:17px; color:#38bdf8;">🏛️ ગેટવે ઓફ માસ્ટર ERP (Gateway of Master ERP)</h2>
+                    <div style="font-size:12px; color:#cbd5e1; margin-top:3px;">નીચેનામાંથી કોઈપણ કાઉન્ટર પસંદ કરો અથવા કીબોર્ડ પરથી <b>[F1]</b> થી <b>[F8]</b> દબાવો:</div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="background:#16a34a; color:white; padding:4px 10px; border-radius:4px; font-weight:800; font-size:11px;">🟢 લાઈવ સિસ્ટમ સક્રિય</span>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-bottom:18px;">
+                <a href="/?sheet=SMART_TERMINAL&mode=F1" style="background:#15803d; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #86efac;">
+                    <div style="font-size:16px; font-weight:900;">📥 [F1] ખરીદી ડેસ્ક</div>
+                    <div style="font-size:11.5px; color:#dcfce7;">નવો સ્ટોક, ટીવી/એસી, ડાયરેક્ટ એક્સચેન્જ, એસેસરીઝ ખરીદી (૧૫ ખાનાં)</div>
+                </a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F2" style="background:#0f2043; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #38bdf8;">
+                    <div style="font-size:16px; font-weight:900;">⚡ [F2] વેચાણ સેટલમેન્ટ</div>
+                    <div style="font-size:11.5px; color:#bae6fd;">રોકડ બિલ, ઉધાર બિલ, ફાઇનાન્સ DO & પેમેન્ટ સ્પ્લિટ (૨૨ ખાનાં)</div>
+                </a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F3" style="background:#4c1d95; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #c084fc;">
+                    <div style="font-size:16px; font-weight:900;">📋 [F3] ઓલ-ઇન-વન લેજર & ખર્ચા</div>
+                    <div style="font-size:11.5px; color:#f3e8ff;">પેમેન્ટ રિસીવ (ગ્રાહક બાકી), પેમેન્ટ આઉટ, દૈનિક સ્ટોર ખર્ચા (૧૫ હેડિંગ)</div>
+                </a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F4" style="background:#0284c7; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #7dd3fc;">
+                    <div style="font-size:16px; font-weight:900;">🏦 [F4] બેંક ડિપોઝિટ & વિડ્રોઅલ</div>
+                    <div style="font-size:11.5px; color:#e0f2fe;">બેંક જમા/ઉપાડ, ઓનલાઈન ટ્રાન્સફર, ૪-ગલ્લા ઓટો રિકન્સિલિએશન</div>
+                </a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F5" style="background:#991b1b; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #fca5a5;">
+                    <div style="font-size:16px; font-weight:900;">🔄 [F5] બાય-બેક & રિપેરિંગ</div>
+                    <div style="font-size:11.5px; color:#fee2e2;">૪ ભાગ ગ્રીડ: ખરીદી, રિપેરિંગ પડતર, સીધું વેચાણ, રિટર્ન & રિફંડ</div>
+                </a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F6" style="background:#b45309; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #fcd34d;">
+                    <div style="font-size:16px; font-weight:900;">🔀 [F6] ૪-ગલ્લા કેશ ટ્રાન્સફર</div>
+                    <div style="font-size:11.5px; color:#fef3c7;">ગલ્લા ૧, ૨, ૩, ૪ વચ્ચે આંતરિક રોકડ ફેરબદલી & ઓડિટ લોગ</div>
+                </a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F7" style="background:#1e3a8a; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #93c5fd;">
+                    <div style="font-size:16px; font-weight:900;">💎 [F7] એક્સ્ટ્રા પ્રોફિટ & રિપેરિંગ</div>
+                    <div style="font-size:11.5px; color:#dbeafe;">ડાયરેક્ટ નફો (ગલ્લો ૪) + કારીગર સ્પ્લિટ & ગ્રાહક રિપેરિંગ</div>
+                </a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F8" style="background:#0f766e; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #5eead4;">
+                    <div style="font-size:16px; font-weight:900;">⚖️ [F8] ૪-ગલ્લા દૈનિક ઓડિટ</div>
+                    <div style="font-size:11.5px; color:#ccfbf1;">સાંજની ફિઝિકલ રોકડ ગણતરી, તફાવત સેટલમેન્ટ & દૈનિક રોજમેળ</div>
+                </a>
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:14px; text-align:center; color:#64748b; font-size:12px;">
+                💡 <b>કીબોર્ડ સહાય:</b> કોઈપણ કાઉન્ટરમાં કામ કરતી વખતે કીબોર્ડ પર <b>Esc</b> કી દબાવવાથી આપ તરત જ આ મુખ્ય ગેટવે સ્ક્રીન પર પાછા આવી શકશો.
+            </div>
+        </div>
+        """
+    elif sheet == "SMART_TERMINAL":
+        is_in_counter = True
         sheet_content = part2_b_counters.render_smart_terminal(
             conn=conn, c=c, mode=mode, f4_sm_filter=f4_sm_filter, staff_list=staff_list,
             party_db_rows=party_db_rows, cat_opts=cat_opts, bb_stock_opts=bb_stock_opts,
@@ -291,6 +345,7 @@ def root_view(
             exp_heads=exp_heads, today_str=today_str, shop_prof=shop_prof
         )
     elif sheet == "UNIVERSAL_SEARCH":
+        is_in_counter = True
         sheet_content = part2_b_counters.render_universal_search(
             conn=conn, c=c, search_q=search_q, u_tab=u_tab, sel_cust=sel_cust,
             sel_sm_hist=sel_sm_hist, sel_sm_due=sel_sm_due, sel_supp=sel_supp,
@@ -298,8 +353,10 @@ def root_view(
             all_galla_options=all_galla_options, indian_lang_options=indian_lang_options, shop_prof=shop_prof
         )
     elif sheet == "LIVE_STOCK_VIEW":
+        is_in_counter = True
         sheet_content = part2_d_sheets.render_live_stock_view(conn, c)
     else:
+        is_in_counter = (sheet != "GATEWAY")
         sheet_content = part2_d_sheets.render_other_sheets(
             sheet=sheet, conn=conn, c=c, sm_range=sm_range, from_d=from_d, to_d=to_d,
             today_str=today_str, dos=dos, desig_opts=desig_opts, cat_opts=cat_opts,
@@ -666,33 +723,77 @@ def root_view(
     <body>
     <div class="container">
         {user_top_bar_html}
-        <div class="main-header">{store_title} - MASTER ERP TERMINAL</div>
-        <div class="sub-bar">{license_display} | <b style="color:#fde047;">📌 વર્ઝન: {STORE_CFG.get('ota_version_id', '2026.11.12.001') if not str(STORE_CFG.get('ota_version_id','')).startswith('v4') else '2026.11.12.001'}</b> | 90-Day FIFO બેકઅપ + લાઈવ ક્લાઉડ સિંક સક્રિય</div>
-        {sheets_bar_html}
-        {badges_grid_html}
 
-        <!-- મલ્ટી-ફાઇલ AI ઇમ્પોર્ટ ફોર્મ્સ (૧૦-૨૦ ફાઇલો એકસાથે) -->
-        <form id="f_stk_imp" action="/import-purchase-invoice" method="post" enctype="multipart/form-data" style="display:none;">
-            <input type="file" id="stock_import_file" name="files" multiple onchange="document.getElementById('f_stk_imp').submit()">
-        </form>
-        <form id="f_do_imp" action="/import-do-pdf" method="post" enctype="multipart/form-data" style="display:none;">
-            <input type="file" id="do_import_file" name="files" multiple onchange="document.getElementById('f_do_imp').submit()">
-        </form>
-        <form id="f_apx_imp" action="/import-apx-sales" method="post" enctype="multipart/form-data" style="display:none;">
-            <input type="file" id="apx_import_file" name="files" multiple onchange="document.getElementById('f_apx_imp').submit()">
-        </form>
+        <!-- 🏛️ મુખ્ય ગેટવે ડેશબોર્ડ હેડર (કાઉન્ટરમાં હોઈએ ત્યારે 100% ફૂલ સ્ક્રીન માટે હાઇડ થઈ જશે) -->
+        <div id="main_gateway_header" style="display:{'none' if is_in_counter else 'block'};">
+            <div class="main-header">{store_title} - MASTER ERP TERMINAL</div>
+            <div class="sub-bar">{license_display} | <b style="color:#fde047;">📌 વર્ઝન: {STORE_CFG.get('ota_version_id', '2026.11.12.001') if not str(STORE_CFG.get('ota_version_id','')).startswith('v4') else '2026.11.12.001'}</b> | 90-Day FIFO બેકઅપ + લાઈવ ક્લાઉડ સિંક સક્રિય</div>
+            {sheets_bar_html}
+            {badges_grid_html}
 
-        <!-- સ્તર ૫: ક્રમબદ્ધ એક્શન અને AI સ્માર્ટ ઇમ્પોર્ટ ટૂલબાર બટનો (દુકાનના સક્રિય ઓપ્શન મુજબ ઓટો-ફિલ્ટર) -->
-        <div class="action-8-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(145px, 1fr)); gap:4px; padding:6px 8px; background:#e2e8f0; border-bottom:1px solid #cbd5e1;">
-            {btn1_pur_html}
-            {btn2_do_html}
-            {franchise_btn3_html}
-            {franchise_btn4_html}
-            <button class="act-btn" style="background:#7c3aed;" onclick="openAiAssistantModal()">🤖 વાઈફાઈ લાઈવ AI & સ્કીમ</button>
-            <a href="/mobile-scan" target="_blank" class="act-btn" style="background:#059669;">📷 મોબાઇલ કેમેરા સ્કેન</a>
-            <a href="/eod-summary-report" class="act-btn" style="background:#2563eb;">💬 રોજમેળ & WhatsApp PDF</a>
-            <a href="/undo-last" class="act-btn" style="background:#dc2626;" onclick="return confirm('શું તમે છેલ્લો વ્યવહાર રદ (Undo) કરવા માંગો છો? (તેની રોકડ અને સ્ટોક અસર પણ આપોઆપ રિવર્સ થઈ જશે!)')">↩️ છેલ્લો વ્યવહાર રદ (Undo)</a>
+            <!-- મલ્ટી-ફાઇલ AI ઇમ્પોર્ટ ફોર્મ્સ (૧૦-૨૦ ફાઇલો એકસાથે) -->
+            <form id="f_stk_imp" action="/import-purchase-invoice" method="post" enctype="multipart/form-data" style="display:none;">
+                <input type="file" id="stock_import_file" name="files" multiple onchange="document.getElementById('f_stk_imp').submit()">
+            </form>
+            <form id="f_do_imp" action="/import-do-pdf" method="post" enctype="multipart/form-data" style="display:none;">
+                <input type="file" id="do_import_file" name="files" multiple onchange="document.getElementById('f_do_imp').submit()">
+            </form>
+            <form id="f_apx_imp" action="/import-apx-sales" method="post" enctype="multipart/form-data" style="display:none;">
+                <input type="file" id="apx_import_file" name="files" multiple onchange="document.getElementById('f_apx_imp').submit()">
+            </form>
+
+            <!-- સ્તર ૫: ક્રમબદ્ધ એક્શન અને AI સ્માર્ટ ઇમ્પોર્ટ ટૂલબાર બટનો (દુકાનના સક્રિય ઓપ્શન મુજબ ઓટો-ફિલ્ટર) -->
+            <div class="action-8-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(145px, 1fr)); gap:4px; padding:6px 8px; background:#e2e8f0; border-bottom:1px solid #cbd5e1;">
+                {btn1_pur_html}
+                {btn2_do_html}
+                {franchise_btn3_html}
+                {franchise_btn4_html}
+                <button class="act-btn" style="background:#7c3aed;" onclick="openAiAssistantModal()">🤖 વાઈફાઈ લાઈવ AI & સ્કીમ</button>
+                <a href="/mobile-scan" target="_blank" class="act-btn" style="background:#059669;">📷 મોબાઇલ કેમેરા સ્કેન</a>
+                <a href="/eod-summary-report" class="act-btn" style="background:#2563eb;">💬 રોજમેળ & WhatsApp PDF</a>
+                <a href="/undo-last" class="act-btn" style="background:#dc2626;" onclick="return confirm('શું તમે છેલ્લો વ્યવહાર રદ (Undo) કરવા માંગો છો? (તેની રોકડ અને સ્ટોક અસર પણ આપોઆપ રિવર્સ થઈ જશે!)')">↩️ છેલ્લો વ્યવહાર રદ (Undo)</a>
+            </div>
         </div>
+
+        <!-- 🚀 સુપર કોમ્પેક્ટ સ્માર્ટ ટૂલબાર (ફૂલ સ્ક્રીન ડિસ્પ્લે માટે - માત્ર 35px ઊંચાઈ) -->
+        <div id="sleek_counter_topbar" style="display:{'flex' if is_in_counter else 'none'}; align-items:center; justify-content:space-between; background:#0b1528; padding:5px 10px; border-bottom:2px solid #38bdf8; border-top:1px solid #334155; margin-bottom:4px; gap:6px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:6px;">
+                <a href="/?sheet=GATEWAY" style="background:#eab308; color:#0f172a; padding:4px 10px; border-radius:4px; font-weight:900; font-size:11.5px; text-decoration:none; border:1px solid #fef08a;" title="મુખ્ય ગેટવે પર પાછા જાઓ (Esc)">⬅️ ગેટવે (Esc)</a>
+                <span style="color:#38bdf8; font-weight:800; font-size:12px;">🏪 {store_title}</span>
+                <span style="background:#1e293b; color:#fde047; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px; border:1px solid #475569;">
+                    {f'કાઉન્ટર: [{mode}]' if mode else f'શીટ: {sheet}'}
+                </span>
+            </div>
+            <!-- ફાસ્ટ F1 થી F8 સ્વિચર -->
+            <div style="display:flex; gap:3px; align-items:center;">
+                <a href="/?sheet=SMART_TERMINAL&mode=F1" class="tally-sub-btn {'active' if mode=='F1' else ''}" style="padding:3px 7px; font-size:11px;">[F1]</a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F2" class="tally-sub-btn {'active' if mode=='F2' else ''}" style="padding:3px 7px; font-size:11px;">[F2]</a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F3" class="tally-sub-btn {'active' if mode=='F3' else ''}" style="padding:3px 7px; font-size:11px;">[F3]</a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F4" class="tally-sub-btn {'active' if mode=='F4' else ''}" style="padding:3px 7px; font-size:11px;">[F4]</a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F5" class="tally-sub-btn {'active' if mode=='F5' else ''}" style="padding:3px 7px; font-size:11px;">[F5]</a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F6" class="tally-sub-btn {'active' if mode=='F6' else ''}" style="padding:3px 7px; font-size:11px;">[F6]</a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F7" class="tally-sub-btn {'active' if mode=='F7' else ''}" style="padding:3px 7px; font-size:11px;">[F7]</a>
+                <a href="/?sheet=SMART_TERMINAL&mode=F8" class="tally-sub-btn {'active' if mode=='F8' else ''}" style="padding:3px 7px; font-size:11px;">[F8]</a>
+            </div>
+            <div>
+                <button type="button" onclick="toggleMainGatewayHeader()" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:3px 9px; border-radius:4px; font-weight:700; font-size:10.5px; cursor:pointer;" id="btn_toggle_hdr">🔼 મુખ્ય ડેશબોર્ડ બતાવો</button>
+            </div>
+        </div>
+        <script>
+        function toggleMainGatewayHeader() {{
+            var hdr = document.getElementById('main_gateway_header');
+            var btn = document.getElementById('btn_toggle_hdr');
+            if (hdr) {{
+                if (hdr.style.display === 'none' || hdr.style.display === '') {{
+                    hdr.style.display = 'block';
+                    if (btn) btn.innerText = '🔽 ડેશબોર્ડ છુપાવો (ફૂલ સ્ક્રીન)';
+                }} else {{
+                    hdr.style.display = 'none';
+                    if (btn) btn.innerText = '🔼 મુખ્ય ડેશબોર્ડ બતાવો';
+                }}
+            }}
+        }}
+        </script>
 
         {inter_galla_global_alert_html if (is_mgmt_role and sheet == 'SMART_TERMINAL' and mode in ('F2', 'F1', '') and not request.cookies.get('dismiss_vendor_alert_' + str(datetime.date.today()))) else ''}
         {msg_html}
