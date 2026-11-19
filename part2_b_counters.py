@@ -105,7 +105,7 @@ def render_smart_terminal(
             </div>
         </div>
 
-        <!-- TALLY PRIME SUB-SECTIONS STRIP (F1 ૧ થી ૫ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <!-- MASTER ERP SUB-SECTIONS STRIP (F1 ૧ થી ૫ લાઈનબદ્ધ પેટા વિભાગો) -->
         <div class="tally-subparts-bar">
             <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
             <button type="button" class="tally-sub-btn active" id="f1_sub_btn_PURCHASE" onclick="setSubpartF1('PURCHASE')">૧. નવો હેન્ડસેટ સ્ટોક (૧૫ ખાનાં)</button>
@@ -131,280 +131,7 @@ def render_smart_terminal(
 
         <form class="term-form f-enter-form" action="/save-f1" method="post" enctype="multipart/form-data">
             <div class="f-row"><div class="lbl">૧. તારીખ (ઓટો / મેન્યુઅલ):</div><input type="date" name="entry_date" value="{today_str}"></div>
-            <div class="f-row" style="background:#e0f2fe; padding:5px; border-radius:4px;">
-                <div class="lbl" style="color:#0369a1;">૨. ખરીદી પ્રકાર (૫ વિકલ્પો):</div>
-                <select name="tx_type" id="f1_tx" onchange="toggleF1Mode()" style="font-weight:bold; color:#0f2043;">
-                    {"".join([
-                        opt_html for sub_k, opt_html in [
-                            ("F1_1", '<option value="PURCHASE">વિકલ્પ (૧): નવો મોબાઈલ સ્ટોક ખરીદી (Mobile Handset Inward - ૧૫ ખાનાં)</option>'),
-                            ("F1_2", '<option value="CONSUMER_PURCHASE">વિકલ્પ (૨): અન્ય કન્ઝ્યુમર પ્રોડક્ટ્સ ખરીદી (TV, AC, લેપટોપ, ટેબ્લેટ - ૧૫ ખાનાં)</option>'),
-                            ("F1_3", '<option value="DIRECT_BB">વિકલ્પ (૩): ફ્રેન્ચાઇઝી / ડાયરેક્ટ એક્સચેન્જ જૂના ફોન ખરીદી (Direct Exchange / Buyback - ૯ ખાનાં)</option>'),
-                            ("F1_5", '<option value="ACC_PURCHASE">વિકલ્પ (૪): એસેસરીઝ ખરીદી (સ્ટાન્ડર્ડ લમ્પ-સમ ખરીદી / સ્પેશિયલ પાર્ટ-૨ બારકોડ મોડ)</option>')
-                        ] if sub_k in active_subparts
-                    ]) or '<option value="PURCHASE">વિકલ્પ (૧): નવો મોબાઈલ સ્ટોક ખરીદી</option>'}
-                </select>
-            </div>
-
-            <!-- વિકલ્પ (૧) અને (૨): મોબાઈલ ખરીદી / કન્ઝ્યુમર પ્રોડક્ટ્સ ખરીદી (૧૫ ખાનાં) -->
-            <div id="f1_supplier_block">
-                <div class="f-row">
-                    <div class="lbl">૩. બિલિંગ પ્રકાર (B2B / B2C):</div>
-                    <select name="b2b_type" id="f1_b2b" style="max-width:220px;">
-                        <option value="B2B">B2B (GST નંબરવાળા વેપારી)</option>
-                        <option value="B2C">B2C (સામાન્ય બિલ)</option>
-                    </select>
-                    <input type="text" name="supplier_gstin" id="f1_gstin" placeholder="૧૫-અંક GSTIN નાખી ઓટો-સર્ચ કરો અથવા હાથેથી લખો..." onblur="autoLookupGstin(this.value, 'f1')" style="flex:1;">
-                    <button type="button" onclick="autoLookupGstin(document.getElementById('f1_gstin').value, 'f1')" style="background:#0284c7; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:11.5px;">🔍 GSTIN સર્ચ (Auto-Fetch)</button>
-                </div>
-                <div class="f-row">
-                    <div class="lbl">૪. વેપારી / સપ્લાયર નામ:</div>
-                    <select name="supplier_name" id="f1_supp_sel" style="flex:1;">{party_opts_html}</select>
-                    <button type="button" onclick="document.getElementById('quick_party_box').style.display='block'" style="background:#16a34a; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">[+ નવો વેપારી]</button>
-                </div>
-                <div class="f-row"><div class="lbl">૫. બિલ / ઇનવોઇસ નંબર:</div><input type="text" name="bill_no" placeholder="AI ઓટો-રીડ અથવા મેન્યુઅલ બિલ નંબર..."></div>
-                <div class="f-row">
-                    <div class="lbl">૬. બ્રાન્ડ અને મોડેલ નામ:</div>
-                    <select name="brand" id="f1_brand_inp" style="max-width:165px; font-weight:bold;">{brand_opts_html}</select>
-                    <button type="button" onclick="openInlineQuickCreateModal('BRAND', 'f1_brand_inp')" style="background:#0d9488; color:white; border:none; padding:6px 9px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:11px;">[+ નવી બ્રાન્ડ]</button>
-                    <input type="text" name="model" id="f1_mod_inp" list="f1_model_datalist" oninput="checkF1PriceDiff(); autoFetchOfficialMopAndGstF1();" placeholder="મોડેલ નામ લખો (દા.ત. Vivo V29e 5G 8/128) - ઓફિશિયલ MOP & GST આપોઆપ આવશે" style="flex:1; font-weight:bold;">
-                    <button type="button" onclick="promptNewModelInlineF1()" style="background:#7c3aed; color:white; border:none; padding:6px 9px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:11px;">[+ નવું મોડેલ]</button>
-                    <datalist id="f1_model_datalist">
-                        <option value="Vivo V29e 5G (8GB/128GB) Arctic Red">
-                        <option value="Vivo V30 5G (8GB/128GB) Peacock Green">
-                        <option value="Vivo Y200 5G (8GB/128GB) Jungle Green">
-                        <option value="Vivo Y28 5G (6GB/128GB) Crystal Purple">
-                        <option value="Samsung Galaxy A15 5G (8GB/128GB) Blue">
-                        <option value="Samsung Galaxy A35 5G (8GB/128GB) Navy">
-                        <option value="Samsung Galaxy S24 Ultra 5G (12GB/256GB)">
-                        <option value="Oppo F25 Pro 5G (8GB/128GB) Lava Red">
-                        <option value="Oppo Reno 11 5G (8GB/128GB) Wave Green">
-                        <option value="Realme 12 Pro 5G (8GB/128GB) Submarine Blue">
-                        <option value="OnePlus Nord CE 4 5G (8GB/128GB) Celadon Marble">
-                        <option value="Apple iPhone 15 (128GB) Black">
-                    </datalist>
-                </div>
-
-                <!-- 🛒 F1 લાઈવ ઓનલાઈન ભાવ તપાસો બાર (Amazon | Flipkart | Brand Portal) -->
-                
-
-                <div class="f-row">
-                    <div class="lbl">૭. ૧૫-અંક IMEI / સિરિયલ નંબર:</div>
-                    <input type="text" name="imei" placeholder="AI ઓટો-રીડ / બલ્ક બારકોડ ગન સ્કેન / મેન્યુઅલ ટાઇપિંગ (સીધા In-Stock માં જમા)">
-                </div>
-                <div class="f-row">
-                    <div class="lbl">૮. ખરીદ પડતર કિંમત (DP ₹):</div>
-                    <input type="number" step="any" name="total_bill" id="f1_dp_inp" oninput="checkF1PriceDiff(); calcF1Gst();" value="0" style="font-weight:bold; color:#0f2043;">
-                </div>
-                <!-- ખરીદી ભાવ તફાવત એલર્ટ બોક્સ -->
-                
-                <!-- [Tally Prime F9] મલ્ટી-હેન્ડસેટ ખરીદી ટેબલ (૧ થી ૨૦ ફોન એક સાથે Inward) -->
-                <div style="background:#f8fafc; border:2px dashed #0284c7; border-radius:8px; padding:12px; margin:10px 0;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-weight:900; color:#0369a1; font-size:13px;">📱 [Tally F9 Parity] બહુવિધ ફોન ખરીદી ઇનવોઇસ એન્ટ્રી (Multi-Phone Handset Inward - ૧ થી ૨૦ ફોન)</span>
-                        <span style="font-size:11px; background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:4px; font-weight:bold;">Tally Prime Stock Ledger Sync</span>
-                    </div>
-                    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:flex-end;">
-                        <div style="flex:1; min-width:120px;">
-                            <label style="font-size:11px; font-weight:bold; color:#475569;">૧૫-અંક IMEI:</label>
-                            <input type="text" id="f1_multi_imei_inp" maxlength="15" placeholder="૧૫-અંક IMEI સ્કેન કરો..." style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:4px; font-weight:bold; font-family:monospace;">
-                        </div>
-                        <div style="flex:1; min-width:100px;">
-                            <label style="font-size:11px; font-weight:bold; color:#475569;">ખરીદ DP (₹):</label>
-                            <input type="number" id="f1_multi_dp_inp" value="0" placeholder="ખરીદ પડતર..." style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:4px; font-weight:bold; color:#0284c7;">
-                        </div>
-                        <button type="button" onclick="addF1MultiItem()" style="background:#16a34a; color:white; border:none; padding:7px 14px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px;">[+ ફોન ઉમેરો]</button>
-                    </div>
-
-                    <div id="f1_multi_wrap" style="margin-top:10px; display:none;">
-                        <table style="width:100%; border-collapse:collapse; font-size:12px; background:white; border:1px solid #cbd5e1;">
-                            <thead>
-                                <tr style="background:#e2e8f0; color:#1e293b;">
-                                    <th style="padding:5px; border:1px solid #cbd5e1;">#</th>
-                                    <th style="padding:5px; border:1px solid #cbd5e1;">બ્રાન્ડ</th>
-                                    <th style="padding:5px; border:1px solid #cbd5e1;">મોડેલ</th>
-                                    <th style="padding:5px; border:1px solid #cbd5e1;">IMEI (૧૫-અંક)</th>
-                                    <th style="padding:5px; border:1px solid #cbd5e1;">ખરીદ પડતર DP (₹)</th>
-                                    <th style="padding:5px; border:1px solid #cbd5e1;">MOP ભાવ (₹)</th>
-                                    <th style="padding:5px; border:1px solid #cbd5e1;">એકશન</th>
-                                </tr>
-                            </thead>
-                            <tbody id="f1_multi_tbody"></tbody>
-                            <tfoot>
-                                <tr style="background:#f1f5f9; font-weight:bold;">
-                                    <td colspan="4" style="padding:6px; text-align:right;">કુલ ઇનવોઇસ હેન્ડસેટ: <span id="f1_multi_qty" style="color:#0369a1;">0</span> ફોન</td>
-                                    <td colspan="3" style="padding:6px; color:#16a34a;">કુલ બિલ ખરીદ રકમ: ₹<span id="f1_multi_total_dp">0</span></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <input type="hidden" name="items_json" id="f1_items_json" value="">
-                </div>
-
-
-    <script>
-    var f1MultiItems = [];
-    function addF1MultiItem() {{
-        var brand = document.getElementById('f1_brand_inp') ? document.getElementById('f1_brand_inp').value : 'Vivo';
-        var model = document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '';
-        var imei = document.getElementById('f1_multi_imei_inp') ? document.getElementById('f1_multi_imei_inp').value.trim() : '';
-        var dp = parseFloat(document.getElementById('f1_multi_dp_inp') ? document.getElementById('f1_multi_dp_inp').value : 0) || 0;
-        var mop = parseFloat(document.getElementById('f1_mop_inp') ? document.getElementById('f1_mop_inp').value : 0) || dp;
-
-        if (!imei || imei.length < 14) {{
-            alert("કૃપા કરીને સાચો ૧૫-અંક IMEI નંબર દાખલ કરો!");
-            return;
-        }}
-        if (dp <= 0) {{
-            dp = parseFloat(document.getElementById('f1_dp_inp') ? document.getElementById('f1_dp_inp').value : 0) || 0;
-        }}
-        if (dp <= 0) {{
-            alert("કૃપા કરીને ખરીદ પડતર (DP ₹) દાખલ કરો!");
-            return;
-        }}
-        for (var i = 0; i < f1MultiItems.length; i++) {{
-            if (f1MultiItems[i].imei === imei) {{
-                alert("આ IMEI પહેલેથી જ આ ખરીદી બિલમાં ઉમેરાયેલ છે!");
-                return;
-            }}
-        }}
-        f1MultiItems.push({{
-            brand: brand,
-            model: model,
-            imei: imei,
-            dp: dp,
-            mop: mop
-        }});
-
-        if (document.getElementById('f1_multi_imei_inp')) {{
-            document.getElementById('f1_multi_imei_inp').value = '';
-            document.getElementById('f1_multi_imei_inp').focus();
-        }}
-        renderF1MultiItems();
-    }}
-
-    function removeF1MultiItem(idx) {{
-        f1MultiItems.splice(idx, 1);
-        renderF1MultiItems();
-    }}
-
-    function renderF1MultiItems() {{
-        var tbody = document.getElementById('f1_multi_tbody');
-        var wrap = document.getElementById('f1_multi_wrap');
-        var totQtyEl = document.getElementById('f1_multi_qty');
-        var totDpEl = document.getElementById('f1_multi_total_dp');
-        var hiddenInp = document.getElementById('f1_items_json');
-        var mainDpInp = document.getElementById('f1_dp_inp');
-
-        if (!tbody || !wrap) return;
-
-        if (f1MultiItems.length === 0) {{
-            wrap.style.display = 'none';
-            if (hiddenInp) hiddenInp.value = '';
-            return;
-        }}
-
-        wrap.style.display = 'block';
-        var totalDp = 0;
-        var trs = '';
-        for (var i = 0; i < f1MultiItems.length; i++) {{
-            var itm = f1MultiItems[i];
-            totalDp += itm.dp;
-            trs += '<tr>' +
-                '<td style="padding:5px; border:1px solid #cbd5e1; text-align:center;">' + (i + 1) + '</td>' +
-                '<td style="padding:5px; border:1px solid #cbd5e1;"><b>' + itm.brand + '</b></td>' +
-                '<td style="padding:5px; border:1px solid #cbd5e1;">' + itm.model + '</td>' +
-                '<td style="padding:5px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0f2043;">' + itm.imei + '</td>' +
-                '<td style="padding:5px; border:1px solid #cbd5e1; font-weight:bold; color:#0284c7; text-align:right;">₹' + itm.dp.toLocaleString() + '</td>' +
-                '<td style="padding:5px; border:1px solid #cbd5e1; font-weight:bold; color:#15803d; text-align:right;">₹' + itm.mop.toLocaleString() + '</td>' +
-                '<td style="padding:5px; border:1px solid #cbd5e1; text-align:center;"><button type="button" onclick="removeF1MultiItem(' + i + ')" style="background:#dc2626; color:white; border:none; padding:2px 7px; border-radius:3px; cursor:pointer;">✖</button></td>' +
-                '</tr>';
-        }}
-        tbody.innerHTML = trs;
-        if (totQtyEl) totQtyEl.innerText = f1MultiItems.length;
-        if (totDpEl) totDpEl.innerText = totalDp.toLocaleString();
-        if (hiddenInp) hiddenInp.value = JSON.stringify(f1MultiItems);
-        if (mainDpInp) {{
-            mainDpInp.value = totalDp;
-            if (typeof checkF1PriceDiff === 'function') checkF1PriceDiff();
-            if (typeof calcF1Gst === 'function') calcF1Gst();
-        }}
-    }}
-    </script>
-
-<div id="f1_price_diff_box" style="display:none; background:#fef3c7; border:2px solid #ca8a04; padding:8px 12px; margin:4px 0 6px 243px; border-radius:6px; font-size:12px; color:#854d0e; font-weight:bold;"></div>
-
-                <div class="f-row">
-                    <div class="lbl">૯. ઓટો-GST ટેક્સ (% અને ₹):</div>
-                    <select name="gst_pct" id="f1_gst_pct" onchange="calcF1Gst()" style="max-width:260px;">
-                        <option value="18">૧૮% GST (૯% CGST + ૯% SGST - મોબાઈલ/IT)</option>
-                        <option value="28">૨૮% GST (૧૪% CGST + ૧૪% SGST - 42"+ TV/AC)</option>
-                        <option value="5">૫% GST (ગિફ્ટ / પરચૂરણ)</option>
-                        <option value="0">૦% (Exempt / Without GST)</option>
-                    </select>
-                    <input type="text" id="f1_gst_info" readonly value="CGST: ₹0 | SGST: ₹0" style="background:#f1f5f9; font-weight:bold; color:#0369a1;">
-                </div>
-                <div class="f-row"><div class="lbl">૧૦. કંપની સ્કીમ / કેશબેક / CN (₹):</div><input type="number" step="any" name="scheme_cn_amt" value="0" placeholder="કંપની સ્કીમ કે ક્રેડિટ નોટ રકમ..."></div>
-                <div class="f-row">
-                    <div class="lbl">૧૧. ઓફિશિયલ વેચાણ ભાવ (MOP ₹):</div>
-                    <button type="button" onclick="openOnlinePriceSpyModal(document.getElementById('f1_mod_inp') ? document.getElementById('f1_mod_inp').value : '', document.getElementById('f1_mop_inp') ? document.getElementById('f1_mop_inp').value : 0)" style="background:linear-gradient(135deg, #ea580c, #c2410c); color:white; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer;" title="Amazon / Flipkart / Brand e-Store લાઈવ MOP ચેક કરો">🛒 લાઈવ MOP</button> <input type="number" step="any" name="mop_rate" id="f1_mop_inp" value="0" placeholder="ઓફિશિયલ બ્રાન્ડ પોર્ટલ પરથી ઓટો-MOP (અથવા હાથેથી લખો)..." style="font-weight:bold; color:#15803d; flex:1;">
-                    <button type="button" onclick="autoFetchOfficialMopAndGstF1(true)" style="background:#0284c7; color:white; border:none; padding:6px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:11px;">🌐 ઓફિશિયલ બ્રાન્ડ MOP લાવો</button>
-                </div>
-                <div class="f-row"><div class="lbl">૧૨. અત્યારે રોકડા ચૂકવ્યા (₹):</div><input type="number" step="any" name="paid_amt" value="0" placeholder="રોકડ ચૂકવેલ રકમ (બાકી રકમ આપોઆપ વેપારી લેજરમાં બાકી બોલશે)..."></div>
-                <div class="f-row" style="background:#fff1f2; padding:4px 6px; border-radius:4px; border:1px dashed #e11d48;">
-                    <div class="lbl" style="color:#be123c;">૧૨(B). વેપારી પેમેન્ટ ક્રેડિટ મુદત & ડ્યુ-ડેટ એલર્ટ:</div>
-                    <select name="credit_days" id="f1_credit_days" onchange="calcF1VendorDueDate()" style="max-width:210px; font-weight:bold; color:#9f1239;">
-                        <option value="0">રોકડ / તાત્કાલિક (0 દિવસ)</option>
-                        <option value="7" selected>૭ દિવસ ક્રેડિટ (7 Days)</option>
-                        <option value="15">૧૫ દિવસ ક્રેડિટ (15 Days)</option>
-                        <option value="30">૩૦ દિવસ ક્રેડિટ (30 Days)</option>
-                        <option value="45">૪૫ દિવસ ક્રેડિટ (45 Days)</option>
-                    </select>
-                    <span style="font-weight:bold; color:#881337; font-size:12px;">ચૂકવણી છેલ્લી તારીખ (Due Date):</span>
-                    <input type="date" name="due_date" id="f1_vendor_due_date" value="{today_str}" style="max-width:170px; font-weight:bold; color:#dc2626;">
-                </div>
-                <script>
-                    function calcF1VendorDueDate() {{
-                        try {{
-                            var days = parseInt(document.getElementById('f1_credit_days').value || '7');
-                            var dInp = document.querySelector('input[name="entry_date"]');
-                            var baseD = dInp && dInp.value ? new Date(dInp.value) : new Date();
-                            baseD.setDate(baseD.getDate() + days);
-                            var iso = baseD.toISOString().slice(0,10);
-                            var dueEl = document.getElementById('f1_vendor_due_date');
-                            if (dueEl) dueEl.value = iso;
-                        }} catch(e) {{}}
-                    }}
-                    setTimeout(calcF1VendorDueDate, 120);
-                </script>
-            </div>
-
-            <!-- વિકલ્પ (૩): જૂના બાય-બેક ફોનની ડાયરેક્ટ ખરીદી (૯ ખાનાં + ૮ કંડિશન + ગ્રાહક ફોટો) -->
-            <div id="f1_bb_block" style="display:none; background:#f0fdf4; border:1px solid #16a34a; padding:10px; border-radius:6px; margin-bottom:6px;">
-                <div class="f-row"><div class="lbl">૨. ગ્રાહકનું નામ અને મોબાઈલ:</div>
-                    <input type="text" name="customer_name" placeholder="વેચનાર ગ્રાહકનું પૂરું નામ" style="flex:1;">
-                    <input type="text" name="customer_phone" maxlength="10" placeholder="૧૦-અંક મોબાઈલ નંબર" style="max-width:180px;">
-                </div>
-                <div class="f-row"><div class="lbl">૩. જૂના ફોનનું બ્રાન્ડ અને મોડેલ:</div>
-                    <select name="bb_brand" style="max-width:160px; font-weight:bold;">{brand_opts_html}</select>
-                    <input type="text" name="bb_model" placeholder="દા.ત. Vivo Y20 (4/64)" style="flex:1;">
-                </div>
-                <div class="f-row"><div class="lbl">૪. ૧૫-અંક IMEI & ૮ કંડિશન:</div>
-                    <input type="text" name="bb_imei" maxlength="15" placeholder="૧૫-અંક IMEI નંબર (ડુપ્લિકેટ ઓટો-લોક)" style="flex:1;">
-                    <select name="bb_condition" style="max-width:310px; font-weight:bold;">
-                        <option value="૧. બિલ + બોક્સ + ઓરિજિનલ ચાર્જર સાથે (Full Kit)">૧. બિલ + બોક્સ + ઓરિજિનલ ચાર્જર સાથે (Full Kit)</option>
-                        <option value="૨. માત્ર પાકું બિલ અને બોક્સ સાથે (Bill + Box)">૨. માત્ર પાકું બિલ અને બોક્સ સાથે (Bill + Box)</option>
-                        <option value="૩. માત્ર ઓરિજિનલ બિલ સાથે (Bill Only)">૩. માત્ર ઓરિજિનલ બિલ સાથે (Bill Only)</option>
-                        <option value="૪. માત્ર બોક્સ અને ચાર્જર સાથે (Box + Charger)">૪. માત્ર બોક્સ અને ચાર્જર સાથે (Box + Charger)</option>
-                        <option value="૫. માત્ર ફોન - આધારકાર્ડ અને લાઈવ ફોટો પ્રૂફ સાથે">૫. માત્ર ફોન - આધારકાર્ડ અને લાઈવ ફોટો પ્રૂફ સાથે</option>
-                        <option value="૬. કંપની વોરંટી ચાલુ ફોન (In-Warranty Mint)">૬. કંપની વોરંટી ચાલુ ફોન (In-Warranty Mint)</option>
-                        <option value="૭. ગ્લાસ તૂટેલો / માઈનોર સ્ક્રેચ વાળો ફોન">૭. ગ્લાસ તૂટેલો / માઈનોર સ્ક્રેચ વાળો ફોન</option>
-                        <option value="૮. ડિસ્પ્લે / બેટરી રિપેરિંગ જરૂરી ફોન">૮. ડિસ્પ્લે / બેટરી રિપેરિંગ જરૂરી ફોન</option>
-                    </select>
-                </div>
-                <div class="f-row"><div class="lbl">૫. ખરીદ કિંમત (Buyback ₹):</div><input type="number" step="any" name="bb_cost" value="0" style="font-weight:bold; color:#15803d;"></div>
-                <div class="f-row"><div class="lbl">૬. 📷 ગ્રાહકનો લાઈવ ફોટો પાડો:</div><input type="file" name="customer_face_photo" accept="image/*" capture="user"></div>
-                <div class="f-row"><div class="lbl">૭. ખરીદનાર સ્ટાફ / સેલ્સમેન:</div><select name="salesman">{staff_opts_html}</select></div>
-            </div>
+            <input type="hidden" name="tx_type" id="f1_tx" value="PURCHASE">
 
             <!-- વિકલ્પ (૫): એસેસરીઝ ખરીદી (સ્ટાન્ડર્ડ મોડ + સ્પેશિયલ પેઇડ 'પાર્ટ-૨' મોડ) -->
             <div id="f1_acc_block" style="display:none; background:#f0f9ff; border:1px solid #0284c7; padding:10px; border-radius:6px; margin-bottom:6px;">
@@ -816,82 +543,22 @@ def render_smart_terminal(
             <span style="font-size:11.5px; color:#0f2043;">Enter = આગળ વધો | છેલ્લે Accept? [Yes/No]</span>
         </div>
 
-        <!-- TALLY PRIME SUB-SECTIONS STRIP (F2 ૧ થી ૩ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <!-- માસ્ટર ERP સબ-સેક્શન્સ પટ્ટી (F2 ૧ થી ૩ લાઈનબદ્ધ પેટા વિભાગો) -->
         <div class="tally-subparts-bar">
             <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
             <button type="button" class="tally-sub-btn active" id="f2_sub_btn_CASH_BILL" onclick="setSubpartF2('CASH_BILL')">૧. રોકડ બિલ (Cash Bill - ૧૫ ખાનાં)</button>
             <button type="button" class="tally-sub-btn" id="f2_sub_btn_CREDIT_BILL" onclick="setSubpartF2('CREDIT_BILL')">૨. ઉધાર બિલ (Credit Bill - ૧૮ ખાનાં)</button>
-            <button type="button" class="tally-sub-btn" id="f2_sub_btn_FINANCE_BILL" onclick="setSubpartF2('FINANCE_BILL')">૩. ફાઇનાન્સ બિલ & DO (Finance Bill - ૨૨ ખાનાં)</button>
+            <button type="button" class="tally-sub-btn" id="f2_sub_btn_FINANCE_BILL" onclick="setSubpartF2('FINANCE_BILL')">૩. ફાઇનાન્સ બિલ & DO (૨૨ ખાનાં)</button>
+            <div style="margin-left:auto; display:flex; align-items:center; gap:4px;">
+                <select name="b2b_type" id="f2_b2b_type" onchange="toggleF2Gstin()" style="font-weight:bold; font-size:11.5px; padding:3px 8px; border-radius:4px; background:#fef08a; color:#0f2043; border:1px solid #ca8a04; cursor:pointer;">
+                    <option value="B2C">B2C (રિટેલ ગ્રાહક)</option>
+                    <option value="B2B">B2B (GST વેપારી ઇન્વોઇસ)</option>
+                </select>
+            </div>
         </div>
 
         <form class="term-form f-enter-form" action="/save-f2" method="post" enctype="multipart/form-data">
-            <!-- મુખ્ય ડ્રોપ-ડાઉન: બિલનો પ્રકાર (૩ ડાયનેમિક કન્ડિશનલ ફોર્મ્સ) -->
-            <div class="f-row" style="background:#0f2043; color:white; padding:6px 10px; border-radius:6px; margin-bottom:8px;">
-                <div class="lbl" style="color:#fde047; font-size:13px;">૧. બિલનો પ્રકાર (ડાયનેમિક ફોર્મ):</div>
-                <select name="bill_type" id="f2_bill_type" onchange="switchF2DynamicForm()" style="font-weight:800; font-size:13px; color:#0f2043; background:#fef08a; flex:1;">
-                    {"".join([
-                        opt_html for sub_k, opt_html in [
-                            ("F2_1", f'<option value="CASH_BILL" {"selected" if (shop_prof or {}).get("f2_bill_type", "CASH_BILL") == "CASH_BILL" else ""}>૧. રોકડ બિલ (Cash Bill - ૧૫ ખાનાં)</option>'),
-                            ("F2_2", f'<option value="CREDIT_BILL" {"selected" if (shop_prof or {}).get("f2_bill_type") == "CREDIT_BILL" else ""}>૨. ઉધાર બિલ (Credit Bill - ૧૮ ખાનાં)</option>'),
-                            ("F2_3", f'<option value="FINANCE_BILL" {"selected" if (shop_prof or {}).get("f2_bill_type") == "FINANCE_BILL" else ""}>૩. ફાઇનાન્સ બિલ & DO સેટલમેન્ટ (Finance Bill - ૨૨ ખાનાં)</option>')
-                        ] if sub_k in active_subparts
-                    ]) or '<option value="CASH_BILL" selected>૧. રોકડ બિલ (Cash Bill)</option>'}
-                </select>
-                <select name="b2b_type" id="f2_b2b_type" onchange="toggleF2Gstin()" style="max-width:190px; font-weight:bold;">
-                    <option value="B2C">B2C (રિટેલ ગ્રાહક)</option>
-                    <option value="B2B">B2B (GST બિલ)</option>
-                </select>
-            </div>
-
-            {pending_bar_html}
-
-            <div class="f-row">
-                <div class="lbl">૩. પાકું બિલ નંબર # & તારીખ:</div>
-                <input type="text" name="bill_no" id="f2_bill" value="{current_bill}" style="background:#f1f5f9; font-weight:bold; max-width:220px;">
-                <input type="date" name="bill_date" value="{today_str}" style="max-width:180px;">
-            </div>
-
-            <!-- ફાઇનાન્સ બિલ માટેના ખાનાં (Bajaj Customer ID AR61015792 / DMI / IDFC / TVS DO Auto-Fill & EMI Dates) -->
-            <div id="f2_finance_only_top">
-                <div class="f-row" style="background:#f0fdf4; padding:4px; border-radius:4px;">
-                    <div class="lbl" style="color:#166534;">૫. કંપની, DO નંબર & કસ્ટમર આઈડી:</div>
-                    <div style="display:flex; gap:3px; max-width:210px;">
-                        <select name="finance_company" id="f2_fin_comp" style="flex:1; font-weight:bold; color:#0f2043; background:#fefce8; border:1.5px solid #ca8a04;">
-                            <option value="">-- કંપની પસંદ કરો --</option>
-                            <option value="Bajaj Finance">Bajaj Finance</option>
-                            <option value="TVS Credit">TVS Credit</option>
-                            <option value="IDFC First Bank">IDFC First Bank</option>
-                            <option value="DMI Finance">DMI Finance</option>
-                            <option value="HDB Financial Services">HDB Financial</option>
-                            <option value="Kotak Mahindra Bank">Kotak Mahindra</option>
-                            <option value="Samsung Finance+">Samsung Finance+</option>
-                        </select>
-                        <button type="button" onclick="openInlineQuickCreateModal('FINANCE_COMP', 'f2_fin_comp')" style="background:#0284c7; color:white; border:none; padding:3px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;" title="નવી ફાઇનાન્સ કંપની ઉમેરો (Alt+C)">[+]</button>
-                    </div>
-                    <input type="text" name="do_ref_no" id="f2_do_ref" placeholder="DO ID / રેફરન્સ નંબર (દા.ત. BR1840...)" style="flex:1; font-weight:bold; color:#0369a1;">
-                    <input type="text" name="app_deal_id" id="f2_app_id" placeholder="કસ્ટમર આઈડી (Customer ID: AR6101...)" style="max-width:210px; font-weight:bold; color:#7c3aed; border:1.5px solid #7c3aed;">
-                </div>
-                <div class="f-row" style="background:#f0fdf4; padding:4px; border-radius:4px;">
-                    <div class="lbl" style="color:#166534;">સ્કીમ (Tenor), માસિક EMI & પ્રથમ ચાર્જ:</div>
-                    <input type="text" name="scheme_name" id="f2_scheme" list="scheme_list_opts" oninput="autoCalcLastEmiF2()" placeholder="સ્કીમ (દા.ત. 6/0, 8/0, 7/1)" style="max-width:165px; font-weight:bold; color:#15803d;">
-                    <input type="number" step="any" name="emi_amt" id="f2_emi_amt" value="0" placeholder="માસિક EMI ₹" style="max-width:140px; font-weight:bold;">
-                    <input type="text" name="first_emi_extra_charge" id="f2_first_extra" placeholder="પ્રથમ હપ્તામાં વિશેષ ચાર્જ ₹ (ખાલી રાખશો તો બિલમાં અંડરલાઇન આવશે)" style="flex:1; font-size:11.5px;">
-                    <datalist id="scheme_list_opts">
-                        <option value="6/0">Bajaj / 6/0</option>
-                        <option value="8/0">TVS / 8/0</option>
-                        <option value="7/1">IDFC / 7/1</option>
-                        <option value="9/0">DMI / 9/0</option>
-                        <option value="10/2">10/2 સ્કીમ</option>
-                        <option value="12/4">12/4 સ્કીમ</option>
-                        <option value="NA">NA (ઝીરો ડાઉનપેમેન્ટ)</option>
-                    </datalist>
-                </div>
-                <div class="f-row" style="background:#fefce8; padding:4px; border-radius:4px; border:1px dashed #ca8a04;">
-                    <div class="lbl" style="color:#854d0e;">📅 પ્રથમ EMI તારીખ & છેલ્લો EMI મહિનો:</div>
-                    <input type="text" name="first_emi_date" id="f2_first_emi_dt" oninput="autoCalcLastEmiF2()" placeholder="પ્રથમ EMI તારીખ (દા.ત. 05-10-2026 અથવા ખાલી રાખો)" style="max-width:230px; font-weight:bold;">
-                    <input type="text" name="last_emi_month" id="f2_last_emi_mo" placeholder="છેલ્લો EMI મહિનો (ઓટો ગણાશે અથવા હાથેથી લખવા ખાલી રાખો)" style="flex:1; font-weight:bold; color:#0369a1;">
-                </div>
-            </div>
+            <input type="hidden" name="bill_type" id="f2_bill_type" value="{(shop_prof or {}).get('f2_bill_type', 'CASH_BILL')}">
 
             <div class="f-row" style="background:#fdf2f8; padding:4px; border-radius:4px;">
                 <div class="lbl">૪. ૧૫-અંક IMEI / બારકોડ સ્કેન:</div>
@@ -1717,7 +1384,7 @@ def render_smart_terminal(
             <span style="font-size:11.5px;">એક જ ડ્રોપ-ડાઉનથી ત્રણેય કામ | ૪-ગલ્લા સિલેક્શન</span>
         </div>
 
-        <!-- TALLY PRIME SUB-SECTIONS STRIP (F3 ૧ થી ૬ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <!-- MASTER ERP SUB-SECTIONS STRIP (F3 ૧ થી ૬ લાઈનબદ્ધ પેટા વિભાગો) -->
         <div class="tally-subparts-bar">
             <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
             <button type="button" class="tally-sub-btn active" id="f3_sub_btn_PAY_RECEIVE" onclick="setSubpartF3('PAY_RECEIVE')">૧. પેમેન્ટ રિસીવ (ગ્રાહક બાકી / વકરો)</button>
@@ -1729,21 +1396,7 @@ def render_smart_terminal(
         </div>
 
         <div class="term-form">
-            <div class="f-row" style="background:#0f2043; color:white; padding:6px 10px; border-radius:6px; margin-bottom:10px;">
-                <div class="lbl" style="color:#fde047;">F3 મુખ્ય વિકલ્પ પસંદ કરો:</div>
-                <select id="f3_master_mode" onchange="switchF3SubForm()" style="font-weight:800; font-size:13px; background:#fef08a; color:#0f2043;">
-                    {"".join([
-                        opt_html for is_vis, opt_html in [
-                            (any(k in active_subparts for k in ("F3_1", "F3_1_CUST_DUE", "F3_1_ACC", "F3_1_RECH")), '<option value="PAY_RECEIVE">વિકલ્પ (૧): પેમેન્ટ રિસીવ (ગ્રાહક બાકી ઉધાર વસૂલાત + સાંજનો એસેસરીઝ અને રિચાર્જ લમ્પ-સમ વકરો - ૮ ખાનાં)</option>'),
-                            ("F3_2" in active_subparts, '<option value="PAY_OUT">વિકલ્પ (૨): પેમેન્ટ આઉટ (વેપારી/સપ્લાયરને ચૂકવણી અથવા સ્ટાફ ઉપાડ/પગાર - ૭ ખાનાં)</option>'),
-                            ("F3_3" in active_subparts, '<option value="STORE_EXPENSE">વિકલ્પ (૩): શુદ્ધ દૈનિક સ્ટોર ખર્ચા (૧૪ રેડીમેડ ખર્ચના નામ સાથે - ૭ ખાનાં)</option>'),
-                            ("F3_4" in active_subparts, '<option value="DIRECT_UDHAR">વિકલ્પ (૪): ડાયરેક્ટ ગ્રાહક બાકી ઉધાર એન્ટ્રી (HO બિલ વગર સીધી ઉધાર નોંધ - ૭ ખાનાં)</option>'),
-                            ("F3_5" in active_subparts, '<option value="PARTNER_CAPITAL">વિકલ્પ (૫): પાર્ટનર મૂડી (Capital In), પાર્ટનર ઉપાડ (Drawing) અને ભેટ/ગિફ્ટ (ઊભું Enter-Enter ફોર્મ)</option>'),
-                            ("F3_6" in active_subparts, '<option value="LAPU_PURCHASE">વિકલ્પ (૬): 📲 ડિસ્ટ્રીબ્યુટર પાસેથી લાપુ બેલેન્સ ખરીદી (LAPU Purchase / Top-up) & ૩-કંપની લાપુ ટ્રેકર (Airtel, VI, Jio)</option>')
-                        ] if is_vis
-                    ]) or '<option value="PAY_RECEIVE">વિકલ્પ (૧): પેમેન્ટ રિસીવ</option>'}
-                </select>
-            </div>
+            <input type="hidden" id="f3_master_mode" value="PAY_RECEIVE">
 
             <!-- વિકલ્પ (૧): પેમેન્ટ રિસીવ (ગ્રાહક બાકી ઉધાર વસૂલાત + સાંજનો એસેસરીઝ અને રિચાર્જ લમ્પ-સમ વકરો - ૮ ખાનાં) -->
             <div id="f3_sub_receive">
@@ -1983,7 +1636,7 @@ def render_smart_terminal(
 
             <!-- વિકલ્પ (૪): ડાયરેક્ટ ગ્રાહક બાકી ઉધાર એન્ટ્રી (HO બિલ વગર સીધી ઉધાર નોંધ - ૭ ખાનાં) -->
             <div id="f3_sub_direct_udhar" style="display:none; background:#fff1f2; border:2px solid #e11d48; padding:12px; border-radius:6px;">
-                <h4 style="margin:0 0 8px 0; color:#9f1239;">📝 વિકલ્પ (૪): ડાયરેક્ટ ગ્રાહક બાકી ઉધાર એન્ટ્રી (HO / APX બિલ વગર સીધી ઉધાર નોંધ)</h4>
+                <h4 style="margin:0 0 8px 0; color:#9f1239;">📝 વિકલ્પ (૪): ડાયરેક્ટ ગ્રાહક બાકી ઉધાર એન્ટ્રી (HO / સેલ્સ બિલ વગર સીધી ઉધાર નોંધ)</h4>
                 <form class="f-enter-form" action="/api/save-direct-customer-due" method="post">
                     <input type="hidden" name="return_sheet" value="SMART_TERMINAL">
                     <div class="f-row"><div class="lbl">૧. તારીખ:</div><input type="date" name="entry_date" value="{today_str}"></div>
@@ -2460,7 +2113,7 @@ def render_smart_terminal(
             <span style="font-size:11.5px;">નોંધ: ગ્રાહક બાકી ઉધાર વસૂલાત [F3] વિકલ્પ (૧) માં છે; અહીં માત્ર શુદ્ધ બેંક ડિપોઝિટ અને વિડ્રોલ લોગ રહેશે</span>
         </div>
 
-        <!-- TALLY PRIME SUB-SECTIONS STRIP (F4 ૧ થી ૨ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <!-- MASTER ERP SUB-SECTIONS STRIP (F4 ૧ થી ૨ લાઈનબદ્ધ પેટા વિભાગો) -->
         <div class="tally-subparts-bar">
             <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
             <button type="button" class="tally-sub-btn active" id="f4_sub_btn_DEPOSIT" onclick="setSubpartF4('DEPOSIT')">૧. બેંક ડિપોઝિટ (Bank Deposit)</button>
