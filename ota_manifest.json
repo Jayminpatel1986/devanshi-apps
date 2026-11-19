@@ -1,6 +1,6 @@
 {
     "version_id": "2026.11.12.001",
-    "updated_at": "19-11-2026 09:14 AM",
+    "updated_at": "19-11-2026 09:57 AM",
     "updated_by": "જયમીનભાઈ પટેલ (9725721215)",
     "target_mode": "ALL",
     "target_shops": "ALL",
@@ -8,8 +8,8 @@
     "update_note": "જયમીનભાઈએ કરેલા નવા સુધારા ઓટોમેટિક અપડેટ થઈ ગયા છે!",
     "files": {
         "app.py": "bb78bc67f66595baf4b75aecb2f1d37380e0bcb921d612c1eeedc3c48e52c5b9",
-        "part1_core.py": "018d439f9643105cde9af0d3e22a298677c47d85d507758dd07a0acc30614fdc",
-        "part2_views.py": "f8f92273a964053c6800215ae52e8542120053c85a719180461be3625011a4af",
+        "part1_core.py": "ed44d389c5e9d58ca672f92dffb9ddaa3960dc1009a0573f1c4168f6d5e27c2c",
+        "part2_views.py": "84dc201c6cd94f18b2ee070d2c431fc7405915b8127f9e4a018ca1e37fc6d872",
         "part2_b_counters.py": "50daad4e03b3e38f7e6255cca22d93ac7238b615ebbeda4f8be1805b09216bb3",
         "part2_c_counters_extra.py": "eeffd2b1a6d967790e4abaeacf0522fc7dc1aa97dab552d9584fca8e359436c0",
         "part2_d_sheets.py": "fcba0c5c1ad6e7c67a2dc94586ea82ecf5584e142709f3c108352f94dd8b2fa7",
