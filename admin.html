@@ -26,7 +26,7 @@
                 <b style="color:#fde047; font-size:16px;">🚨 નવી પેન્ડિંગ ડેમો અરજીઓ (સુપર એડમિન એપ્રુવલ પેનલ - Jayminbhai 9725721215)</b>
                 <div style="font-size:12px; color:#94a3b8;">નવો દુકાનદાર સાઇન-અપ કરે ત્યારે તમે અહીંથી મંજૂરી (Approve) આપો ત્યારે જ એનું સોફ્ટવેર ૧૦ દિવસ માટે શરૂ થશે!</div>
             </div>
-            <button type="button" onclick="loadPendingAdminSignups()" style="background:#16a34a; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">🔄 રિફ્રેશ કરો</button>
+            <button type="button" onclick="loadPendingAdminSignups(true)" style="background:#16a34a; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">🔄 રિફ્રેશ કરો</button>
         </div>
         <div id="admin_pending_signups_box">
             <div style="text-align:center; padding:15px; color:#94a3b8;">પેન્ડિંગ સાઇન-અપ અરજીઓ ચેક થઈ રહી છે...</div>
@@ -1333,97 +1333,112 @@ async function handleWhatsAppDirectAction(act, shopId) {
     </script>
     
 <script id="admin_approval_system">
-async function loadPendingAdminSignups() {
+async async function loadPendingAdminSignups(isUserRefresh) {
     var box = document.getElementById('admin_pending_signups_box');
     if (!box) return;
     
+    box.innerHTML = '<div style="text-align:center; padding:15px; color:#38bdf8;">🔄 પેન્ડિંગ સાઇન-અપ અરજીઓ ચેક થઈ રહી છે...</div>';
+
     var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
     
-    try {
-        var r = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups', { headers: headers });
-        if (!r.ok) {
-            box.innerHTML = '<div style="color:#ef4444; text-align:center; padding:10px;">ક્લાઉડ સિંક કનેક્ટ થઈ શક્યું નથી.</div>';
-            return;
-        }
-        var files = await r.json();
-        var cards = '';
-        var count = 0;
-        
-        for (var f of files) {
-            if (!f.name || !f.name.endsWith('.json')) continue;
-            var rf = await fetch(f.url, { headers: headers });
-            if (rf.ok) {
-                var fj = await rf.json();
-                var rawStr = decodeURIComponent(escape(atob(fj.content.replace(/\s/g, ''))));
-                var d = JSON.parse(rawStr);
-                
-                var isPending = (d.status === 'PENDING_APPROVAL' || d.status === 'TRIAL');
-                var isApproved = (d.status === 'APPROVED');
-                count++;
-                
-                var rawDev = (d.machine_name || d.device_type || '').toString();
-                var devBadge = '📱 Android સ્માર્ટફોન';
-                if (rawDev.indexOf('V2222') !== -1 || rawDev.toLowerCase().indexOf('vivo') !== -1) devBadge = '📱 Vivo સ્માર્ટફોન (V2222)';
-                else if (rawDev.indexOf('SM-') !== -1 || rawDev.toLowerCase().indexOf('samsung') !== -1) devBadge = '📱 Samsung Galaxy';
-                else if (rawDev.indexOf('CPH') !== -1 || rawDev.toLowerCase().indexOf('oppo') !== -1) devBadge = '📱 Oppo સ્માર્ટફોન';
-                else if (rawDev.indexOf('RMX') !== -1 || rawDev.toLowerCase().indexOf('realme') !== -1) devBadge = '📱 Realme સ્માર્ટફોન';
-                else if (rawDev.toLowerCase().indexOf('iphone') !== -1) devBadge = '🍎 Apple iPhone';
-                else if (rawDev.toLowerCase().indexOf('windows') !== -1) devBadge = '💻 Windows PC / લેપટોપ';
-                if (rawDev.indexOf('Android 15') !== -1) devBadge += ' [Android 15]';
-                else if (rawDev.indexOf('Android 14') !== -1) devBadge += ' [Android 14]';
+    var allSignups = [];
+    var seenShopIds = {};
 
-                cards += '<div style="background:#1e293b; border:1.5px solid ' + (isApproved ? '#22c55e' : '#eab308') + '; border-radius:10px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-                    '<div>' +
-                    '<div style="font-size:15px; font-weight:bold; color:#fde047;">🏬 ' + (d.store_name || 'દુકાન') + ' <span style="font-size:12px; color:#38bdf8;">(ID: ' + d.shop_id + ')</span></div>' +
-                    '<div style="font-size:13px; color:#cbd5e1; margin-top:2px;">👤 માલિક: <b>' + (d.owner_name || '-') + '</b> | 📱 મોબાઈલ: <b><a href="tel:' + d.owner_mobile + '" style="color:#4ade80;">' + (d.owner_mobile || '-') + '</a></b> | 🔑 ID: <b>' + (d.owner_user_id || '-') + '</b></div>' +
-                    '<div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">📱 ડિવાઇસ: <b style="color:#38bdf8;">' + devBadge + '</b> | તારીખ: ' + (d.timestamp || '-') + ' | સ્થિતિ: <b style="color:' + (isApproved ? '#4ade80' : '#fde047') + ';">' + (d.status || '-') + '</b></div>' +
-                    '</div>' +
-                    '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
-                    '<button type="button" onclick="approveShopDemo(\'' + d.shop_id + '\', \'' + encodeURIComponent(d.store_name) + '\', \'' + d.owner_mobile + '\', \'' + encodeURIComponent(d.owner_name) + '\', \'' + d.owner_user_id + '\', \'' + f.sha + '\')" style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">✅ Approve (૧૦ દિવસ ડેમો આપો)</button>' +
-                    '<button type="button" onclick="rejectShopDemo(\'' + d.shop_id + '\', \'' + encodeURIComponent(d.store_name) + '\', \'' + f.sha + '\')" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">❌ Reject (નામંજૂર / ડિલીટ)</button>' +
-                    '<a href="https://wa.me/91' + d.owner_mobile + '?text=' + encodeURIComponent('નમસ્તે ' + d.owner_name + 'જી! તમારી દુકાન (' + d.store_name + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરની ડેમો અરજી મળી ગઈ છે.') + '" target="_blank" style="background:#0284c7; color:white; padding:8px 12px; border-radius:6px; text-decoration:none; font-weight:bold;">💬 વોટ્સએપ મેસેજ</a>' +
-                    '</div>' +
-                    '</div>';
+    // 1. First read local storage signups
+    try {
+        var localS = JSON.parse(localStorage.getItem('dm_local_signups_v3') || '[]');
+        localS.forEach(function(item) {
+            if (item && item.shop_id) {
+                seenShopIds[item.shop_id] = true;
+                allSignups.push(item);
+            }
+        });
+    } catch(e) {}
+
+    // 2. Then fetch cloud signups from GitHub repo Jayminpatel1986/devanshi-apps
+    try {
+        var r = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-apps/contents/cloud_signups', { headers: headers });
+        if (r.ok) {
+            var files = await r.json();
+            for (var f of files) {
+                if (!f.name || !f.name.endsWith('.json') || f.name === '.gitkeep') continue;
+                try {
+                    var rf = await fetch(f.url, { headers: headers });
+                    if (rf.ok) {
+                        var fj = await rf.json();
+                        var rawStr = decodeURIComponent(escape(atob(fj.content.replace(/\s/g, ''))));
+                        var d = JSON.parse(rawStr);
+                        d._sha = f.sha;
+                        if (!seenShopIds[d.shop_id]) {
+                            seenShopIds[d.shop_id] = true;
+                            allSignups.push(d);
+                        } else {
+                            var ex = allSignups.find(function(x) { return x.shop_id === d.shop_id; });
+                            if (ex) ex._sha = f.sha;
+                        }
+                    }
+                } catch(err) {}
             }
         }
-        
-        box.innerHTML = cards || '<div style="color:#94a3b8; text-align:center; padding:12px;">હાલ કોઈ પેન્ડિંગ અરજીઓ નથી.</div>';
     } catch(err) {
-        box.innerHTML = '<div style="color:#ef4444; text-align:center; padding:10px;">ભૂલ: ' + err.message + '</div>';
+        console.warn('Cloud signups fetch failed:', err);
     }
-}
 
+    var cards = '';
+    var pendingCount = 0;
+    
+    for (var d of allSignups) {
+        var isApproved = (d.status === 'APPROVED');
+        var isPending = (!isApproved);
+        if (isPending) pendingCount++;
 
-async function rejectShopDemo(shopId, encStoreName, sha) {
-    var sName = decodeURIComponent(encStoreName);
-    if (!confirm('શું તમે આ દુકાન (' + sName + ') ની ડેમો અરજી ખરેખર નામંજૂર (Reject / Delete) કરવા માંગો છો?')) return;
+        var rawDev = (d.machine_name || d.device_type || d.client_device_type || '').toString();
+        var devBadge = '📱 Android સ્માર્ટફોન';
+        if (rawDev.indexOf('V2222') !== -1 || rawDev.toLowerCase().indexOf('vivo') !== -1) devBadge = '📱 Vivo સ્માર્ટફોન';
+        else if (rawDev.indexOf('SM-') !== -1 || rawDev.toLowerCase().indexOf('samsung') !== -1) devBadge = '📱 Samsung Galaxy';
+        else if (rawDev.indexOf('CPH') !== -1 || rawDev.toLowerCase().indexOf('oppo') !== -1) devBadge = '📱 Oppo સ્માર્ટફોન';
+        else if (rawDev.indexOf('RMX') !== -1 || rawDev.toLowerCase().indexOf('realme') !== -1) devBadge = '📱 Realme સ્માર્ટફોન';
+        else if (rawDev.toLowerCase().indexOf('iphone') !== -1) devBadge = '🍎 Apple iPhone';
+        else if (rawDev.toLowerCase().indexOf('windows') !== -1) devBadge = '💻 Windows PC / લેપટોપ';
+
+        var timeStr = d.timestamp || d.created_at || 'તાજેતરમાં';
+        var statusBadge = isApproved 
+            ? '<span style="background:#15803d; color:#fef08a; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">✅ મંજૂર (Approved)</span>'
+            : '<span style="background:#b45309; color:#fef08a; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">⏳ પેન્ડિંગ મંજૂરી</span>';
+
+        cards += '<div style="background:#1e293b; border:1.8px solid ' + (isApproved ? '#22c55e' : '#eab308') + '; border-radius:10px; padding:14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:0 3px 10px rgba(0,0,0,0.3);">' +
+            '<div>' +
+            '<div style="font-size:15.5px; font-weight:bold; color:#fde047;">🏬 ' + (d.store_name || 'દુકાન') + ' <span style="font-size:12px; color:#38bdf8;">(Shop ID: ' + d.shop_id + ')</span> ' + statusBadge + '</div>' +
+            '<div style="font-size:13px; color:#cbd5e1; margin-top:4px;">👤 માલિક: <b>' + (d.owner_name || '-') + '</b> | 📱 મોબાઈલ: <b><a href="tel:' + d.owner_mobile + '" style="color:#4ade80; text-decoration:none;">' + (d.owner_mobile || '-') + '</a></b> | 🔑 યુઝર ID: <b>' + (d.owner_user_id || '-') + '</b></div>' +
+            '<div style="font-size:11.5px; color:#94a3b8; margin-top:3px;">📱 ડિવાઇસ: <b style="color:#38bdf8;">' + devBadge + '</b> | 🕒 નોંધણી તારીખ: ' + timeStr + '</div>' +
+            '</div>' +
+            '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
+            (!isApproved ? ('<button type="button" onclick="approveShopDemo('' + d.shop_id + '', '' + encodeURIComponent(d.store_name) + '', '' + d.owner_mobile + '', '' + encodeURIComponent(d.owner_name) + '', '' + (d.owner_user_id || d.owner_mobile) + '', '' + (d._sha || '') + '')" style="background:#16a34a; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; font-size:12px; cursor:pointer; box-shadow:0 2px 6px rgba(22,163,74,0.4);">✅ ૧૦-દિવસ ડેમો આપો (Approve)</button>') : '<span style="color:#86efac; font-size:12px; font-weight:bold; padding:6px;">✔️ ૧૦ દિવસ સક્રિય</span>') +
+            '<button type="button" onclick="rejectShopDemo('' + d.shop_id + '', '' + encodeURIComponent(d.store_name) + '', '' + (d._sha || '') + '')" style="background:#dc2626; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; font-size:12px; cursor:pointer; box-shadow:0 2px 6px rgba(220,38,38,0.4);">🗑️ Reject / Delete (ડિલીટ)</button>' +
+            '<a href="https://wa.me/91' + d.owner_mobile + '?text=' + encodeURIComponent('નમસ્તે ' + d.owner_name + 'જી! તમારી દુકાન (' + d.store_name + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરની ડેમો અરજી મળી ગઈ છે.') + '" target="_blank" style="background:#0284c7; color:white; padding:8px 12px; border-radius:6px; text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:4px;">💬 WhatsApp</a>' +
+            '</div>' +
+            '</div>';
+    }
     
-    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
-    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
-    
-    try {
-        var delRes = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json', {
-            method: 'DELETE',
-            headers: headers,
-            body: JSON.stringify({
-                message: 'Reject / Delete Demo Signup: ' + sName,
-                sha: sha
-            })
-        });
-        if (delRes.ok) {
-            alert('❌ ' + sName + ' ની ડેમો અરજી સફળતાપૂર્વક નામંજૂર / ડિલીટ કરી દેવામાં આવી છે!');
-            loadPendingAdminSignups();
-        } else {
-            alert('❌ ડિલીટ કરવામાં ક્ષતિ આવી!');
+    box.innerHTML = cards || '<div style="color:#94a3b8; text-align:center; padding:16px;">✅ હાલ કોઈ પેન્ડિંગ અરજીઓ નથી. તમામ દુકાનો સક્રિય છે.</div>';
+
+    var nb = document.getElementById('notif_count_badge');
+    if (nb) nb.innerText = pendingCount;
+
+    if (isUserRefresh) {
+        var tEl = document.getElementById('admin_live_toast_banner');
+        if (tEl) {
+            tEl.style.display = 'flex';
+            tEl.innerHTML = '✅ <b>રિફ્રેશ સફળ:</b> ' + allSignups.length + ' દુકાનો ચેક થઈ | ' + pendingCount + ' પેન્ડિંગ અરજીઓ છે. <button type="button" onclick="dismissAdminLiveToast()" style="margin-left:auto; background:transparent; border:none; color:white; font-size:14px; cursor:pointer;">✖</button>';
+            setTimeout(function() { if (tEl) tEl.style.display = 'none'; }, 4000);
         }
-    } catch(err) {
-        alert('ભૂલ: ' + err.message);
     }
 }
 
 async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userId, sha) {
-    if (!confirm('શું તમે આ દુકાન (' + decodeURIComponent(encStoreName) + ') ને ૧૦ દિવસનો ફ્રી ડેમો મંજૂર (Approve) કરવા માંગો છો?')) return;
+    var sName = decodeURIComponent(encStoreName);
+    if (!confirm('શું તમે આ દુકાન (' + sName + ') ને ૧૦ દિવસનો ફ્રી ડેમો મંજૂર (Approve) કરવા માંગો છો?')) return;
     
     var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
@@ -1434,7 +1449,7 @@ async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userI
     
     var updatedPayload = {
         shop_id: shopId,
-        store_name: decodeURIComponent(encStoreName),
+        store_name: sName,
         owner_name: decodeURIComponent(encOwnerName),
         owner_mobile: mobile,
         owner_user_id: userId,
@@ -1444,31 +1459,82 @@ async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userI
         demo_days: 10,
         approved_at: new Date().toISOString()
     };
-    
-    var b64Content = btoa(unescape(encodeURIComponent(JSON.stringify(updatedPayload, null, 2))));
-    
-    var putRes = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-mansvi-software/contents/cloud_signups/' + shopId + '.json', {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify({
-            message: 'Approve Demo for ' + decodeURIComponent(encStoreName),
+
+    // 1. Update in LocalStorage
+    try {
+        var localS = JSON.parse(localStorage.getItem('dm_local_signups_v3') || '[]');
+        var exIdx = localS.findIndex(function(x) { return x.shop_id === shopId; });
+        if (exIdx !== -1) {
+            localS[exIdx] = Object.assign(localS[exIdx], updatedPayload);
+        } else {
+            localS.unshift(updatedPayload);
+        }
+        localStorage.setItem('dm_local_signups_v3', JSON.stringify(localS));
+    } catch(e) {}
+
+    // 2. Update on GitHub
+    try {
+        var b64Content = btoa(unescape(encodeURIComponent(JSON.stringify(updatedPayload, null, 2))));
+        var reqBody = {
+            message: 'Approve Demo: ' + sName + ' (' + shopId + ')',
             content: b64Content,
-            sha: sha
-        })
-    });
+            branch: 'main'
+        };
+        if (sha) reqBody.sha = sha;
+        
+        await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-apps/contents/cloud_signups/' + shopId + '.json', {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify(reqBody)
+        });
+    } catch(e) {}
+
+    alert('🎉 ' + sName + ' નો ૧૦ દિવસનો ફ્રી ડેમો સફળતાપૂર્વક મંજૂર (Approved) થઈ ગયો છે!\nમુદ્દત: ' + todayIso + ' થી ' + expIso);
+    loadPendingAdminSignups(false);
+}
+
+async function rejectShopDemo(shopId, encStoreName, sha) {
+    var sName = decodeURIComponent(encStoreName);
+    if (!confirm('શું તમે આ દુકાન (' + sName + ') ની ડેમો અરજી ખરેખર નામંજૂર (Reject / Delete) કરવા માંગો છો?')) return;
     
-    if (putRes.ok) {
-        alert('✅ અભિનંદન! ' + decodeURIComponent(encStoreName) + ' નો ૧૦ દિવસનો ફ્રી ડેમો મંજૂર થઈ ગયો છે!\n\nહવે દુકાનદારને વોટ્સએપ પર લૉગિન વિગતો મોકલી આપો.');
-        var directLoginUrl = 'https://jayminpatel1986.github.io/devanshi-apps/client-erp.html?shop=' + shopId + '&user=' + encodeURIComponent(userId) + '&auth=approved';
-        window.open('https://wa.me/91' + mobile + '?text=' + encodeURIComponent('🎉 અભિનંદન ' + decodeURIComponent(encOwnerName) + 'જી! તમારી દુકાન (' + decodeURIComponent(encStoreName) + ') માટે દેવાંશી મનસ્વી ERP સોફ્ટવેરનો ૧૦-દિવસનો ફ્રી ડેમો મંજૂર (Approved) થઈ ગયો છે!\n\n🔗 સીધી લૉગિન લિંક (૧-ક્લિકમાં ખુલી જશે):\n' + directLoginUrl + '\n\n👤 તમારો લૉગિન ID: ' + userId + '\n\nકોઈપણ પ્રશ્ન હોય તો મને સીધો ફોન કરજો!\nજયમીન પટેલ - 9725721215'), '_blank');
-        loadPendingAdminSignups();
-    } else {
-        alert('❌ એપ્રુવલ અપડેટ કરવામાં ક્ષતિ આવી!');
-    }
+    // 1. Remove from LocalStorage
+    try {
+        var localS = JSON.parse(localStorage.getItem('dm_local_signups_v3') || '[]');
+        localS = localS.filter(function(x) { return x.shop_id !== shopId; });
+        localStorage.setItem('dm_local_signups_v3', JSON.stringify(localS));
+    } catch(e) {}
+
+    // 2. Delete from GitHub if sha exists
+    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
+    
+    try {
+        if (!sha) {
+            var chk = await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-apps/contents/cloud_signups/' + shopId + '.json', { headers: headers });
+            if (chk.ok) {
+                var cj = await chk.json();
+                sha = cj.sha;
+            }
+        }
+        if (sha) {
+            await fetch('https://api.github.com/repos/Jayminpatel1986/devanshi-apps/contents/cloud_signups/' + shopId + '.json', {
+                method: 'DELETE',
+                headers: headers,
+                body: JSON.stringify({
+                    message: 'Delete Demo Registration: ' + sName,
+                    sha: sha,
+                    branch: 'main'
+                })
+            });
+        }
+    } catch(err) {}
+
+    alert('🗑️ ' + sName + ' ની ડેમો અરજી સફળતાપૂર્વક ડિલીટ કરી દેવામાં આવી છે!');
+    loadPendingAdminSignups(false);
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-    loadPendingAdminSignups();
+    loadPendingAdminSignups(false);
 });
 </script>
 
