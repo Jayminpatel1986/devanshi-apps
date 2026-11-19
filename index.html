@@ -578,9 +578,32 @@ function populateAllActiveDropdowns() {
 <!-- ૨. અસલ મુખ્ય ERP ટર્મિનલ (18 Sheets + 4 Gallas + 8 Action Buttons + F1 to F8 Dynamic Counters) -->
 <div id="spa_erp_view" style="display:none;">
     <div class="container" id="spa_erp_container">
-        <div id="spa_erp_top_inner"></div>
+        <!-- 🚀 સુપર કોમ્પેક્ટ સ્માર્ટ ટૂલબાર (TallyPrime Style - માત્ર 36px ઊંચાઈ) -->
+        <div id="sleek_counter_topbar" style="display:none; align-items:center; justify-content:space-between; background:#0b1528; padding:5px 12px; border-bottom:2px solid #38bdf8; border-top:1px solid #334155; margin-bottom:4px; gap:6px; flex-wrap:wrap; width:100%; box-sizing:border-box;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" onclick="goBackOrGateway()" style="background:#eab308; color:#0f172a; border:1px solid #fef08a; padding:4px 10px; border-radius:4px; font-weight:900; font-size:11.5px; cursor:pointer;" title="પાછલા પેજ પર અથવા મુખ્ય ગેટવે પર પાછા જાઓ (Esc)">⬅️ ગેટવે (Esc)</button>
+                <span style="color:#fde047; font-weight:800; font-size:12.5px;" id="sleek_bar_shop_name">🏪 માસ્ટર ERP</span>
+                <span style="background:#1e293b; color:#38bdf8; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px; border:1px solid #475569;" id="sleek_bar_mode_badge">કાઉન્ટર</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:3px; flex-wrap:wrap;" id="sleek_bar_f_buttons">
+                <button type="button" onclick="navigateSpa('/?sheet=SMART_TERMINAL&mode=F1')" class="tally-sub-btn" style="background:#15803d; color:white; border:none; padding:4px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;">[F1] ખરીદી</button>
+                <button type="button" onclick="navigateSpa('/?sheet=SMART_TERMINAL&mode=F2')" class="tally-sub-btn" style="background:#0f2043; color:white; border:none; padding:4px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;">[F2] વેચાણ</button>
+                <button type="button" onclick="navigateSpa('/?sheet=SMART_TERMINAL&mode=F3')" class="tally-sub-btn" style="background:#4c1d95; color:white; border:none; padding:4px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;">[F3] લેજર</button>
+                <button type="button" onclick="navigateSpa('/?sheet=SMART_TERMINAL&mode=F4')" class="tally-sub-btn" style="background:#0369a1; color:white; border:none; padding:4px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;">[F4] બેંક</button>
+                <button type="button" onclick="navigateSpa('/?sheet=SMART_TERMINAL&mode=F5')" class="tally-sub-btn" style="background:#991b1b; color:white; border:none; padding:4px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;">[F5] બાય-બેક</button>
+                <button type="button" onclick="navigateSpa('/?sheet=SMART_TERMINAL&mode=F6')" class="tally-sub-btn" style="background:#b45309; color:white; border:none; padding:4px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;">[F6] કેશ</button>
+                <button type="button" onclick="navigateSpa('/?sheet=SMART_TERMINAL&mode=F7')" class="tally-sub-btn" style="background:#1e3a8a; color:white; border:none; padding:4px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;">[F7] નફો</button>
+                <button type="button" onclick="navigateSpa('/?sheet=SMART_TERMINAL&mode=F8')" class="tally-sub-btn" style="background:#0f766e; color:white; border:none; padding:4px 8px; border-radius:3px; font-weight:bold; font-size:11px; cursor:pointer;">[F8] ઓડિટ</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <button type="button" onclick="openAllInOneAiModal()" style="background:#7c3aed; color:white; border:1px solid #c084fc; padding:4px 10px; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer;">🤖 AI</button>
+                <button type="button" onclick="navigateSpa('/?sheet=GATEWAY')" style="background:#0284c7; color:white; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer;">🏛️ મુખ્ય ગેટવે</button>
+                <button type="button" onclick="logoutToLoginScreen()" style="background:#334155; color:#cbd5e1; border:1px solid #475569; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">🚪 લૉગ આઉટ</button>
+            </div>
+        </div>
+        <div id="spa_erp_top_inner" style="display:none !important;"></div>
         <div id="spa_erp_msg_box"></div>
-        <div id="spa_erp_sheet_body"></div>
+        <div id="spa_erp_sheet_body" style="width:100%; box-sizing:border-box;"></div>
     </div>
     <!-- ⚠️ સ્માર્ટ ફાઇનલ કન્ફર્મેશન [ Accept? Yes (Y) / No (N) ] પોપ-અપ બોક્સ (નિયમ ૦.૧) -->
     <div class="tally-accept-overlay" id="tally_accept_modal">
@@ -852,6 +875,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -963,6 +1021,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1074,6 +1167,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1185,6 +1313,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1296,6 +1459,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1407,6 +1605,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1518,6 +1751,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1629,6 +1897,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1740,6 +2043,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1851,6 +2189,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -1962,6 +2335,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -2073,6 +2481,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -2184,6 +2627,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -2295,6 +2773,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -2406,6 +2919,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -2517,6 +3065,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
@@ -5016,7 +5599,6 @@ function navigateSpa(urlStr, optMsg, isBack) {
 </div>
 `;
     window.__GATEWAY_CARDS_HTML__ = window.__GATEWAY_2COL_HTML__;
-`;
     var isGateway = (sheet === 'GATEWAY' || (sheet === 'SMART_TERMINAL' && !mode));
     var spaTop = document.getElementById('spa_erp_top_inner');
     if (spaTop) spaTop.style.display = 'none';
@@ -5266,10 +5848,16 @@ function openSampleStore(shopId) {
 }
 
 function logoutToLoginScreen() {
+    localStorage.removeItem('devanshi_logged_in_standalone');
     window.__SPA_HISTORY_STACK__ = [];
-    document.getElementById('spa_erp_view').style.display = 'none';
-    document.getElementById('spa_aux_view').style.display = 'none';
-    document.getElementById('spa_login_view').style.display = 'block';
+    var loginV = document.getElementById('spa_login_view');
+    var erpV = document.getElementById('spa_erp_view');
+    var auxV = document.getElementById('spa_aux_view');
+    if (erpV) erpV.style.display = 'none';
+    if (auxV) auxV.style.display = 'none';
+    if (loginV) loginV.style.display = 'block';
+    var inpShop = document.getElementById('inp-shop');
+    if (inpShop) inpShop.focus();
 }
 
 function triggerSampleWipeFromTerminal(shopId) {
@@ -5423,6 +6011,41 @@ function purgeNonTiedDo() {
 
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
+
+    // 🚀 MASTER SPA ROUTER & INITIAL LANDING CONTROLLER
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = (urlParams.get('action') || '').toLowerCase();
+    var isLogout = urlParams.get('logout') === '1' || action === 'login' || action === 'logout';
+    var hasActiveSession = localStorage.getItem('devanshi_logged_in_standalone') === '1';
+
+    // If explicit login requested or user is not logged in: SHOW LOGIN VIEW
+    if (isLogout || !hasActiveSession) {
+        localStorage.removeItem('devanshi_logged_in_standalone');
+        window.__SPA_HISTORY_STACK__ = [];
+        var loginV = document.getElementById('spa_login_view');
+        var erpV = document.getElementById('spa_erp_view');
+        var auxV = document.getElementById('spa_aux_view');
+        if (loginV) loginV.style.display = 'block';
+        if (erpV) erpV.style.display = 'none';
+        if (auxV) auxV.style.display = 'none';
+        var inpShop = document.getElementById('inp-shop');
+        if (inpShop) inpShop.focus();
+        return;
+    }
+
+    // User is logged in: Check target sheet or open GATEWAY by default
+    var targetSheet = urlParams.get('sheet') || 'GATEWAY';
+    var targetMode = urlParams.get('mode') || '';
+    var targetShop = urlParams.get('shop') || '';
+    if (targetShop) {
+        window.__ACTIVE_SHOP_ID__ = targetShop.toUpperCase();
+        localStorage.setItem('dm_active_shop_id', window.__ACTIVE_SHOP_ID__);
+    } else if (!window.__ACTIVE_SHOP_ID__) {
+        window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
+    }
+
+    var targetUrl = '/?sheet=' + targetSheet + (targetMode ? ('&mode=' + targetMode) : '');
+    navigateSpa(targetUrl);
 });
 </script>
 
