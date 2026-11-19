@@ -289,7 +289,7 @@ def root_view(
             "rech": recharge_cash,
             "extra": extra_cash,
             "gift": today_gift,
-            "do": pending_do_count,
+            "do": active_do_count,
             "bill": pending_apx_count
         }
         owner_name = STORE_CFG.get("owner_name", "જયમીનભાઈ પટેલ")
@@ -347,7 +347,7 @@ def root_view(
                     </div>
                     <div style="background:#1e293b; padding:6px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #475569;">
                         <span style="font-size:11px; color:#cbd5e1;">પેન્ડિંગ DO | બિલ:</span>
-                        <b style="font-size:12px; color:#38bdf8;" id="gw_val_do_bill">DO: {pending_do_count} | બિલ: {pending_apx_count}</b>
+                        <b style="font-size:12px; color:#38bdf8;" id="gw_val_do_bill">DO: {active_do_count} | બિલ: {pending_apx_count}</b>
                     </div>
                 </div>
             </div>
