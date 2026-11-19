@@ -873,10 +873,10 @@ def root_view(
         }}
     
         /* Tally Prime Full-Screen Viewport */
-        .counter-promo-banner, .f-counters-grid, .mode-banner { display: none !important; }
-        .b-card { text-decoration: none !important; }
-        .gw-sh-link { display:block; padding:5px 8px; border-radius:4px; text-decoration:none; color:#1e293b; font-size:12px; margin-bottom:2px; transition:background 0.15s; }
-        .gw-sh-link:hover { background:#f1f5f9; color:#0284c7; }
+        .counter-promo-banner, .f-counters-grid, .mode-banner {{ display: none !important; }}
+        .b-card {{ text-decoration: none !important; }}
+        .gw-sh-link {{ display:block; padding:5px 8px; border-radius:4px; text-decoration:none; color:#1e293b; font-size:12px; margin-bottom:2px; transition:background 0.15s; }}
+        .gw-sh-link:hover {{ background:#f1f5f9; color:#0284c7; }}
 
     </style>
     </head>
