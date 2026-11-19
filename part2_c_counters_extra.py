@@ -120,6 +120,16 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <a href="/police-verification-form" target="_blank" style="background:#fde047; color:#0f2043; padding:3px 10px; border-radius:4px; text-decoration:none; font-weight:800; font-size:11.5px;">👮 પોલીસ વેરિફિકેશન વૉલ્ટ ખોલો</a>
         </div>
 
+        <!-- TALLY PRIME SUB-SECTIONS STRIP (F5 ૧ થી ૫ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <div class="tally-subparts-bar">
+            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
+            <button type="button" class="tally-sub-btn active" id="f5_sub_btn_ALL_4_GRID" onclick="setSubpartF5('ALL_4_GRID')">૧. ચારેય ભાગ ગ્રીડ (ALL)</button>
+            <button type="button" class="tally-sub-btn" id="f5_sub_btn_PART1" onclick="setSubpartF5('PART1')">૨. ભાગ ૧: જૂનો ફોન ખરીદી</button>
+            <button type="button" class="tally-sub-btn" id="f5_sub_btn_PART2" onclick="setSubpartF5('PART2')">૩. ભાગ ૨: રિપેરિંગ પડતર</button>
+            <button type="button" class="tally-sub-btn" id="f5_sub_btn_PART3" onclick="setSubpartF5('PART3')">૪. ભાગ ૩: જૂના ફોન વેચાણ</button>
+            <button type="button" class="tally-sub-btn" id="f5_sub_btn_PART4" onclick="setSubpartF5('PART4')">૫. ભાગ ૪: રિટર્ન & રિફંડ</button>
+        </div>
+
         <div class="term-form">
             <div class="f-row" style="background:#0f2043; color:white; padding:6px 10px; border-radius:6px; margin-bottom:10px;">
                 <div class="lbl" style="color:#fde047; width:240px;">F5 બાય-બેક વિભાગ પસંદ કરો (૪ ભાગ):</div>
@@ -298,7 +308,18 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             }}
             window.syncUniversalMopGalla = syncUniversalMopGalla;
             window.syncF7MopGalla = syncUniversalMopGalla;
+            function setSubpartF5(val){{
+                var sel = document.getElementById('f5_part_sel');
+                if (sel) sel.value = val;
+                switchF5Part(val);
+            }}
+
             function switchF5Part(val){{
+                document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                    b.classList.remove('active');
+                }});
+                var curBtn = document.getElementById('f5_sub_btn_' + val);
+                if (curBtn) curBtn.classList.add('active');
                 var p1 = document.getElementById('f5_box_p1');
                 var p2 = document.getElementById('f5_box_p2');
                 var p3 = document.getElementById('f5_box_p3');
@@ -472,6 +493,35 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <span>મોડ: [F6] આંતરિક ગલ્લા ટ્રાન્સફર ટેબલ (Vault-to-Vault Transfer - ૭ ખાનાં)</span>
             <span style="font-size:11.5px;">ઇમરજન્સીમાં એક ગલ્લામાંથી બીજા ગલ્લામાં લીધેલી રોકડ પાછી મૂળ ગલ્લામાં જમા કરવા માટે</span>
         </div>
+
+        <!-- TALLY PRIME SUB-SECTIONS STRIP (F6 ૧ થી ૩ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <div class="tally-subparts-bar">
+            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
+            <button type="button" class="tally-sub-btn active" id="f6_sub_btn_ALL" onclick="setSubpartF6('ALL')">૧. બંને બોક્સ સાથે જુઓ</button>
+            <button type="button" class="tally-sub-btn" id="f6_sub_btn_INTRA" onclick="setSubpartF6('INTRA')">૨. આંતરિક ગલ્લા કેશ ટ્રાન્સફર</button>
+            <button type="button" class="tally-sub-btn" id="f6_sub_btn_STOCK" onclick="setSubpartF6('STOCK')">૩. સ્ટોક ચલણ ટ્રાન્સફર</button>
+        </div>
+        <script>
+        function setSubpartF6(val) {{
+            document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                b.classList.remove('active');
+            }});
+            var curBtn = document.getElementById('f6_sub_btn_' + val);
+            if (curBtn) curBtn.classList.add('active');
+            var gSec = document.getElementById('f6_galla_section');
+            var sSec = document.getElementById('f6_stock_section');
+            if (val === 'INTRA') {{
+                if (gSec) gSec.style.display = 'block';
+                if (sSec) sSec.style.display = 'none';
+            }} else if (val === 'STOCK') {{
+                if (gSec) gSec.style.display = 'none';
+                if (sSec) sSec.style.display = 'block';
+            }} else {{
+                if (gSec) gSec.style.display = 'block';
+                if (sSec) sSec.style.display = 'block';
+            }}
+        }}
+        </script>
         {cross_alert_html}
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
@@ -824,9 +874,43 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <span style="font-size:11.5px;">ડાબું બોક્સ: ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ | જમણું બોક્સ: ગ્રાહક રિપેરિંગ & કારીગર નફા વહેંચણી</span>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
+        <!-- TALLY PRIME SUB-SECTIONS STRIP (F7 ૧ થી ૩ લાઈનબદ્ધ પેટા વિભાગો) -->
+        <div class="tally-subparts-bar">
+            <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
+            <button type="button" class="tally-sub-btn active" id="f7_sub_btn_ALL" onclick="setSubpartF7('ALL')">૧. બંને બોક્સ સાથે જુઓ (Side-by-Side)</button>
+            <button type="button" class="tally-sub-btn" id="f7_sub_btn_PROFIT" onclick="setSubpartF7('PROFIT')">૨. ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ (ગલ્લો ૪ & P&L - Full Width)</button>
+            <button type="button" class="tally-sub-btn" id="f7_sub_btn_REPAIR" onclick="setSubpartF7('REPAIR')">૩. ગ્રાહક રિપેરિંગ & કારીગર સ્પ્લિટ (Full Width)</button>
+        </div>
+        <script>
+        function setSubpartF7(val) {{
+            document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+                b.classList.remove('active');
+            }});
+            var curBtn = document.getElementById('f7_sub_btn_' + val);
+            if (curBtn) curBtn.classList.add('active');
+            var gGrid = document.getElementById('f7_boxes_grid');
+            var bProfit = document.getElementById('f7_box_profit');
+            var bRepair = document.getElementById('f7_box_repair');
+            if (!gGrid || !bProfit || !bRepair) return;
+            if (val === 'PROFIT') {{
+                bProfit.style.display = 'block';
+                bRepair.style.display = 'none';
+                gGrid.style.gridTemplateColumns = '1fr';
+            }} else if (val === 'REPAIR') {{
+                bProfit.style.display = 'none';
+                bRepair.style.display = 'block';
+                gGrid.style.gridTemplateColumns = '1fr';
+            }} else {{
+                bProfit.style.display = 'block';
+                bRepair.style.display = 'block';
+                gGrid.style.gridTemplateColumns = '1fr 1fr';
+            }}
+        }}
+        </script>
+
+        <div id="f7_boxes_grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
             <!-- ડાબું બોક્સ (Box 1): [F7] ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ સેટઅપ -->
-            <div style="display:{'block' if 'F7_1' in active_subparts else 'none'}; background:#fffbeb; border:2px solid #b45309; border-radius:6px; padding:12px;">
+            <div id="f7_box_profit" style="display:{'block' if 'F7_1' in active_subparts else 'none'}; background:#fffbeb; border:2px solid #b45309; border-radius:6px; padding:12px;">
                 <h4 style="margin:0 0 10px 0; color:#b45309;">💎 ૧. [F7] ડાયરેક્ટ એક્સ્ટ્રા પ્રોફિટ સેટઅપ (સીધો ગલ્લા ૪ અને P&L માં જમા)</h4>
                 <form class="term-form f-enter-form" action="/save-f7-extra-profit" method="post">
                     <div class="f-row"><div class="lbl" style="width:190px;">૧. તારીખ:</div><input type="date" name="entry_date" value="{today_str}"></div>
@@ -852,7 +936,7 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             </div>
 
             <!-- જમણું બોક્સ (Box 2): 🛠️ બારોબાર ગ્રાહક રિપેરિંગ અને કારીગર પ્રોફિટ સ્પ્લિટ (૧૧ ખાનાં) -->
-            <div style="display:{'block' if ('F7_2' in active_subparts or 'F7_3' in active_subparts) else 'none'}; background:#f0fdf4; border:2px solid #16a34a; border-radius:6px; padding:12px;">
+            <div id="f7_box_repair" style="display:{'block' if ('F7_2' in active_subparts or 'F7_3' in active_subparts) else 'none'}; background:#f0fdf4; border:2px solid #16a34a; border-radius:6px; padding:12px;">
                 <h4 style="margin:0 0 8px 0; color:#166534;">🛠️ ૨. બારોબાર ગ્રાહક રિપેરિંગ & કારીગર પ્રોફિટ સ્પ્લિટ બોક્સ</h4>
                 
                 <div style="background:#fefce8; border:1px solid #fde047; padding:6px 10px; border-radius:4px; margin-bottom:10px;">
@@ -1312,15 +1396,40 @@ def render_f5_to_f8(conn, c, mode, staff_opts_html, all_galla_options, bank_opts
             <button type="submit" onclick="return confirm('શું આજની ક્લોઝિંગ બેલેન્સ સેવ કરીને આવતીકાલની ઓપનિંગ બેલેન્સ તરીકે કેરી-ફોરવર્ડ કરવી છે?')" style="background:#15803d; color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:11.5px;">🔄 આજની ક્લોઝિંગ -> આવતીકાલની ઓપનિંગમાં કેરી-ફોરવર્ડ કરો</button>
         </form>
     </div>
+
+    <!-- TALLY PRIME SUB-SECTIONS STRIP (F8 ૧ થી ૪ લાઈનબદ્ધ પેટા વિભાગો) -->
+    <div class="tally-subparts-bar">
+        <span style="color:#fde047; font-weight:800; font-size:11px; margin-right:4px;">પેટા વિભાગ:</span>
+        <button type="button" class="tally-sub-btn active" id="f8_sub_btn_ALL" onclick="setSubpartF8('ALL')">૧. તમામ ઓડિટ ટેબલ સાથે જુઓ</button>
+        <button type="button" class="tally-sub-btn" id="f8_sub_btn_AUDIT" onclick="setSubpartF8('AUDIT')">૨. ૪-ગલ્લા નોટ ગણતરી (Audit Log)</button>
+        <button type="button" class="tally-sub-btn" id="f8_sub_btn_RECON" onclick="setSubpartF8('RECON')">૩. ૧૨-લાઇન મેળવણી (Reconciliation)</button>
+        <button type="button" class="tally-sub-btn" id="f8_sub_btn_VAULT" onclick="setSubpartF8('VAULT')">૪. વૉલ્ટ કેરી-ફોરવર્ડ</button>
+    </div>
+    <script>
+    function setSubpartF8(val) {{
+        document.querySelectorAll('.tally-subparts-bar .tally-sub-btn').forEach(function(b){{
+            b.classList.remove('active');
+        }});
+        var curBtn = document.getElementById('f8_sub_btn_' + val);
+        if (curBtn) curBtn.classList.add('active');
+        var bAudit = document.getElementById('f8_audit_tables_wrap');
+        var bRecon = document.getElementById('f8_recon_wrap');
+        if (val === 'AUDIT' && bAudit) {{
+            bAudit.scrollIntoView({{ behavior:'smooth' }});
+        }} else if (val === 'RECON' && bRecon) {{
+            bRecon.scrollIntoView({{ behavior:'smooth' }});
+        }}
+    }}
+    </script>
     {f8_mode_banner}
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
+    <div id="f8_audit_tables_wrap" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px;">
         {tbl1_html}
         {tbl2_html}
     </div>
 
     {ho_recon_block}
 
-    <div style="padding:0 8px 12px;">
+    <div id="f8_recon_wrap" style="padding:0 8px 12px;">
         <div style="background:white; border:2px solid #0f2043; border-radius:6px; padding:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <h4 style="margin:0; color:#0f2043; font-size:13.5px;">📊 ૧. ૪-ગલ્લા સ્વતંત્ર ૧૨-લાઈન દૈનિક રિકોન્સિલેશન (Four-Vault Independent Cash Reconciliation)</h4>
