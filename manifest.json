@@ -1,21 +1,25 @@
 {
-  "name": "દેવાંશી મનસ્વી માસ્ટર ERP",
+  "name": "દેવાંશી મનસ્વી ERP સોફ્ટવેર",
   "short_name": "દેવાંશી ERP",
-  "description": "3-in-1 Official Mobile & Cloud ERP",
-  "start_url": "index.html",
+  "description": "દેવાંશી & મનસ્વી મોબાઇલ સ્માર્ટ એકાઉન્ટિંગ ERP ટર્મિનલ (Tally & Miracle સ્ટાઇલ)",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#091224",
   "theme_color": "#091224",
+  "orientation": "any",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
