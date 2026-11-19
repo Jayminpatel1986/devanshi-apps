@@ -288,7 +288,7 @@ def root_view(
             "acc": acc_dcash,
             "rech": recharge_cash,
             "extra": extra_cash,
-            "gift": gift_cash,
+            "gift": today_gift,
             "do": pending_do_count,
             "bill": pending_apx_count
         }
@@ -343,7 +343,7 @@ def root_view(
                     </div>
                     <div style="background:#1e293b; padding:6px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #475569;">
                         <span style="font-size:11px; color:#cbd5e1;">ગિફ્ટ (આજે આપેલી):</span>
-                        <b style="font-size:12px; color:#fde047;" class="galla-val" id="gw_val_gift">₹{gift_cash:,.0f}</b>
+                        <b style="font-size:12px; color:#fde047;" class="galla-val" id="gw_val_gift">₹{today_gift:,.0f}</b>
                     </div>
                     <div style="background:#1e293b; padding:6px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #475569;">
                         <span style="font-size:11px; color:#cbd5e1;">પેન્ડિંગ DO | બિલ:</span>
