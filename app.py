@@ -63,7 +63,7 @@ try:
 except Exception:
     pass
 
-CURRENT_BUILD_VERSION = "2026.11.12.001"
+CURRENT_BUILD_VERSION = "2026.11.19_FINAL"
 
 ERP_DYNAMIC_MODULES = {
     "part1_core",
@@ -167,7 +167,7 @@ def open_standalone_desktop_window(url: str):
         except Exception:
             pass
 
-CURRENT_BUILD_VERSION = "2026.11.12.001"
+CURRENT_BUILD_VERSION = "2026.11.19_FINAL"
 
 def kill_old_server_on_port(port: int):
     """જો જૂની .exe પોર્ટ પર ચાલતી હોય તો તેને આપમેળે બંધ (Kill) કરે છે જેથી નવું સોફ્ટવેર તરત જ ચાલુ થઈ જાય!"""
