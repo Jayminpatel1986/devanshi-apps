@@ -616,8 +616,12 @@ def root_view(
         .act-btn {{ border:none; padding:6px 4px; color:white; font-weight:700; border-radius:4px; cursor:pointer; text-align:center; text-decoration:none; display:block; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-shadow:0 1px 2px rgba(0,0,0,0.1); }}
         .act-btn:hover {{ opacity:0.92; }}
         .f-btn {{ padding:8px 4px; color:white; font-weight:800; text-align:center; border-radius:4px; text-decoration:none; font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }}
-        .mode-banner {{ background:#e0f2fe; color:#0369a1; padding:8px 12px; font-weight:800; font-size:13px; border-left:4px solid #0284c7; margin:6px 8px; border-radius:0 4px 4px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; }}
-        .term-form {{ max-width:980px; margin:8px; background:#f8fafc; padding:12px; border:1px solid #cbd5e1; border-radius:6px; }}
+        .mode-banner {{ background:#e0f2fe; color:#0369a1; padding:8px 12px; font-weight:800; font-size:13px; border-left:4px solid #0284c7; margin:6px 0; border-radius:0 4px 4px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; }}
+        .term-form {{ width:100%; box-sizing:border-box; margin:8px 0; background:#f8fafc; padding:14px; border:1px solid #cbd5e1; border-radius:6px; }}
+        .tally-subparts-bar {{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; background:#0b1528; padding:7px 10px; border-radius:6px; margin:6px 0 10px 0; border:1px solid #334155; box-shadow:0 2px 5px rgba(0,0,0,0.25); width:100%; box-sizing:border-box; }}
+        .tally-sub-btn {{ background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:4px; font-weight:700; font-size:11.5px; cursor:pointer; transition:all 0.15s ease-in-out; white-space:nowrap; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }}
+        .tally-sub-btn:hover {{ background:#334155; color:#ffffff; border-color:#94a3b8; }}
+        .tally-sub-btn.active {{ background:#0284c7 !important; color:#ffffff !important; border-color:#fde047 !important; font-weight:800 !important; box-shadow:0 0 8px rgba(56,189,248,0.5) !important; }}
         .f-row {{ display:flex; align-items:center; margin-bottom:5px; gap:6px; }}
         .f-row .lbl {{ width:235px; font-weight:700; color:#1e293b; text-align:right; padding-right:8px; font-size:12px; flex-shrink:0; }}
         .f-row input, .f-row select, .f-row textarea {{ flex:1; padding:6px 9px; border:1px solid #94a3b8; border-radius:4px; font-size:12.5px; background:white; color:#0f172a; outline:none; }}
@@ -1784,14 +1788,13 @@ def root_view(
                     sessionStorage.setItem(_navStackKey, JSON.stringify(stack));
                     window.location.href = prevUrl;
                 }} else {{
-                    // જો હિસ્ટ્રી ખાલી હોય તો મુખ્ય વેચાણ કાઉન્ટર (F2) પર પાછા જાઓ અથવા બ્રાઉઝર બેક કરો
+                    // જો હિસ્ટ્રી ખાલી હોય તો મુખ્ય વેચાણ કાઉન્ટર (F2) પર પાછા જાઓ
                     if ("{sheet}" !== "SMART_TERMINAL" || "{mode}" !== "F2") {{
                         window.location.href = "/?sheet=SMART_TERMINAL&mode=F2";
                     }} else {{
-                        // જો F2 પર જ હોવ તો ફોર્મ ક્લિયર / રીસેટ કરો
-                        if (confirm('શું તમે ચાલુ કાઉન્ટર ફોર્મ ક્લિયર કરી નવેસરથી શરૂ કરવા માંગો છો?')) {{
-                            window.location.href = "/?sheet=SMART_TERMINAL&mode=F2";
-                        }}
+                        // જો F2 પર જ હોવ તો પ્રથમ ઇનપુટ પર ફોકસ કરો અથવા બેક કરો
+                        var firstInp = document.querySelector('.term-form input:not([type="hidden"])');
+                        if (firstInp) firstInp.focus();
                     }}
                 }}
             }} catch(e) {{
@@ -1800,7 +1803,7 @@ def root_view(
         }}
 
         window.addEventListener('keydown', function(e) {{
-            if (e.key === 'Escape') {{
+            if (e.key === 'Escape' || e.keyCode === 27) {{
                 var tallyM = document.getElementById('tally_accept_modal');
                 if (tallyM && tallyM.style.display === 'flex') return; // Handled by tally modal listener
                 e.preventDefault();
