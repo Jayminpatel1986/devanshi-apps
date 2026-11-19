@@ -629,7 +629,7 @@ def render_smart_terminal(
     # [F2] વેચાણ અને પેમેન્ટ સ્પ્લિટ મોડ્યુલ (૩ ડાયનેમિક કન્ડિશનલ ફોર્મ્સ + ફ્રેન્ચાઇઝી વિ. રિટેલ)
     # =========================================================================
     elif mode == "F2":
-        f2_banner_top = """<div style="background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:white; padding:8px 12px; border-radius:6px; margin:0 8px 8px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+        f2_banner_top = """<div class="counter-promo-banner" style="display:none; background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:white; padding:8px 12px; border-radius:6px; margin:0 8px 8px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
             <div style="font-weight:bold; font-size:12px;">
                 💡 <span style="color:#38bdf8;">નવા મોડ્યુલ્સ:</span> સેલ્સમેન 360° (ડિસ્કાઉન્ટ ટકાવારી & બ્રાન્ડ મેટ્રિક્સ) તથા ડે-બુક સ્નેપશોટ આર્કાઇવ
             </div>
@@ -699,13 +699,14 @@ def render_smart_terminal(
                     <button type="button" onclick="previewSelectedDoPdf()" style="background:#0284c7; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">[👁️ DO PDF જુઓ]</button>
                     <button type="button" onclick="unmatchDoSelection()" style="background:#ca8a04; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">[✖️ DO રીસેટ]</button>
                     <button type="button" onclick="deleteSelectedDo()" style="background:#dc2626; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">[🗑️ કાઢી નાખો]</button>
+                    <button type="button" onclick="purgeNonTiedDo()" style="background:#b91c1c; color:#fef2f2; border:1px solid #fca5a5; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;" title="નોન-ટાઈડ સ્કીમ / રદ થયેલ DO અનમેચ કરી લિસ્ટમાંથી હટાવો">🗑️ DO રદ / અનમેચ કરો (Non-Tied Scheme)</button>
                 </div>
             </div>
             """
 
         form_html = f"""
         {f2_banner_top}
-        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin:6px 8px;">
+        <div class="counter-promo-banner" style="display:none; gap:6px; align-items:center; flex-wrap:wrap; margin:6px 8px;">
             <button type="button" onclick="startGujaratiVoiceBilling()" id="f2_voice_btn" style="background:linear-gradient(135deg, #7c3aed, #6d28d9); color:white; border:none; padding:6px 14px; border-radius:5px; font-weight:bold; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(109,40,217,0.3);">🎤 બોલીને બિલ બનાવો (ગુજરાતી)</button>
             <button type="button" onclick="openOnlinePriceSpyModal(document.getElementById('f2_mod') ? document.getElementById('f2_mod').value : '', document.getElementById('f2_mop') ? document.getElementById('f2_mop').value : 0)" style="background:linear-gradient(135deg, #ea580c, #c2410c); color:white; border:none; padding:6px 14px; border-radius:5px; font-weight:bold; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(234,88,12,0.3);">🛒 ઓનલાઈન MOP & બેંક ઓફર્સ</button>
             <button type="button" onclick="generateSalesmanClosingPitch()" style="background:linear-gradient(135deg, #0284c7, #0369a1); color:white; border:none; padding:6px 14px; border-radius:5px; font-weight:bold; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">🧠 AI સેલ્સ ક્લોઝિંગ પિચ</button>
@@ -2321,7 +2322,6 @@ def render_smart_terminal(
         """
 
     return f"""
-    {f_strip_html}
     {form_html}
     <div class="grid-head">
         <span>આજના જમા થયેલ વ્યવહારો (લાઈવ રનિંગ ટ્રાન્ઝેક્શન ગ્રીડ)</span>
