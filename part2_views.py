@@ -885,7 +885,7 @@ def root_view(
         {'' if is_in_counter else user_top_bar_html}
 
         <!-- 🏛️ મુખ્ય ગેટવે ડેશબોર્ડ હેડર (કાઉન્ટરમાં હોઈએ ત્યારે 100% ફૂલ સ્ક્રીન માટે હાઇડ થઈ જશે) -->
-        <div id="main_gateway_header" style="display:{'none' if is_in_counter else 'block'};">
+        <div id="main_gateway_header" style="display:none !important;">
             <div class="main-header">{store_title} - MASTER ERP TERMINAL</div>
             <div class="sub-bar">{license_display} | <b style="color:#fde047;">📌 વર્ઝન: {STORE_CFG.get('ota_version_id', '2026.11.19_FINAL') if not str(STORE_CFG.get('ota_version_id','')).startswith('v4') else '2026.11.19_FINAL'}</b> | 90-Day FIFO બેકઅપ + લાઈવ ક્લાઉડ સિંક સક્રિય</div>
             {sheets_bar_html}
