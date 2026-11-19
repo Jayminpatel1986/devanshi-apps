@@ -534,7 +534,7 @@ def root_view(
         ("OLD_STOCK_CLEARANCE", "૧૫. ૬૦+ દિવસ જૂનો સ્ટોક"),
         ("GST_SUMMARY_SHEET", "૧૬. GST રિટર્ન સમરી (B2B/B2C)"),
         ("SMART_DESK_GROWTH", "૧૭. માસિક & વાર્ષિક ગ્રોથ (YoY)"),
-        ("GUJARATI_CONFIG", "૧૮. માસ્ટર સેટિંગ & ટેલી લેજર")
+        ("GUJARATI_CONFIG", "૧૮. માસ્ટર સેટિંગ & પ્રોફેશનલ લેજર")
     ]
     active_sheets_list = list(shop_prof.get("active_sheets") or [k for k, _ in all_sheet_defs])
     if "SMART_TERMINAL" not in active_sheets_list:
@@ -633,7 +633,7 @@ def root_view(
         table.live-grid th {{ background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:6px; font-weight:700; }}
         table.live-grid td {{ border:1px solid #e2e8f0; padding:5px 6px; text-align:center; color:#1e293b; }}
         table.live-grid tr:nth-child(even) {{ background:#f8fafc; }}
-        /* ટેલી સ્ટાઇલ Accept? [Yes (Y) / No (N)] બોક્સ */
+        /* સ્માર્ટ માસ્ટર Accept? [Yes (Y) / No (N)] બોક્સ */
         .tally-accept-overlay {{ display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); backdrop-filter:blur(3px); z-index:99999; align-items:center; justify-content:center; }}
         .tally-accept-card {{ width:370px; background:#0f172a; border:2px solid #38bdf8; border-radius:10px; box-shadow:0 15px 35px rgba(0,0,0,0.5); color:white; text-align:center; padding:20px 24px; }}
 
@@ -696,10 +696,12 @@ def root_view(
 
         {inter_galla_global_alert_html if (is_mgmt_role and sheet == 'SMART_TERMINAL' and mode in ('F2', 'F1', '') and not request.cookies.get('dismiss_vendor_alert_' + str(datetime.date.today()))) else ''}
         {msg_html}
-        {sheet_content}
+        <div id="counter_workspace" style="scroll-margin-top:0px;">
+            {sheet_content}
+        </div>
     </div>
 
-    <!-- ⚠️ ટેલી સ્ટાઇલ [ Accept? Yes (Y) / No (N) ] પોપ-અપ બોક્સ (નિયમ ૦.૧) -->
+    <!-- ⚠️ સ્માર્ટ ફાઇનલ કન્ફર્મેશન [ Accept? Yes (Y) / No (N) ] પોપ-અપ બોક્સ (નિયમ ૦.૧) -->
     <div class="tally-accept-overlay" id="tally_accept_modal">
         <div class="tally-accept-card">
             <div style="font-size:18px; font-weight:800; color:#fde047; margin-bottom:8px;">Accept ?</div>
@@ -2225,5 +2227,19 @@ function triggerGoogleReviewBooster(custName, custMob, modelName) {{
 }}
 
 </script>
-    </body></html>"""
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {{
+            var isCounter = {json.dumps(sheet == "SMART_TERMINAL" and bool(mode))};
+            var isSheet = {json.dumps(sheet != "SMART_TERMINAL")};
+            if (isCounter || isSheet) {{
+                var el = document.getElementById('counter_workspace');
+                if (el) {{
+                    setTimeout(function() {{
+                        el.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+                    }}, 100);
+                }}
+            }}
+        }});
+</script>
+</body></html>"""
     return HTMLResponse(content=full_html)
