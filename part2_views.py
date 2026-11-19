@@ -283,58 +283,211 @@ def root_view(
         STORE_CFG["last_active_url"] = "/?sheet=GATEWAY"
         STORE_CFG["last_active_sheet"] = "GATEWAY"
         STORE_CFG["last_active_mode"] = ""
-        sheet_content = """
-        <div style="padding:15px; max-width:1150px; margin:0 auto; font-family:sans-serif;">
-            <div style="background:#0f172a; color:#fde047; padding:12px 18px; border-radius:8px; border:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
-                <div>
-                    <h2 style="margin:0; font-size:17px; color:#38bdf8;">🏛️ ગેટવે ઓફ માસ્ટર ERP (Gateway of Master ERP)</h2>
-                    <div style="font-size:12px; color:#cbd5e1; margin-top:3px;">નીચેનામાંથી કોઈપણ કાઉન્ટર પસંદ કરો અથવા કીબોર્ડ પરથી <b>[F1]</b> થી <b>[F8]</b> દબાવો:</div>
-                </div>
-                <div style="text-align:right;">
-                    <span style="background:#16a34a; color:white; padding:4px 10px; border-radius:4px; font-weight:800; font-size:11px;">🟢 લાઈવ સિસ્ટમ સક્રિય</span>
-                </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-bottom:18px;">
-                <a href="/?sheet=SMART_TERMINAL&mode=F1" style="background:#15803d; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #86efac;">
-                    <div style="font-size:16px; font-weight:900;">📥 [F1] ખરીદી ડેસ્ક</div>
-                    <div style="font-size:11.5px; color:#dcfce7;">નવો સ્ટોક, ટીવી/એસી, ડાયરેક્ટ એક્સચેન્જ, એસેસરીઝ ખરીદી (૧૫ ખાનાં)</div>
-                </a>
-                <a href="/?sheet=SMART_TERMINAL&mode=F2" style="background:#0f2043; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #38bdf8;">
-                    <div style="font-size:16px; font-weight:900;">⚡ [F2] વેચાણ સેટલમેન્ટ</div>
-                    <div style="font-size:11.5px; color:#bae6fd;">રોકડ બિલ, ઉધાર બિલ, ફાઇનાન્સ DO & પેમેન્ટ સ્પ્લિટ (૨૨ ખાનાં)</div>
-                </a>
-                <a href="/?sheet=SMART_TERMINAL&mode=F3" style="background:#4c1d95; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #c084fc;">
-                    <div style="font-size:16px; font-weight:900;">📋 [F3] ઓલ-ઇન-વન લેજર & ખર્ચા</div>
-                    <div style="font-size:11.5px; color:#f3e8ff;">પેમેન્ટ રિસીવ (ગ્રાહક બાકી), પેમેન્ટ આઉટ, દૈનિક સ્ટોર ખર્ચા (૧૫ હેડિંગ)</div>
-                </a>
-                <a href="/?sheet=SMART_TERMINAL&mode=F4" style="background:#0284c7; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #7dd3fc;">
-                    <div style="font-size:16px; font-weight:900;">🏦 [F4] બેંક ડિપોઝિટ & વિડ્રોઅલ</div>
-                    <div style="font-size:11.5px; color:#e0f2fe;">બેંક જમા/ઉપાડ, ઓનલાઈન ટ્રાન્સફર, ૪-ગલ્લા ઓટો રિકન્સિલિએશન</div>
-                </a>
-                <a href="/?sheet=SMART_TERMINAL&mode=F5" style="background:#991b1b; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #fca5a5;">
-                    <div style="font-size:16px; font-weight:900;">🔄 [F5] બાય-બેક & રિપેરિંગ</div>
-                    <div style="font-size:11.5px; color:#fee2e2;">૪ ભાગ ગ્રીડ: ખરીદી, રિપેરિંગ પડતર, સીધું વેચાણ, રિટર્ન & રિફંડ</div>
-                </a>
-                <a href="/?sheet=SMART_TERMINAL&mode=F6" style="background:#b45309; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #fcd34d;">
-                    <div style="font-size:16px; font-weight:900;">🔀 [F6] ૪-ગલ્લા કેશ ટ્રાન્સફર</div>
-                    <div style="font-size:11.5px; color:#fef3c7;">ગલ્લા ૧, ૨, ૩, ૪ વચ્ચે આંતરિક રોકડ ફેરબદલી & ઓડિટ લોગ</div>
-                </a>
-                <a href="/?sheet=SMART_TERMINAL&mode=F7" style="background:#1e3a8a; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #93c5fd;">
-                    <div style="font-size:16px; font-weight:900;">💎 [F7] એક્સ્ટ્રા પ્રોફિટ & રિપેરિંગ</div>
-                    <div style="font-size:11.5px; color:#dbeafe;">ડાયરેક્ટ નફો (ગલ્લો ૪) + કારીગર સ્પ્લિટ & ગ્રાહક રિપેરિંગ</div>
-                </a>
-                <a href="/?sheet=SMART_TERMINAL&mode=F8" style="background:#0f766e; color:white; padding:16px; border-radius:8px; text-decoration:none; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); border:1px solid #5eead4;">
-                    <div style="font-size:16px; font-weight:900;">⚖️ [F8] ૪-ગલ્લા દૈનિક ઓડિટ</div>
-                    <div style="font-size:11.5px; color:#ccfbf1;">સાંજની ફિઝિકલ રોકડ ગણતરી, તફાવત સેટલમેન્ટ & દૈનિક રોજમેળ</div>
-                </a>
-            </div>
-
-            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:14px; text-align:center; color:#64748b; font-size:12px;">
-                💡 <b>કીબોર્ડ સહાય:</b> કોઈપણ કાઉન્ટરમાં કામ કરતી વખતે કીબોર્ડ પર <b>Esc</b> કી દબાવવાથી આપ તરત જ આ મુખ્ય ગેટવે સ્ક્રીન પર પાછા આવી શકશો.
+        g_balances = {
+            "bank": bank_cash,
+            "acc": acc_dcash,
+            "rech": recharge_cash,
+            "extra": extra_cash,
+            "gift": gift_cash,
+            "do": pending_do_count,
+            "bill": pending_apx_count
+        }
+        owner_name = STORE_CFG.get("owner_name", "જયમીનભાઈ પટેલ")
+        shop_id = active_sid
+        sheet_content = f"""
+<div style="padding:12px; max-width:1440px; margin:0 auto; font-family:'Noto Sans Gujarati', 'Segoe UI', sans-serif; box-sizing:border-box;">
+    <!-- 🏛️ ટોપ સિંગલ ગેટવે ટાઈટલ બાર -->
+    <div style="background:linear-gradient(135deg, #0b1528, #1e293b); color:white; padding:10px 16px; border-radius:8px; border:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; box-shadow:0 4px 15px rgba(0,0,0,0.3); flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:22px;">🏛️</span>
+            <div>
+                <h2 style="margin:0; font-size:16px; color:#fde047; font-weight:900;" id="gw_title_shop">🏪 {store_title}</h2>
+                <div style="font-size:11.5px; color:#cbd5e1;" id="gw_sub_owner">ઓનર: <b>{owner_name}</b> | Shop ID: <b>{shop_id}</b> | 🟢 લાઈવ સિસ્ટમ સક્રિય</div>
             </div>
         </div>
-        """
+        <div style="display:flex; align-items:center; gap:6px;">
+            <button type="button" onclick="document.getElementById('stock_import_file').click()" style="background:#7c3aed; color:white; border:1px solid #c084fc; padding:5px 12px; border-radius:5px; font-weight:bold; font-size:11px; cursor:pointer;">🤖 Gemini All-in-One AI</button>
+            <a href="/undo-last" onclick="return confirm('શું તમે છેલ્લો વ્યવહાર રદ કરવા માંગો છો?');" style="background:#dc2626; color:white; border:1px solid #fca5a5; padding:5px 12px; border-radius:5px; font-weight:bold; font-size:11px; text-decoration:none; display:inline-block;">↩️ છેલ્લો વ્યવહાર રદ</a>
+            <a href="/logout" style="background:#334155; color:#cbd5e1; border:1px solid #64748b; padding:5px 10px; border-radius:5px; font-size:11px; text-decoration:none; display:inline-block;">🔒 લૉગ આઉટ (Esc)</a>
+        </div>
+    </div>
+
+    <!-- ૨-વિભાગીય ટેલી પ્રાઈમ લેઆઉટ (2 Columns Grid) -->
+    <div style="display:grid; grid-template-columns:310px 1fr; gap:14px; align-items:start;">
+        <!-- ======================================================== -->
+        <!-- ડાબી બાજુ (35%): ૪-ગલ્લા કેશ બેલેન્સ + માસ્ટર ટૂલ્સ -->
+        <!-- ======================================================== -->
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <!-- ૪-ગલ્લા કાર્ડ્સ (સિક્યોરિટી અને પ્રાઇવસી સાથે) -->
+            <div id="gw_galla_box" style="background:#0f172a; border:2px solid #0284c7; border-radius:8px; padding:12px; color:white; box-shadow:0 4px 12px rgba(0,0,0,0.25);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:6px;">
+                    <b style="color:#38bdf8; font-size:13px;">💰 ૪-ગલ્લા રોકડ સ્થિતિ (Live Cash)</b>
+                    <button type="button" onclick="toggleGallaBalancePrivacy()" id="btn_toggle_privacy" style="background:#1e293b; color:#fde047; border:1px solid #475569; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;" title="સેલ્સમેનથી રોકડ બેલેન્સ છુપાવો / બતાવો">👁️ છુપાવો</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div style="background:#15803d; padding:8px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12px; font-weight:bold;">૧. બેંક કેશ (ગલ્લો ૧):</span>
+                        <b style="font-size:13.5px; color:#fef08a;" class="galla-val" id="gw_val_g1">₹{bank_cash:,.0f}</b>
+                    </div>
+                    <div style="background:#0284c7; padding:8px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12px; font-weight:bold;">૨. એક્સેસરીઝ કેશ (ગલ્લો ૨):</span>
+                        <b style="font-size:13.5px; color:#fef08a;" class="galla-val" id="gw_val_g2">₹{acc_dcash:,.0f}</b>
+                    </div>
+                    <div style="background:#7c3aed; padding:8px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12px; font-weight:bold;">૩. રિચાર્જ કેશ (ગલ્લો ૩):</span>
+                        <b style="font-size:13.5px; color:#fef08a;" class="galla-val" id="gw_val_g3">₹{recharge_cash:,.0f}</b>
+                    </div>
+                    <div style="background:#b45309; padding:8px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12px; font-weight:bold;">૪. એક્સ્ટ્રા કેશ (ગલ્લો ૪):</span>
+                        <b style="font-size:13.5px; color:#fef08a;" class="galla-val" id="gw_val_g4">₹{extra_cash:,.0f}</b>
+                    </div>
+                    <div style="background:#1e293b; padding:6px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #475569;">
+                        <span style="font-size:11px; color:#cbd5e1;">ગિફ્ટ (આજે આપેલી):</span>
+                        <b style="font-size:12px; color:#fde047;" class="galla-val" id="gw_val_gift">₹{gift_cash:,.0f}</b>
+                    </div>
+                    <div style="background:#1e293b; padding:6px 10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #475569;">
+                        <span style="font-size:11px; color:#cbd5e1;">પેન્ડિંગ DO | બિલ:</span>
+                        <b style="font-size:12px; color:#38bdf8;" id="gw_val_do_bill">DO: {pending_do_count} | બિલ: {pending_apx_count}</b>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ૨ મુખ્ય એક્શન બટનો -->
+            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+                <b style="color:#0f172a; font-size:12px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">⚡ સ્માર્ટ ઓટોમેશન ટૂલ્સ:</b>
+                <button type="button" onclick="document.getElementById('stock_import_file').click()" style="background:linear-gradient(135deg, #0284c7, #0369a1); color:white; border:none; padding:10px 14px; border-radius:6px; font-weight:bold; font-size:12px; cursor:pointer; text-align:left; display:flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
+                    <span style="font-size:20px;">🤖</span>
+                    <div>
+                        <div style="font-size:12px; font-weight:bold;">Google Gemini All-in-One AI</div>
+                        <div style="font-size:10px; color:#bae6fd;">ખરીદી, DO, સ્કીમ, એક્સેલ, વર્ડ, ફોટો સ્કેન</div>
+                    </div>
+                </button>
+                <a href="/undo-last" onclick="return confirm('શું તમે છેલ્લો વ્યવહાર રદ કરવા માંગો છો?');" style="background:#dc2626; color:white; border:none; padding:10px 14px; border-radius:6px; font-weight:bold; font-size:12px; text-decoration:none; display:flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgba(220,38,38,0.3);">
+                    <span style="font-size:20px;">↩️</span>
+                    <div>
+                        <div style="font-size:12px; font-weight:bold;">છેલ્લો વ્યવહાર રદ (Undo)</div>
+                        <div style="font-size:10px; color:#fecaca;">માસ્ટર પિન સુરક્ષિત - રોકડ & સ્ટોક રિવર્સ</div>
+                    </div>
+                </a>
+                <div style="display:flex; gap:6px;">
+                    <a href="/mobile-scan" target="_blank" style="flex:1; background:#059669; color:white; padding:8px 6px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:11px; text-align:center;">📷 મોબાઇલ સ્કેન</a>
+                    <a href="/eod-summary-report" style="flex:1; background:#2563eb; color:white; padding:8px 6px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:11px; text-align:center;">💬 રોજમેળ PDF</a>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <a href="https://anydesk.com" target="_blank" style="flex:1; background:#475569; color:white; border:none; padding:6px; border-radius:4px; font-size:10.5px; font-weight:bold; text-align:center; text-decoration:none;">🌐 AnyDesk મદદ</a>
+                    <a href="/download-apk" style="flex:1; background:#0f766e; color:white; padding:6px; border-radius:4px; text-decoration:none; font-size:10.5px; font-weight:bold; text-align:center;">📱 APK ડાઉનલોડ</a>
+                </div>
+                <div style="display:flex; gap:6px; border-top:1px solid #e2e8f0; padding-top:6px; margin-top:2px;">
+                    <a href="/clear-garbage" onclick="return confirm('કચરો ડેટા સાફ કરવો છે?');" style="flex:1; background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; text-align:center; text-decoration:none;">🧹 કચરો ડેટા સાફ</a>
+                    <a href="/fill-sample" onclick="return confirm('સેમ્પલ ડેટા ભરવો છે?');" style="flex:1; background:#f0fdf4; color:#15803d; border:1px solid #86efac; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; text-align:center; text-decoration:none;">📋 સેમ્પલ ડેટા ભરો</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- જમણી બાજુ (65%): મુખ્ય કાઉન્ટર્સ (F1-F8) + ૧૭ ક્રમબદ્ધ શીટ્સ -->
+        <!-- ======================================================== -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+            <!-- સેક્શન ૧: મુખ્ય કાઉન્ટર્સ (Transactions - F1 થી F8) -->
+            <div style="background:#0f172a; border:2px solid #fde047; border-radius:8px; padding:12px; box-shadow:0 4px 15px rgba(0,0,0,0.25);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:6px;">
+                    <b style="color:#fde047; font-size:13px;">⚡ મુખ્ય કાઉન્ટર્સ (Counter Transactions - કીબોર્ડ [F1] થી [F8])</b>
+                    <span style="font-size:11px; color:#94a3b8;">ક્લિક કરો અથવા F1-F8 કી દબાવો</span>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:8px;">
+                    <a href="/?sheet=SMART_TERMINAL&mode=F1" style="background:#15803d; color:white; padding:12px 10px; border-radius:6px; text-decoration:none; display:flex; flex-direction:column; gap:4px; border:1px solid #86efac;">
+                        <div style="font-size:14px; font-weight:900;">📥 [F1] ખરીદી ડેસ્ક</div>
+                        <div style="font-size:11px; color:#dcfce7;">નવો સ્ટોક, ટીપી/બેસો, એક્સેન્જ, એસેસરીઝ (૧૫ ખાનાં)</div>
+                    </a>
+                    <a href="/?sheet=SMART_TERMINAL&mode=F2" style="background:#0f2043; color:white; padding:12px 10px; border-radius:6px; text-decoration:none; display:flex; flex-direction:column; gap:4px; border:1px solid #93c5fd;">
+                        <div style="font-size:14px; font-weight:900;">⚡ [F2] વેચાણ સેટલમેન્ટ</div>
+                        <div style="font-size:11px; color:#bfdbfe;">રોકડ બિલ, ઉધાર બિલ, ફાઇનાન્સ DO & પેમેન્ટ સ્પ્લિટ</div>
+                    </a>
+                    <a href="/?sheet=SMART_TERMINAL&mode=F3" style="background:#4c1d95; color:white; padding:12px 10px; border-radius:6px; text-decoration:none; display:flex; flex-direction:column; gap:4px; border:1px solid #c084fc;">
+                        <div style="font-size:14px; font-weight:900;">📒 [F3] ઓલ-ઇન-વન લેજર & ખર્ચા</div>
+                        <div style="font-size:11px; color:#e9d5ff;">પેમેન્ટ રિસીવ્ડ, પેમેન્ટ આઉટ, દૈનિક ખર્ચ (૧૫ હેડિંગ)</div>
+                    </a>
+                    <a href="/?sheet=SMART_TERMINAL&mode=F4" style="background:#0369a1; color:white; padding:12px 10px; border-radius:6px; text-decoration:none; display:flex; flex-direction:column; gap:4px; border:1px solid #7dd3fc;">
+                        <div style="font-size:14px; font-weight:900;">🏦 [F4] બેંક ડિપોઝિટ & વિડ્રોઅલ</div>
+                        <div style="font-size:11px; color:#bae6fd;">બેંક જમા/ઉપાડ, ઓનલાઇન ટ્રાન્સફર, ૪-ગલ્લા ઓટો રિકન્સિલિએશન</div>
+                    </a>
+                    <a href="/?sheet=SMART_TERMINAL&mode=F5" style="background:#991b1b; color:white; padding:12px 10px; border-radius:6px; text-decoration:none; display:flex; flex-direction:column; gap:4px; border:1px solid #fca5a5;">
+                        <div style="font-size:14px; font-weight:900;">🔄 [F5] બાય-બેક & રિપેરિંગ</div>
+                        <div style="font-size:11px; color:#fecaca;">૪ ભાગ ગ્રીડ: ખરીદી, રિપેરિંગ પડતર, સીધું વેચાણ, રિટર્ન</div>
+                    </a>
+                    <a href="/?sheet=SMART_TERMINAL&mode=F6" style="background:#b45309; color:white; padding:12px 10px; border-radius:6px; text-decoration:none; display:flex; flex-direction:column; gap:4px; border:1px solid #fde68a;">
+                        <div style="font-size:14px; font-weight:900;">🔀 [F6] ૪-ગલ્લા કેશ ટ્રાન્સફર</div>
+                        <div style="font-size:11px; color:#fef08a;">ગલ્લા ૧, ૨, ૩, ૪ વચ્ચે આંતરિક રોકડ ફેરબદલી & ઓડિટ</div>
+                    </a>
+                    <a href="/?sheet=SMART_TERMINAL&mode=F7" style="background:#1e3a8a; color:white; padding:12px 10px; border-radius:6px; text-decoration:none; display:flex; flex-direction:column; gap:4px; border:1px solid #93c5fd;">
+                        <div style="font-size:14px; font-weight:900;">💎 [F7] એક્સ્ટ્રા પ્રોફિટ & રિપેરિંગ</div>
+                        <div style="font-size:11px; color:#bfdbfe;">ડાયરેક્ટ નફો (ગલ્લો ૪) + કારીગર સ્પ્લિટ & ગ્રાહક રિપેરિંગ</div>
+                    </a>
+                    <a href="/?sheet=SMART_TERMINAL&mode=F8" style="background:#0f766e; color:white; padding:12px 10px; border-radius:6px; text-decoration:none; display:flex; flex-direction:column; gap:4px; border:1px solid #99f6e4;">
+                        <div style="font-size:14px; font-weight:900;">⚖️ [F8] ૪-ગલ્લા દૈનિક ઓડિટ</div>
+                        <div style="font-size:11px; color:#ccfbf1;">સાંજની ફિઝિકલ રોકડ ગણતરી, તફાવત સેટલમેન્ટ & દૈનિક રોજમેળ</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- સેક્શન ૨: ૧૭ ક્રમબદ્ધ શીટ્સ (૩ વેપારી કેટેગરીઓમાં વિભાજિત) -->
+            <div style="background:#f8fafc; border:2px solid #cbd5e1; border-radius:8px; padding:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px;">
+                    <b style="color:#0f172a; font-size:13px;">📑 ૧૭ બિઝનેસ એકાઉન્ટિંગ શીટ્સ (૩ કેટેગરીમાં ક્રમબદ્ધ ૧, ૨, ૩...)</b>
+                    <span style="font-size:11px; color:#64748b;">કીબોર્ડ Alt+S થી પણ ખોલી શકો છો</span>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px;">
+                    <!-- કેટેગરી ૧ -->
+                    <div style="background:white; border:1.5px solid #0284c7; border-radius:6px; padding:10px;">
+                        <div style="font-size:12px; font-weight:800; color:#0369a1; margin-bottom:8px; border-bottom:1px solid #bae6fd; padding-bottom:4px;">
+                            📦 કેટેગરી ૧: સ્ટોક અને ઇન્વેન્ટરી
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <a href="/?sheet=LIVE_STOCK_VIEW" class="gw-sh-link"><b>૧.</b> લાઈવ મોબાઈલ સ્ટોક રજીસ્ટર</a>
+                            <a href="/?sheet=BUYBACK_STOCK" class="gw-sh-link"><b>૨.</b> જૂના ફોન (બાય-બેક) સ્ટોક</a>
+                            <a href="/?sheet=ACCESSORIES_STOCK" class="gw-sh-link"><b>૩.</b> એક્સેસરીઝ સ્ટોક & D-Cash</a>
+                            <a href="/?sheet=BARCODE_AUDIT" class="gw-sh-link"><b>૪.</b> ૪-કવર બારકોડ ઓડિટ</a>
+                            <a href="/?sheet=DEAD_STOCK_VIEW" class="gw-sh-link"><b>૫.</b> ૬૦+ દિવસ જૂનો ડેડ સ્ટોક</a>
+                        </div>
+                    </div>
+                    <!-- કેટેગરી ૨ -->
+                    <div style="background:white; border:1.5px solid #7c3aed; border-radius:6px; padding:10px;">
+                        <div style="font-size:12px; font-weight:800; color:#6d28d9; margin-bottom:8px; border-bottom:1px solid #ddd6fe; padding-bottom:4px;">
+                            📒 કેટેગરી ૨: ખાતાવહી, લેજર & ગ્રાહક
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <a href="/?sheet=UNIVERSAL_SEARCH" class="gw-sh-link"><b>૧.</b> ૩૬૦° યુનિવર્સલ સર્ચ</a>
+                            <a href="/?sheet=SALES_DO_REGISTRY" class="gw-sh-link"><b>૨.</b> વેચાણ & DO રજીસ્ટર</a>
+                            <a href="/?sheet=CUSTOMER_CREDIT_LEDGER" class="gw-sh-link"><b>૩.</b> ગ્રાહક બાકી ઉધાર ખાતાવહી</a>
+                            <a href="/?sheet=VENDOR_PURCHASE_LEDGER" class="gw-sh-link"><b>૪.</b> વેપારી ખરીદી ખાતાવહી</a>
+                            <a href="/?sheet=RECHARGE_LAPU_LEDGER" class="gw-sh-link"><b>૫.</b> રિચાર્જ & LAPU બેલેન્સ લેજર</a>
+                        </div>
+                    </div>
+                    <!-- કેટેગરી ૩ -->
+                    <div style="background:white; border:1.5px solid #059669; border-radius:6px; padding:10px;">
+                        <div style="font-size:12px; font-weight:800; color:#047857; margin-bottom:8px; border-bottom:1px solid #a7f3d0; padding-bottom:4px;">
+                            📊 કેટેગરી ૩: દૈનિક રોજમેળ, GST & નફો
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <a href="/?sheet=DAILY_SUMMARY" class="gw-sh-link"><b>૧.</b> દૈનિક રોજમેળ & ચોખ્ખો નફો</a>
+                            <a href="/?sheet=AUDIT_LOG" class="gw-sh-link"><b>૨.</b> ૪-ગલ્લા કેશ ઓડિટ લોગ</a>
+                            <a href="/?sheet=SALESMAN_360_MATRIX" class="gw-sh-link"><b>૩.</b> સેલ્સમેન & બ્રાન્ડ ૩૬૦° મેટ્રિક્સ</a>
+                            <a href="/?sheet=STAFF_ATTENDANCE_SALARY" class="gw-sh-link"><b>૪.</b> સ્ટાફ સેલ્ફી હાજરી & પગાર</a>
+                            <a href="/?sheet=GST_REPORT_B2B_B2C" class="gw-sh-link"><b>૫.</b> GST રિટર્ન સમરી (B2B / 3B)</a>
+                            <a href="/?sheet=BUSINESS_GROWTH_YOY" class="gw-sh-link"><b>૬.</b> માસિક & વાર્ષિક બિઝનેસ ગ્રોથ</a>
+                            <a href="/?sheet=SETTINGS_CUSTOMIZE" class="gw-sh-link"><b>૭.</b> માસ્ટર સેટિંગ્સ & કસ્ટમાઈઝેશન</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px; text-align:center; color:#64748b; font-size:11.5px;">
+                💡 <b>ટેલી પ્રાઈમ કીબોર્ડ શોર્ટકટ:</b> કોઈપણ કાઉન્ટરમાં કામ કરતી વખતે કીબોર્ડ પર <b>Esc</b> કી દબાવવાથી આપ તરત જ પાછલા પેજ પર કે આ મુખ્ય ગેટવે સ્ક્રીન પર પાછા આવી શકશો. તમારો ભરેલો ફોર્મ ડેટા આપોઆપ સુરક્ષિત રહેશે.
+            </div>
+        </div>
+    </div>
+</div>
+"""
     elif sheet == "SMART_TERMINAL":
         is_in_counter = True
         sheet_content = part2_b_counters.render_smart_terminal(
@@ -718,16 +871,23 @@ def root_view(
             .btn-wrap {{ margin-left: 0 !important; }}
             table.live-grid {{ display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }}
         }}
+    
+        /* Tally Prime Full-Screen Viewport */
+        .counter-promo-banner, .f-counters-grid, .mode-banner { display: none !important; }
+        .b-card { text-decoration: none !important; }
+        .gw-sh-link { display:block; padding:5px 8px; border-radius:4px; text-decoration:none; color:#1e293b; font-size:12px; margin-bottom:2px; transition:background 0.15s; }
+        .gw-sh-link:hover { background:#f1f5f9; color:#0284c7; }
+
     </style>
     </head>
     <body>
     <div class="container">
-        {user_top_bar_html}
+        {'' if is_in_counter else user_top_bar_html}
 
         <!-- 🏛️ મુખ્ય ગેટવે ડેશબોર્ડ હેડર (કાઉન્ટરમાં હોઈએ ત્યારે 100% ફૂલ સ્ક્રીન માટે હાઇડ થઈ જશે) -->
         <div id="main_gateway_header" style="display:{'none' if is_in_counter else 'block'};">
             <div class="main-header">{store_title} - MASTER ERP TERMINAL</div>
-            <div class="sub-bar">{license_display} | <b style="color:#fde047;">📌 વર્ઝન: {STORE_CFG.get('ota_version_id', '2026.11.12.001') if not str(STORE_CFG.get('ota_version_id','')).startswith('v4') else '2026.11.12.001'}</b> | 90-Day FIFO બેકઅપ + લાઈવ ક્લાઉડ સિંક સક્રિય</div>
+            <div class="sub-bar">{license_display} | <b style="color:#fde047;">📌 વર્ઝન: {STORE_CFG.get('ota_version_id', '2026.11.19_FINAL') if not str(STORE_CFG.get('ota_version_id','')).startswith('v4') else '2026.11.19_FINAL'}</b> | 90-Day FIFO બેકઅપ + લાઈવ ક્લાઉડ સિંક સક્રિય</div>
             {sheets_bar_html}
             {badges_grid_html}
 
@@ -758,7 +918,8 @@ def root_view(
         <!-- 🚀 સુપર કોમ્પેક્ટ સ્માર્ટ ટૂલબાર (ફૂલ સ્ક્રીન ડિસ્પ્લે માટે - માત્ર 35px ઊંચાઈ) -->
         <div id="sleek_counter_topbar" style="display:{'flex' if is_in_counter else 'none'}; align-items:center; justify-content:space-between; background:#0b1528; padding:5px 10px; border-bottom:2px solid #38bdf8; border-top:1px solid #334155; margin-bottom:4px; gap:6px; flex-wrap:wrap;">
             <div style="display:flex; align-items:center; gap:6px;">
-                <a href="/?sheet=GATEWAY" style="background:#eab308; color:#0f172a; padding:4px 10px; border-radius:4px; font-weight:900; font-size:11.5px; text-decoration:none; border:1px solid #fef08a;" title="મુખ્ય ગેટવે પર પાછા જાઓ (Esc)">⬅️ ગેટવે (Esc)</a>
+                <a href="/?sheet=GATEWAY" style="background:#eab308; color:#0f172a; padding:4px 10px; border-radius:4px; font-weight:900; font-size:11.5px; text-decoration:none; border:1px solid #fef08a;" title="પાછલા પેજ પર જાઓ (Esc)">⬅️ પાછા (Esc)</a>
+                <a href="/?sheet=GATEWAY" style="background:#0284c7; color:white; padding:4px 10px; border-radius:4px; font-weight:900; font-size:11.5px; text-decoration:none; border:1px solid #38bdf8;" title="મુખ્ય ગેટવે હોમસ્ક્રીન પર જાઓ">🏛️ ગેટવે (Home)</a>
                 <span style="color:#38bdf8; font-weight:800; font-size:12px;">🏪 {store_title}</span>
                 <span style="background:#1e293b; color:#fde047; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px; border:1px solid #475569;">
                     {f'કાઉન્ટર: [{mode}]' if mode else f'શીટ: {sheet}'}
@@ -1628,7 +1789,7 @@ def root_view(
             var subEl = document.getElementById('f1_tx') || document.getElementById('f2_bill_type') || document.getElementById('f3_master_mode') || document.getElementById('f5_part_sel') || document.getElementById('f7_rep_submode');
             return {{
                 shop_id: "{shop_prof.get('shop_id', 'DEVANSHI')}",
-                active_version: "{STORE_CFG.get('applied_ota_version') or STORE_CFG.get('ota_version_id', '2026.11.12.001')}",
+                active_version: "{STORE_CFG.get('applied_ota_version') or STORE_CFG.get('ota_version_id', '2026.11.19_FINAL')}",
                 active_sheet: "{sheet}",
                 active_mode: "{mode}",
                 active_subpart: subEl ? subEl.value : "",
