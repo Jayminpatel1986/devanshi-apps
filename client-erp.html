@@ -3670,14 +3670,15 @@ function handleDynamicMopGalla(el) {
 
     // In F1 Purchase
     var f1GallaWrap = document.getElementById('f1_galla_wrap');
-    if (f1GallaWrap && (el.id === 'f1_pay_mode' || el.name === 'pay_mode')) {
+    if (f1GallaWrap && (el.id === 'f1_pay_mode' || el.name === 'pay_mode' || el.id === 'f1_mop')) {
         f1GallaWrap.style.display = isCash ? 'flex' : 'none';
         return;
     }
-    // In F2 Sales
+    // In F2 Sales - STRICT ID CHECK so other counters do NOT toggle F2!
     var f2GallaWrap = document.getElementById('f2_cash_galla_row');
-    if (f2GallaWrap) {
+    if (f2GallaWrap && (el.id === 'f2_mop' || el.name === 'mop' || el.id === 'f2_pay_mode')) {
         f2GallaWrap.style.display = isCash ? 'flex' : 'none';
+        return;
     }
     // In F3 Ledger Payout
     var f3poRow = document.getElementById('f3_payout_galla_row');
@@ -3715,9 +3716,9 @@ function handleDynamicMopGalla(el) {
         p4Row.style.display = isCash ? 'flex' : 'none';
         return;
     }
-    // In F7 Repairing
-    var f7GallaWrap = document.getElementById('f7_part_galla_wrap');
-    if (f7GallaWrap && (el.id === 'f7_part_mop' || el.name === 'part_pay_mode')) {
+    // In F7 Service & Repairing
+    var f7GallaWrap = document.getElementById('f7_part_galla_wrap') || document.getElementById('f7_cash_galla_row') || document.getElementById('f7_galla_wrap');
+    if (f7GallaWrap && (el.id === 'f7_part_mop' || el.name === 'part_pay_mode' || el.id === 'f7_mop' || el.id === 'f7_pay_mode' || el.name === 'f7_pay_mode')) {
         f7GallaWrap.style.display = isCash ? 'inline-flex' : 'none';
         return;
     }
