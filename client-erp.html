@@ -1338,12 +1338,7 @@ function initSmartEnterNavigation() {
         window.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a' || e.key === 'M' || e.key === 'm')) {
                 e.preventDefault();
-                var p = prompt('👑 જયમીનભાઈ માસ્ટર એડમિન PIN દાખલ કરો:');
-                if (p === '1986') {
-                    navigateSpa('/super-admin');
-                } else if (p !== null) {
-                    alert('ખોટો PIN!');
-                }
+                window.location.href = 'admin.html';
             }
         });
 
@@ -3127,12 +3122,7 @@ function goBackOrGateway() {
     }
 }
 
-// Rule 223: Single unified Esc listener - NEVER kick out or log out on Esc!
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' || e.keyCode === 27) {
-        goBackUniversalHistory();
-    }
-});
+// [Esc handled exclusively by canonical listener at line 325]
 
 function openAllInOneAiModal() {
     var aiM = document.getElementById('ai_assistant_modal');
