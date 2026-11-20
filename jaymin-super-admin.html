@@ -80,7 +80,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
         document.body.insertBefore(actionBox, document.body.firstChild.nextSibling);
     }
     
-    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var token = localStorage.getItem('dm_admin_token') || prompt('સુરક્ષિત સુપર એડમિન એક્સેસ ટોકન દાખલ કરો:') || '';
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
     
     actionBox.innerHTML = '<div style="font-size:20px; font-weight:bold; color:#38bdf8;">⏳ ૧-ક્લિક WhatsApp એક્શન પ્રોસેસ થઈ રહી છે... (દુકાન: ' + shopId + ')</div>';
@@ -1333,13 +1333,13 @@ async function handleWhatsAppDirectAction(act, shopId) {
     </script>
     
 <script id="admin_approval_system">
-async async function loadPendingAdminSignups(isUserRefresh) {
+async function loadPendingAdminSignups(isUserRefresh) {
     var box = document.getElementById('admin_pending_signups_box');
     if (!box) return;
     
     box.innerHTML = '<div style="text-align:center; padding:15px; color:#38bdf8;">🔄 પેન્ડિંગ સાઇન-અપ અરજીઓ ચેક થઈ રહી છે...</div>';
 
-    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var token = localStorage.getItem('dm_admin_token') || prompt('સુરક્ષિત સુપર એડમિન એક્સેસ ટોકન દાખલ કરો:') || '';
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
     
     var allSignups = [];
@@ -1440,7 +1440,7 @@ async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userI
     var sName = decodeURIComponent(encStoreName);
     if (!confirm('શું તમે આ દુકાન (' + sName + ') ને ૧૦ દિવસનો ફ્રી ડેમો મંજૂર (Approve) કરવા માંગો છો?')) return;
     
-    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var token = localStorage.getItem('dm_admin_token') || prompt('સુરક્ષિત સુપર એડમિન એક્સેસ ટોકન દાખલ કરો:') || '';
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
     
     var now = new Date();
@@ -1505,7 +1505,7 @@ async function rejectShopDemo(shopId, encStoreName, sha) {
     } catch(e) {}
 
     // 2. Delete from GitHub if sha exists
-    var token = ['ghp_q9U96SCY6UKAkmUs', '8Mpn1GMIeQlFiH2l5PDR'].join('');
+    var token = localStorage.getItem('dm_admin_token') || prompt('સુરક્ષિત સુપર એડમિન એક્સેસ ટોકન દાખલ કરો:') || '';
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
     
     try {
