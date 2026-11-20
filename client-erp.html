@@ -243,7 +243,7 @@ function openSampleStore(shopId) {
         var sid = (shopId || 'MANSHVI').toUpperCase();
         window.__ACTIVE_SHOP_ID__ = sid;
         localStorage.setItem('dm_active_shop_id', sid);
-        localStorage.setItem('devanshi_logged_in_standalone', '1');
+        localStorage.setItem('devanshi_logged_in_standalone', '1'); sessionStorage.setItem('devanshi_session_active', '1');
         
         var existingGalla = localStorage.getItem('devanshi_galla_' + sid);
         if (!existingGalla) {
@@ -978,6 +978,212 @@ function triggerApkDownload() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+
+// =========================================================================
+// 💼 UNIVERSAL ACCOUNTING PAYMENT & GALLA ENGINE (F1 TO F8)
+// સાચી વ્યાપારી એકાઉન્ટિંગ ફોર્મ્યુલા, ૪-ગલ્લા ઓટો-અપડેટ & લાઈવ રનિંગ ગ્રીડ
+// =========================================================================
+function initUniversalAccountingPaymentEngine() {
+    // Intercept form submissions across all counter forms
+    document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (!form || !form.closest || !form.closest('.term-form, #spa_erp_sheet_body')) return;
+        
+        // Ignore search/filter forms
+        if (form.getAttribute('action') && form.getAttribute('action').indexOf('search') !== -1) return;
+        
+        e.preventDefault();
+        processUniversalPaymentTransaction(form);
+    }, true);
+}
+
+function processUniversalPaymentTransaction(form) {
+    var sid = window.__ACTIVE_SHOP_ID__ || 'MANSHVI';
+    var mode = window.__ACTIVE_COUNTER_MODE__ || 'F2';
+    
+    // Extract values dynamically from form fields
+    var now = new Date();
+    var timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    var dateStr = now.toLocaleDateString('en-GB');
+    
+    // Bill / Invoice Number
+    var billNo = 'INV/' + now.getFullYear() + '/' + Math.floor(1000 + Math.random() * 9000);
+    var bInput = form.querySelector('input[name="bill_no"], input[name="inv_no"], #f1_inv, #f2_bill_no');
+    if (bInput && bInput.value.trim()) billNo = bInput.value.trim();
+    
+    // Party / Customer / Supplier Name
+    var partyName = 'વોક-ઇન ગ્રાહક';
+    var pInput = form.querySelector('input[name="cust_name"], input[name="party_name"], input[name="supp_name"], #f2_cname, #f1_supp, #f3_party');
+    if (pInput && pInput.value.trim()) partyName = pInput.value.trim();
+    
+    // Model / Description / Heading
+    var itemDetail = 'જનરલ વ્યવહાર';
+    var mInput = form.querySelector('input[name="model_name"], input[name="exp_name"], #f2_mod, #f1_mod, #f5_model');
+    if (mInput && mInput.value.trim()) itemDetail = mInput.value.trim();
+    var selHead = form.querySelector('select[name="exp_heading"], #f3_exp_head');
+    if (selHead && selHead.value) itemDetail = selHead.value;
+    
+    // IMEI / Serial Number
+    var imeiStr = '-';
+    var imeiInput = form.querySelector('input[name="imei"], #f2_imei, #f1_imei, #f5_imei');
+    if (imeiInput && imeiInput.value.trim()) imeiStr = imeiInput.value.trim();
+    
+    // Amount
+    var amount = 0;
+    var amtInput = form.querySelector('input[name="amount"], input[name="cash_rec"], input[name="pay_amount"], input[name="dp_amount"], #f2_cash, #f1_cash, #f3_rec_amt, #f3_po_amt, #f5_bb_cost, #f7_net_prof');
+    if (amtInput && amtInput.value) amount = parseFloat(amtInput.value.replace(/,/g, '')) || 0;
+    
+    // Mode of Payment (MOP)
+    var mopVal = 'રોકડ (Cash)';
+    var mopSelect = form.querySelector('select[name="pay_mode"], select[name="mop"], select[name="rec_mop"], select[name="po_mop"], #f1_pay_mode, #f2_mop, #f3_rec_mop, #f5_p1_mop');
+    if (mopSelect && mopSelect.value) mopVal = mopSelect.value;
+    var isCash = (mopVal.indexOf('રોકડ') !== -1 || mopVal.indexOf('Cash') !== -1 || mopVal === 'CASH');
+    
+    // Target Cash Galla (૧ થી ૪)
+    var gallaNum = 1;
+    var gallaName = 'ગલ્લો ૧ (બેંક કેશ)';
+    var gallaSelect = form.querySelector('select[name="galla"], select[name="galla_id"], select[name="cash_galla"], #f1_galla, #f2_galla, #f3_rec_galla');
+    if (gallaSelect && gallaSelect.value) {
+        var gv = gallaSelect.value.toString();
+        if (gv.indexOf('2') !== -1 || gv.indexOf('acc') !== -1 || gv.indexOf('એક્સેસરીઝ') !== -1) { gallaNum = 2; gallaName = 'ગલ્લો ૨ (એક્સેસરીઝ કેશ)'; }
+        else if (gv.indexOf('3') !== -1 || gv.indexOf('rech') !== -1 || gv.indexOf('રિચાર્જ') !== -1) { gallaNum = 3; gallaName = 'ગલ્લો ૩ (રિચાર્જ કેશ)'; }
+        else if (gv.indexOf('4') !== -1 || gv.indexOf('extra') !== -1 || gv.indexOf('તિજોરી') !== -1 || gv.indexOf('નફો') !== -1) { gallaNum = 4; gallaName = 'ગલ્લો ૪ (એક્સ્ટ્રા કેશ)'; }
+    }
+    
+    // Salesman / Staff
+    var salesmanName = 'જયમીન (એકાઉન્ટન્ટ)';
+    var smInput = form.querySelector('select[name="salesman"], select[name="staff_name"], #f2_sm, #f1_sm, #f3_sm');
+    if (smInput && smInput.value) salesmanName = smInput.value;
+    
+    // -------------------------------------------------------------
+    // ACCOUNTING LOGIC: INWARD VS OUTWARD
+    // -------------------------------------------------------------
+    var txType = 'આવક';
+    var isOutward = false;
+    
+    if (mode === 'F1') {
+        txType = 'ખરીદી (જાવક)';
+        isOutward = true;
+    } else if (mode === 'F2') {
+        txType = 'વેચાણ (આવક)';
+        isOutward = false;
+    } else if (mode === 'F3') {
+        // In F3: check if Payout or Expense
+        var f3Sub = form.querySelector('#f3_master_mode') ? form.querySelector('#f3_master_mode').value : '';
+        if (f3Sub === 'PAY_OUT' || f3Sub === 'STORE_EXPENSE' || form.id.indexOf('payout') !== -1 || form.id.indexOf('expense') !== -1) {
+            txType = 'ખર્ચ/ચુકવણી (જાવક)';
+            isOutward = true;
+        } else {
+            txType = 'બાકી વસુલાત (આવક)';
+            isOutward = false;
+        }
+    } else if (mode === 'F4') {
+        var f4Action = form.querySelector('select[name="f4_type"]') ? form.querySelector('select[name="f4_type"]').value : '';
+        if (f4Action.indexOf('DEPOSIT') !== -1 || f4Action.indexOf('જમા') !== -1) {
+            txType = 'બેંક ડિપોઝિટ (રોકડ જાવક -> બેંક જમા)';
+            isOutward = true;
+        } else {
+            txType = 'બેંક વિડ્રોલ (બેંક જાવક -> રોકડ આવક)';
+            isOutward = false;
+        }
+    } else if (mode === 'F5') {
+        var f5Part = form.querySelector('select[name="f5_part"]') ? form.querySelector('select[name="f5_part"]').value : '';
+        if (f5Part === 'PART3' || form.id.indexOf('resale') !== -1) {
+            txType = 'જૂનો ફોન વેચાણ (આવક)';
+            isOutward = false;
+        } else {
+            txType = 'બાયબેક/રિપેરિંગ (જાવક)';
+            isOutward = true;
+        }
+    } else if (mode === 'F7') {
+        txType = 'એક્સ્ટ્રા નફો (આવક)';
+        isOutward = false;
+        gallaNum = 4;
+        gallaName = 'ગલ્લો ૪ (તિજોરી / નફો)';
+    }
+    
+    // Load existing galla balance
+    var curG = JSON.parse(localStorage.getItem('devanshi_galla_' + sid) || '{"bank":0,"acc":0,"rech":0,"extra":0,"gift":0,"do":0,"bill":0}');
+    
+    // Apply cash arithmetic
+    if (isCash && amount > 0) {
+        var delta = isOutward ? -amount : amount;
+        if (gallaNum === 1) curG.bank = Math.max(0, (curG.bank || 0) + delta);
+        else if (gallaNum === 2) curG.acc = Math.max(0, (curG.acc || 0) + delta);
+        else if (gallaNum === 3) curG.rech = Math.max(0, (curG.rech || 0) + delta);
+        else if (gallaNum === 4) curG.extra = Math.max(0, (curG.extra || 0) + delta);
+    }
+    
+    // Special F5 Part 3 auto-split (Cost to Galla 1, Profit to Galla 4)
+    if (mode === 'F5' && txType.indexOf('જૂનો ફોન વેચાણ') !== -1 && isCash) {
+        var costVal = parseFloat(form.querySelector('input[name="bb_cost"]') ? form.querySelector('input[name="bb_cost"]').value : 0) || 0;
+        var profitVal = Math.max(0, amount - costVal);
+        curG.bank = (curG.bank || 0) + costVal;
+        curG.extra = (curG.extra || 0) + profitVal;
+    }
+    
+    // Save updated gallas
+    localStorage.setItem('devanshi_galla_' + sid, JSON.stringify(curG));
+    localStorage.setItem('dm_galla_' + sid, JSON.stringify(curG));
+    
+    // Update live galla balance display on screen
+    var e1 = document.getElementById('gw_val_g1'); if (e1) e1.innerText = '₹' + Number(curG.bank || 0).toLocaleString('en-IN');
+    var e2 = document.getElementById('gw_val_g2'); if (e2) e2.innerText = '₹' + Number(curG.acc || 0).toLocaleString('en-IN');
+    var e3 = document.getElementById('gw_val_g3'); if (e3) e3.innerText = '₹' + Number(curG.rech || 0).toLocaleString('en-IN');
+    var e4 = document.getElementById('gw_val_g4'); if (e4) e4.innerText = '₹' + Number(curG.extra || 0).toLocaleString('en-IN');
+    
+    // Add transaction to log
+    var txRecord = {
+        time: timeStr,
+        bill_no: billNo,
+        party: partyName,
+        detail: itemDetail,
+        imei: imeiStr,
+        galla: isCash ? gallaName : 'ઓનલાઇન (બેંક)',
+        type: txType,
+        amount: amount,
+        is_outward: isOutward,
+        salesman: salesmanName
+    };
+    
+    var txLogs = JSON.parse(localStorage.getItem('devanshi_tx_log_' + sid) || '[]');
+    txLogs.unshift(txRecord);
+    if (txLogs.length > 200) txLogs.pop();
+    localStorage.setItem('devanshi_tx_log_' + sid, JSON.stringify(txLogs));
+    
+    // Dynamically insert new row into live running grid table
+    var gridTable = document.querySelector('.live-grid');
+    if (gridTable) {
+        var rowHtml = '<tr style="background:' + (isOutward ? '#fef2f2' : '#f0fdf4') + '; font-weight:600;">' +
+            '<td>' + timeStr + '</td>' +
+            '<td><b>' + billNo + '</b></td>' +
+            '<td>' + partyName + '</td>' +
+            '<td>' + itemDetail + '</td>' +
+            '<td>' + imeiStr + '</td>' +
+            '<td><span style="background:' + (isCash ? '#1e293b' : '#0284c7') + '; color:white; padding:2px 6px; border-radius:4px; font-size:10px;">' + (isCash ? gallaName : 'બેંક ટ્રાન્સફર') + '</span></td>' +
+            '<td style="color:' + (isOutward ? '#dc2626' : '#15803d') + ';">' + (isOutward ? '▼ ' : '▲ ') + txType + '</td>' +
+            '<td style="color:' + (isOutward ? '#dc2626' : '#15803d') + '; font-weight:800;">₹' + amount.toLocaleString('en-IN') + '</td>' +
+            '<td>-</td>' +
+            '<td>₹0</td>' +
+            '<td>' + salesmanName + '</td>' +
+            '<td><button type="button" onclick="alert(\'બિલ પ્રિન્ટ થઈ રહ્યું છે: ' + billNo + '\')" style="background:#0284c7; color:white; border:none; padding:2px 8px; border-radius:3px; font-size:10px; cursor:pointer;">🖨️ પ્રિન્ટ</button></td>' +
+            '</tr>';
+        
+        var firstDataRow = gridTable.querySelector('tr:nth-child(2)');
+        if (firstDataRow) {
+            firstDataRow.insertAdjacentHTML('beforebegin', rowHtml);
+        } else {
+            gridTable.insertAdjacentHTML('beforeend', rowHtml);
+        }
+    }
+    
+    // Show instant success banner
+    showSpaBannerMsg('✅ ' + mode + ' વ્યવહાર સેવ થયો! રકમ: ₹' + amount.toLocaleString('en-IN') + ' (' + (isCash ? gallaName : 'ઓનલાઇન બેંક') + ')');
+    
+    // Reset form
+    form.reset();
 }
 
 function initSmartEnterNavigation() {
@@ -3382,25 +3588,27 @@ function navigateSpa(urlStr, optMsg, isBack) {
     window.scrollTo(0, 0);
 }
 
-// Router Initializer
+// Router Initializer: ALWAYS show Login Screen by default on launch!
 window.addEventListener('DOMContentLoaded', function() {
     setupFormDraftAutoSave();
-    
+    initUniversalAccountingPaymentEngine();
+
     var urlParams = new URLSearchParams(window.location.search);
     var actParam = urlParams.get('action');
     var sheetParam = urlParams.get('sheet');
     var modeParam = urlParams.get('mode');
     var subParam = urlParams.get('sub');
 
-    // If explicit action=login or no login session, ALWAYS show Login screen!
-    if (actParam === 'login' || localStorage.getItem('devanshi_logged_in_standalone') !== '1') {
+    // 🔒 નિયમ: જ્યારે પણ યુઝર સોફ્ટવેર ખોલે અથવા ડેસ્કટોપ આઇકોન પર ક્લિક કરે,
+    // ત્યારે સીધું કોઈ દુકાન ન ખુલવી જોઈએ — પ્રથમ ઓરિજિનલ ૪-રોલ લૉગિન સ્ક્રીન જ દેખાવી જોઈએ!
+    if (!sheetParam || actParam === 'login' || sessionStorage.getItem('devanshi_session_active') !== '1') {
         document.getElementById('spa_erp_view').style.display = 'none';
         document.getElementById('spa_aux_view').style.display = 'none';
         document.getElementById('spa_login_view').style.display = 'block';
+        window.scrollTo(0, 0);
         return;
     }
 
-    // Otherwise, user is logged in:
     if (!window.__ACTIVE_SHOP_ID__) {
         window.__ACTIVE_SHOP_ID__ = localStorage.getItem('dm_active_shop_id') || 'MANSHVI';
     }
@@ -3414,10 +3622,7 @@ window.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    var targetUrl = '/?sheet=GATEWAY';
-    if (sheetParam) {
-        targetUrl = '/?sheet=' + sheetParam + (modeParam ? ('&mode=' + modeParam) : '');
-    }
+    var targetUrl = '/?sheet=' + sheetParam + (modeParam ? ('&mode=' + modeParam) : '');
     navigateSpa(targetUrl);
 });
 </script>
