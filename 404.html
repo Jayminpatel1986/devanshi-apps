@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>દેવાંશી મનસ્વી ERP - રીડાયરેક્ટ</title>
+    <script>
+        var path = window.location.pathname;
+        var search = window.location.search || '';
+        if (path.indexOf('mobile-scan') !== -1) {
+            window.location.replace('/devanshi-apps/?sub=mobile-scan');
+        } else if (path.indexOf('eod-summary-report') !== -1) {
+            window.location.replace('/devanshi-apps/?sub=eod-report');
+        } else if (search) {
+            window.location.replace('/devanshi-apps/' + search);
+        } else {
+            window.location.replace('/devanshi-apps/');
+        }
+    </script>
+</head>
+<body style="background:#0b1528; color:white; font-family:'Segoe UI', sans-serif; text-align:center; padding-top:60px;">
+    <h2 style="color:#38bdf8;">🔄 દેવાંશી મનસ્વી ERP લોડ થઈ રહ્યું છે...</h2>
+    <p style="color:#94a3b8;">કૃપા કરીને એક ક્ષણ રાહ જુઓ, આપ મુખ્ય સિસ્ટમ પર પહોંચી રહ્યા છો.</p>
+</body>
+</html>
