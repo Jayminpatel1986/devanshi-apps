@@ -259,13 +259,13 @@ function openSampleStore(shopId) {
         if (auxView) auxView.style.display = 'none';
         if (erpView) erpView.style.display = 'block';
 
-        var defMode = (sid === 'MANSHVI') ? 'F7' : 'F2';
+        // 🔒 સત્તાવાર નિયમ: જ્યારે પણ કોઈપણ સ્ટોર ખુલે (મનસ્વી કે દેવાંશી), હંમેશાં મુખ્ય ગેટવે ડેશબોર્ડ (GATEWAY) જ ખુલશે, ક્યારેય સીધું F7 નહીં!
         if (typeof navigateSpa === 'function') {
-            navigateSpa('/?sheet=SMART_TERMINAL&mode=' + defMode);
+            navigateSpa('/?sheet=GATEWAY');
         } else {
             setTimeout(function() {
                 if (typeof navigateSpa === 'function') {
-                    navigateSpa('/?sheet=SMART_TERMINAL&mode=' + defMode);
+                    navigateSpa('/?sheet=GATEWAY');
                 }
             }, 50);
         }
