@@ -3473,6 +3473,13 @@ function navigateSpa(urlStr, optMsg, isBack) {
         document.getElementById('spa_aux_view').style.display = 'block';
         document.getElementById('spa_aux_body').innerHTML = window.__AUTHENTIC_VIEWS__.REGISTER_STORE;
         fixEmbeddedImages(document.getElementById('spa_aux_body'));
+        try {
+            var rf = document.querySelector('#spa_aux_body form');
+            if (rf) {
+                var apiBase = (window.ERP_API_BASE || DEFAULT_RENDER_URL || 'https://devanshi-mansvi-software.onrender.com').replace(/\/$/, '');
+                rf.action = apiBase + '/register-store-submit';
+            }
+        } catch(e) {}
         window.scrollTo(0, 0);
         return;
     }
