@@ -34,7 +34,7 @@
 <meta name="apple-mobile-web-app-title" content="દેવાંશી ERP">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f2043">
-<title>દેવાંશી મોબાઈલ - MASTER ERP (2026.11.20_FIXED_V5)</title>
+<title>દેવાંશી મોબાઈલ - MASTER ERP (2026.11.21_FIXED_V6)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 
@@ -3435,7 +3435,7 @@ document.addEventListener('click', function(e) {
                 navigateSpa('/store-setup');
             } else if (href.indexOf('/mobile-scan') !== -1) {
                 navigateSpa('/mobile-scan');
-            } else if (href.indexOf('/super-admin') !== -1) {
+            } else if (href.indexOf('jaymin-super-admin.html') !== -1) {
                 window.location.href = 'jaymin-super-admin.html';
             } else {
                 navigateSpa('/?sheet=GATEWAY');
@@ -3497,7 +3497,7 @@ function navigateSpa(urlStr, optMsg, isBack) {
         return;
     }
 
-    if (false && cleanU.startsWith('/super-admin')) { /* Blocked in Client ERP */
+    if (false && cleanU.startsWith('jaymin-super-admin.html')) { /* Blocked in Client ERP */
         document.getElementById('spa_login_view').style.display = 'none';
         document.getElementById('spa_erp_view').style.display = 'none';
         document.getElementById('spa_aux_view').style.display = 'block';

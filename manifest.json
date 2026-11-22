@@ -1,6 +1,6 @@
 {
-  "name": "દેવાંશી મનસ્વી માસ્ટર ERP",
-  "short_name": "દેવાંશી ERP",
+  "name": "\u0aa6\u0ac7\u0ab5\u0abe\u0a82\u0ab6\u0ac0 \u0aae\u0aa8\u0ab8\u0acd\u0ab5\u0ac0 \u0aae\u0abe\u0ab8\u0acd\u0a9f\u0ab0 ERP",
+  "short_name": "\u0aa6\u0ac7\u0ab5\u0abe\u0a82\u0ab6\u0ac0 ERP",
   "description": "3-in-1 Official Mobile & Cloud ERP",
   "start_url": "index.html",
   "display": "standalone",
@@ -8,14 +8,15 @@
   "theme_color": "#091224",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "App_Icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "App_Icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "version": "2026.11.20_FINAL"
 }

@@ -4,7 +4,7 @@
 <script id="erp_cloud_api_router_v2026">
 (function() {
   // Set your live Render URL here once deployed, e.g. 'https://devanshi-mansvi-erp.onrender.com'
-  var DEFAULT_RENDER_URL = localStorage.getItem('erp_cloud_api_base') || '';
+  var DEFAULT_RENDER_URL = localStorage.getItem('erp_cloud_api_base') || 'https://devanshi-mansvi-software.onrender.com';
   window.ERP_API_BASE = window.ERP_API_BASE || DEFAULT_RENDER_URL;
   if (window.fetch && !window.__erpFetchWrapped) {
     window.__erpFetchWrapped = true;
@@ -34,7 +34,7 @@
 <meta name="apple-mobile-web-app-title" content="દેવાંશી ERP">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f2043">
-<title>દેવાંશી મોબાઈલ - MASTER ERP (2026.11.20_FIXED_V5)</title>
+<title>દેવાંશી મોબાઈલ - MASTER ERP (2026.11.21_FIXED_V6)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 
@@ -861,7 +861,7 @@ const GH_TOKEN = localStorage.getItem("dm_github_token") || "";
 
             const bgImages = [window.__DEVANSHI_BG_B64__];
             const loginImages = [window.__DEVANSHI_BG_B64__];
-            var _loginQrData = {"cloud_url": "", "lan_url": window.location.origin + "/login", "best_url": window.location.origin + "/login"};
+            var _loginQrData = {"cloud_url": "https://devanshi-mansvi-software.onrender.com/login", "lan_url": window.location.origin + "/login", "best_url": "https://devanshi-mansvi-software.onrender.com/login"};
             var _loginQrPref = "AUTO";
 
             function renderLoginQrImg(urlStr) {
@@ -1413,7 +1413,7 @@ function initSmartEnterNavigation() {
             }
         });
 
-    var _termQrInfo = {"cloud_url": "", "lan_url": window.location.origin + "/login", "best_url": window.location.origin + "/login"};
+    var _termQrInfo = {"cloud_url": "https://devanshi-mansvi-software.onrender.com/login", "lan_url": window.location.origin + "/login", "best_url": "https://devanshi-mansvi-software.onrender.com/login"};
     function openMobileQrModal() {
         var m = document.getElementById('terminal_qr_modal');
         if(!m) {
@@ -2911,7 +2911,7 @@ function initSmartEnterNavigation() {
             });
         }
 
-        var _adminQrInfo = {"cloud_url": "", "lan_url": "http://127.0.0.1:8000/login", "best_url": "http://127.0.0.1:8000/login", "cloud_base": "", "lan_base": "http://127.0.0.1:8000"};
+        var _adminQrInfo = {"cloud_url": "https://devanshi-mansvi-software.onrender.com/login", "lan_url": "http://127.0.0.1:8000/login", "best_url": "https://devanshi-mansvi-software.onrender.com/login", "cloud_base": "https://devanshi-mansvi-software.onrender.com", "lan_base": "http://127.0.0.1:8000"};
         var _adminQrSelectedMode = "AUTO";
 
         function setQrImgAndInput(targetUrl, labelText) {
@@ -3435,7 +3435,7 @@ document.addEventListener('click', function(e) {
                 navigateSpa('/store-setup');
             } else if (href.indexOf('/mobile-scan') !== -1) {
                 navigateSpa('/mobile-scan');
-            } else if (href.indexOf('/super-admin') !== -1) {
+            } else if (href.indexOf('jaymin-super-admin.html') !== -1) {
                 window.location.href = 'jaymin-super-admin.html';
             } else {
                 navigateSpa('/?sheet=GATEWAY');
@@ -3473,6 +3473,13 @@ function navigateSpa(urlStr, optMsg, isBack) {
         document.getElementById('spa_aux_view').style.display = 'block';
         document.getElementById('spa_aux_body').innerHTML = window.__AUTHENTIC_VIEWS__.REGISTER_STORE;
         fixEmbeddedImages(document.getElementById('spa_aux_body'));
+        try {
+            var rf = document.querySelector('#spa_aux_body form');
+            if (rf) {
+                var apiBase = (window.ERP_API_BASE || DEFAULT_RENDER_URL || 'https://devanshi-mansvi-software.onrender.com').replace(/\/$/, '');
+                rf.action = apiBase + '/register-store-submit';
+            }
+        } catch(e) {}
         window.scrollTo(0, 0);
         return;
     }
@@ -3490,7 +3497,7 @@ function navigateSpa(urlStr, optMsg, isBack) {
         return;
     }
 
-    if (false && cleanU.startsWith('/super-admin')) { /* Blocked in Client ERP */
+    if (false && cleanU.startsWith('jaymin-super-admin.html')) { /* Blocked in Client ERP */
         document.getElementById('spa_login_view').style.display = 'none';
         document.getElementById('spa_erp_view').style.display = 'none';
         document.getElementById('spa_aux_view').style.display = 'block';
