@@ -3730,6 +3730,12 @@ window.addEventListener('DOMContentLoaded', function() {
     var modeParam = urlParams.get('mode');
     var subParam = urlParams.get('sub');
 
+    // 🚀 ૧૦ દિવસ ફ્રી ડેમો સાઇન-અપ ડાયરેક્ટ લિંક હેન્ડલર
+    if (actParam === 'signup' || actParam === 'register' || sheetParam === 'REGISTER_STORE') {
+        navigateSpa('/register-store');
+        return;
+    }
+
     // 🔒 સત્તાવાર નિયમ: જ્યારે પણ યુઝર સોફ્ટવેર ખોલે અથવા ડેસ્કટોપ આઇકોન પર ક્લિક કરે,
     // અથવા લૉગિન એક્શન હોય, અથવા સત્ર નવું હોય — પ્રથમ ઓરિજિનલ ૪-રોલ લૉગિન સ્ક્રીન જ ખુલશે!
     if (!sheetParam || actParam === 'login' || sessionStorage.getItem('devanshi_session_active') !== '1') {
