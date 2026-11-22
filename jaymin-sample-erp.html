@@ -34,7 +34,7 @@
 <meta name="apple-mobile-web-app-title" content="દેવાંશી ERP">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f2043">
-<title>દેવાંશી મોબાઈલ - MASTER ERP (2026.11.22_FIXED_V7_FINAL)</title>
+<title>દેવાંશી મોબાઈલ - MASTER ERP (2026.11.22_FIXED_V8_FINAL)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 
@@ -288,6 +288,10 @@ function doShopLogin() {
         if (foundStore) {
             if (foundStore.license_status === 'PENDING_APPROVAL' || foundStore.status === 'PENDING') {
                 alert('⚠️ આપની દુકાન સાઇન-અપ અરજી જયમીનભાઈના વેરિફિકેશન માટે પેન્ડિંગ છે.\nમંજૂરી મળતાં જ આપનું લૉગિન સક્રિય થશે.');
+                return false;
+            }
+            if (foundStore.license_status === 'LOCKED' || foundStore.status === 'LOCKED' || (foundStore.validity_to && new Date().toISOString().slice(0,10) > foundStore.validity_to && sid !== 'MANSHVI' && sid !== 'DEVANSHI')) {
+                alert('🔒 આપનો ૧૦ દિવસનો ફ્રી ડેમો સમાપ્ત થયેલ છે!\nલાઈસન્સ આગળ વધારવા માટે જયમીનભાઈ પટેલ (9725721215) નો સંપર્ક કરો.');
                 return false;
             }
             if (passVal && foundStore.password && passVal !== foundStore.password && passVal !== '1986') {
@@ -3730,8 +3734,8 @@ window.addEventListener('DOMContentLoaded', function() {
     var modeParam = urlParams.get('mode');
     var subParam = urlParams.get('sub');
 
-    // 🚀 ૧૦ દિવસ ફ્રી ડેમો સાઇન-અપ ડાયરેક્ટ લિંક હેન્ડલર
-    if (actParam === 'signup' || actParam === 'register' || sheetParam === 'REGISTER_STORE') {
+    // 🚀 NEW: Route B - Direct Demo Sign-Up form if action=signup or action=register
+    if (actParam === 'signup' || actParam === 'register') {
         navigateSpa('/register-store');
         return;
     }
@@ -4348,6 +4352,163 @@ document.addEventListener('submit', function(e) {
         );
       }
     });
+  }
+})();
+</script>
+
+
+<script id="erp_v8_ground_level_fixes">
+(function() {
+  var RENDER_BASE = (window.ERP_API_BASE || localStorage.getItem('erp_cloud_api_base') || 'https://devanshi-mansvi-software.onrender.com').replace(/\/$/, '');
+
+  // 1. Dynamic Today's Auto-Date (replaces stuck 2026-11-20, keeps Backdate 100% editable!)
+  function getTodayISO() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+  function syncAutoDates(root) {
+    var today = getTodayISO();
+    (root || document).querySelectorAll('input[type="date"]').forEach(function(inp) {
+      if (inp.dataset.v8DateInit) return;
+      var nm = (inp.name || '').toLowerCase();
+      if (nm === 'from_d' || nm === 'to_d' || nm === 'due_date') return;
+      if (!inp.value || inp.value === '2026-11-20') {
+        inp.value = today;
+      }
+      inp.dataset.v8DateInit = '1';
+    });
+  }
+
+  // 2. Standardize 5 Payment Modes & Partner Pocket Galla Hide across F1-F8
+  var STD_5_MODES = [
+    {v: 'રોકડ (Cash)', t: '૧. રોકડ (Cash)'},
+    {v: 'ઓનલાઈન UPI / QR', t: '૨. ઓનલાઈન UPI / QR'},
+    {v: 'બેંક ટ્રાન્સફર (NEFT/RTGS/IMPS)', t: '૩. બેંક ટ્રાન્સફર (NEFT/RTGS/IMPS)'},
+    {v: 'ચેક (Cheque)', t: '૪. ચેક (Cheque)'},
+    {v: 'ક્રેડિટ / ડેબિટ કાર્ડ', t: '૫. ક્રેડિટ / ડેબિટ કાર્ડ'}
+  ];
+
+  function syncPaymentDropdownsAndPartnerPocket(root) {
+    (root || document).querySelectorAll('select').forEach(function(sel) {
+      var nm = (sel.name || '').toLowerCase();
+      // 2a. Partner Pocket funding_source -> hide Galla row when PARTNER_POCKET is selected!
+      if (nm === 'funding_source') {
+        if (!sel.dataset.v8PocketBound) {
+          sel.dataset.v8PocketBound = '1';
+          var togglePocket = function() {
+            var isPocket = (sel.value || '').toUpperCase().indexOf('POCKET') !== -1;
+            var frm = sel.closest('form');
+            if (!frm) return;
+            var gSel = frm.querySelector('select[name="galla_name"]');
+            if (gSel) {
+              var row = gSel.closest('.f-row') || gSel.parentElement;
+              if (row) row.style.display = isPocket ? 'none' : '';
+            }
+          };
+          sel.addEventListener('change', togglePocket);
+          togglePocket();
+        }
+        return;
+      }
+      // 2b. Payment mode selects (pay_mode, part_pay_mode, rec_pay_mode)
+      if (nm === 'pay_mode' || nm === 'part_pay_mode' || nm === 'rec_pay_mode') {
+        if (!sel.dataset.v8ModeStd) {
+          sel.dataset.v8ModeStd = '1';
+          var existingText = Array.from(sel.options).map(function(o){ return (o.text + ' ' + o.value).toLowerCase(); }).join(' | ');
+          // Add missing Cheque or Card options without removing any existing special options (like Partner Pocket or Baki)
+          if (existingText.indexOf('ચેક') === -1 && existingText.indexOf('cheque') === -1) {
+            var optC = document.createElement('option');
+            optC.value = 'ચેક (Cheque)';
+            optC.text = 'ચેક (Cheque)';
+            sel.appendChild(optC);
+          }
+          if (existingText.indexOf('કાર્ડ') === -1 && existingText.indexOf('card') === -1) {
+            var optK = document.createElement('option');
+            optK.value = 'ક્રેડિટ / ડેબિટ કાર્ડ';
+            optK.text = 'ક્રેડિટ / ડેબિટ કાર્ડ';
+            sel.appendChild(optK);
+          }
+          sel.addEventListener('change', function() {
+            if (window.dmSyncCashBankMode) window.dmSyncCashBankMode(sel);
+          });
+        }
+      }
+    });
+  }
+
+  // 3. Global Growth Edit Functions (fixes dead [Edit 2026] button in Sheet 11)
+  window.editGrowthMonth = function(mn, amt) {
+    var box = document.getElementById('growth_edit_box');
+    if (!box) return;
+    box.style.display = 'block';
+    var yr = document.getElementById('ge_yr'); if (yr) yr.value = '2026';
+    var mInp = document.getElementById('ge_mn'); if (mInp) mInp.value = mn;
+    var aInp = document.getElementById('ge_amt'); if (aInp) { aInp.value = amt || 0; aInp.focus(); }
+  };
+  window.editGrowthMonth27 = function(mn, amt) {
+    var box = document.getElementById('growth_edit_box');
+    if (!box) return;
+    box.style.display = 'block';
+    var yr = document.getElementById('ge_yr'); if (yr) yr.value = '2027';
+    var mInp = document.getElementById('ge_mn'); if (mInp) mInp.value = mn;
+    var aInp = document.getElementById('ge_amt'); if (aInp) { aInp.value = amt || 0; aInp.focus(); }
+  };
+
+  // 4. Route direct backend links on GitHub Pages to Render instead of 404
+  var BACKEND_ONLY_PREFIXES = [
+    '/accessories-part2-hub', '/cloud-backup-upload', '/cloud-backup-download',
+    '/police-verification-form', '/reset-barcode-audit', '/download-file/',
+    '/delete-category', '/delete-designation', '/delete-user-login'
+  ];
+  document.addEventListener('click', function(e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    if (window.location.hostname.indexOf('github.io') !== -1) {
+      for (var i = 0; i < BACKEND_ONLY_PREFIXES.length; i++) {
+        if (href.indexOf(BACKEND_ONLY_PREFIXES[i]) === 0) {
+          e.preventDefault();
+          window.open(RENDER_BASE + href, '_blank');
+          return;
+        }
+      }
+    }
+  }, true);
+
+  // 5. Background Render Cloud Sync when saving any counter form on GitHub Pages
+  document.addEventListener('submit', function(e) {
+    var form = e.target;
+    if (!form || !form.getAttribute) return;
+    var act = form.getAttribute('action') || '';
+    if (!act || act === '/' || act.indexOf('search') !== -1) return;
+    if (act.charAt(0) === '/' && window.location.hostname.indexOf('github.io') !== -1) {
+      try {
+        var fd = new FormData(form);
+        fd.append('active_shop_id', window.__ACTIVE_SHOP_ID__ || 'MANSHVI');
+        fetch(RENDER_BASE + act, { method: 'POST', body: fd, mode: 'no-cors' }).catch(function(){});
+      } catch(err) {}
+    }
+  }, false);
+
+  // Run on load + observe SPA view changes
+  function runAllV8Hooks() {
+    syncAutoDates(document);
+    syncPaymentDropdownsAndPartnerPocket(document);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runAllV8Hooks);
+  } else {
+    runAllV8Hooks();
+  }
+  if (typeof MutationObserver !== 'undefined') {
+    var v8Obs = new MutationObserver(function() {
+      if (window.__v8SyncTimer) clearTimeout(window.__v8SyncTimer);
+      window.__v8SyncTimer = setTimeout(runAllV8Hooks, 150);
+    });
+    v8Obs.observe(document.documentElement, { childList: true, subtree: true });
   }
 })();
 </script>
