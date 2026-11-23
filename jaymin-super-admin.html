@@ -16,7 +16,78 @@
         tr:nth-child(even) { background:#f8fafc; }
         tr:hover { background:#f0f9ff; }
         .ota-shop-card:hover { background:rgba(255,255,255,0.15) !important; border-color:#38bdf8 !important; }
-    </style></head>
+    
+        * { box-sizing: border-box; }
+        html, body { max-width: 100%; overflow-x: hidden; }
+        .table-scroll-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        @media (max-width: 768px) {
+            body { padding: 6px !important; font-size: 13px !important; }
+            .hub-box { padding: 10px 8px !important; border-radius: 8px !important; max-width: 100% !important; }
+            h1, h2, h3 { font-size: 15px !important; line-height: 1.35 !important; }
+            div[style*="display:grid"], div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+            div[style*="display:flex"], form[style*="display:flex"] {
+                flex-wrap: wrap !important;
+                gap: 6px !important;
+            }
+            input, select, textarea, button {
+                max-width: 100% !important;
+                font-size: 13px !important;
+                min-height: 36px;
+            }
+            table { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; font-size: 11.5px !important; }
+            th, td { padding: 5px 6px !important; }
+        }
+    </style>
+    <script id="v9_admin_render_bridge">
+    window.ADMIN_API_BASE = (localStorage.getItem('erp_cloud_api_base') || 'https://devanshi-mansvi-software.onrender.com').replace(/\/+$/, '');
+    window.getAdminSessionPin = function() {
+        return sessionStorage.getItem('dm_admin_session_pin') || '';
+    };
+    // Auto-route all relative fetch('/...') calls to Render when hosted on GitHub Pages or APK file://
+    (function() {
+        var origFetch = window.fetch;
+        window.fetch = function(input, init) {
+            var isCloudOrApk = (window.location.protocol === 'file:' || window.location.hostname.indexOf('github.io') !== -1);
+            if (isCloudOrApk && typeof input === 'string' && input.startsWith('/')) {
+                input = window.ADMIN_API_BASE + input;
+            }
+            return origFetch.call(this, input, init);
+        };
+    })();
+    // Auto-intercept all relative <form action="/..."> submissions on GitHub Pages / APK to prevent 404/405
+    document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (!form || form.tagName !== 'FORM') return;
+        var act = form.getAttribute('action') || '';
+        var isCloudOrApk = (window.location.protocol === 'file:' || window.location.hostname.indexOf('github.io') !== -1);
+        if (isCloudOrApk && act.startsWith('/')) {
+            e.preventDefault();
+            var targetUrl = window.ADMIN_API_BASE + act;
+            var method = (form.getAttribute('method') || 'POST').toUpperCase();
+            var fd = new FormData(form);
+            if (!fd.get('pin') && window.getAdminSessionPin()) {
+                fd.set('pin', window.getAdminSessionPin());
+            }
+            var fetchOpts = (method === 'GET') ? { method: 'GET' } : { method: method, body: fd };
+            if (method === 'GET') {
+                var qs = new URLSearchParams(fd).toString();
+                targetUrl += (targetUrl.indexOf('?') === -1 ? '?' : '&') + qs;
+            }
+            fetch(targetUrl, fetchOpts).then(function(r) {
+                if (r.ok) {
+                    alert('✅ સુપર એડમિન એક્શન Render સર્વર પર સફળતાપૂર્વક પૂર્ણ થયું!');
+                    if (typeof loadPendingAdminSignups === 'function') loadPendingAdminSignups(true);
+                } else {
+                    alert('⚠️ સર્વર પ્રતિસાદ: HTTP ' + r.status + ' — કૃપા કરીને વિગતો અથવા PIN ચકાસો.');
+                }
+            }).catch(function(err) {
+                alert('⚠️ Render સર્વર સાથે કનેક્ટ થઈ શક્યું નથી: ' + err.message);
+            });
+        }
+    }, true);
+    </script></head>
     <body>
 
     <!-- 🚨 નવી પેન્ડિંગ ડેમો અરજીઓ (Pending Approval - 9725721215) -->
@@ -38,36 +109,59 @@
     <div style="background:#1e293b; border:2.5px solid #f59e0b; border-radius:12px; padding:24px 20px; max-width:400px; width:100%; text-align:center; box-shadow:0 10px 35px rgba(0,0,0,0.8);">
         <div style="font-size:36px; margin-bottom:8px;">⚡</div>
         <h3 style="color:#fde047; margin:0 0 4px; font-size:18px;">સુપર એડમિન માસ્ટર સુરક્ષા</h3>
-        <p style="color:#94a3b8; font-size:12px; margin:0 0 16px;">માત્ર જયમીનભાઈ માટે (માસ્ટર પિન ૧૯૮૬)</p>
+        <p style="color:#94a3b8; font-size:12px; margin:0 0 16px;">માત્ર જયમીનભાઈ માટે (સુરક્ષિત માસ્ટર પિન દાખલ કરો)</p>
         <div style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
             <input type="password" id="admin_master_pin_input" maxlength="4" placeholder="••••" style="width:140px; font-size:24px; text-align:center; letter-spacing:8px; background:#0f172a; border:2px solid #38bdf8; color:#38bdf8; border-radius:8px; padding:8px;" autofocus onkeyup="if(event.key==='Enter') verifyAdminMasterPin();">
         </div>
         <button type="button" onclick="verifyAdminMasterPin()" style="background:#f59e0b; color:#0f172a; border:none; padding:10px 24px; border-radius:6px; font-weight:900; font-size:14px; cursor:pointer; width:100%;">
             🔓 અનલૉક કરો
         </button>
-        <div id="pin_error_msg" style="color:#f87171; font-size:12px; margin-top:10px; display:none;">❌ ખોટો પિન! સાચો પિન ૧૯૮૬ છે.</div>
+        <div id="pin_error_msg" style="color:#f87171; font-size:12px; margin-top:10px; display:none;">❌ ખોટો માસ્ટર પિન! કૃપા કરીને ફરી પ્રયત્ન કરો.</div>
     </div>
 </div>
 <script id="admin_pin_verifier">
-function verifyAdminMasterPin() {
-    var p = document.getElementById('admin_master_pin_input').value.trim();
-    if (p === '1986') {
-        localStorage.setItem('dm_admin_unlocked', '1');
-        document.getElementById('jaymin_pin_lock_screen').style.display = 'none';
-    } else {
-        document.getElementById('pin_error_msg').style.display = 'block';
+async function verifyAdminMasterPin() {
+    var inp = document.getElementById('admin_master_pin_input');
+    var errEl = document.getElementById('pin_error_msg');
+    var p = inp ? inp.value.trim() : '';
+    if (!p) {
+        if (errEl) { errEl.textContent = '❌ કૃપા કરીને માસ્ટર પિન દાખલ કરો.'; errEl.style.display = 'block'; }
+        return;
+    }
+    try {
+        var r = await fetch(window.ADMIN_API_BASE + '/api/verify-master-pin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin: p })
+        });
+        var d = await r.json();
+        if (d && d.ok) {
+            sessionStorage.setItem('dm_admin_unlocked', '1');
+            sessionStorage.setItem('dm_admin_session_pin', p);
+            document.getElementById('jaymin_pin_lock_screen').style.display = 'none';
+            if (errEl) errEl.style.display = 'none';
+            // Populate hidden pin fields dynamically for authenticated session
+            document.querySelectorAll('input[type="hidden"][name="pin"]').forEach(function(el) { el.value = p; });
+        } else {
+            if (errEl) { errEl.textContent = '❌ ખોટો માસ્ટર પિન! કૃપા કરીને ફરી પ્રયત્ન કરો.'; errEl.style.display = 'block'; }
+        }
+    } catch (e) {
+        if (errEl) { errEl.textContent = '⚠️ સર્વર સાથે કનેક્ટ થઈ શક્યું નથી. ઇન્ટરનેટ ચેક કરી ફરી પ્રયત્ન કરો.'; errEl.style.display = 'block'; }
     }
 }
 window.addEventListener('DOMContentLoaded', async function() {
-    var u = new URLSearchParams(window.location.search);
-    if (u.get('pin') === '1986' || window.location.hash.indexOf('1986') !== -1 || localStorage.getItem('dm_admin_unlocked') === '1') {
+    // V9 Security: Strictly NO ?pin= URL bypass! Only active verified session unlocks the hub.
+    if (sessionStorage.getItem('dm_admin_unlocked') === '1' && sessionStorage.getItem('dm_admin_session_pin')) {
         var ls = document.getElementById('jaymin_pin_lock_screen');
         if (ls) ls.style.display = 'none';
-    }
-    var act = u.get('action');
-    var targetShop = u.get('shop');
-    if (act && targetShop && (u.get('pin') === '1986' || localStorage.getItem('dm_admin_unlocked') === '1')) {
-        handleWhatsAppDirectAction(act, targetShop);
+        var sp = sessionStorage.getItem('dm_admin_session_pin');
+        document.querySelectorAll('input[type="hidden"][name="pin"]').forEach(function(el) { el.value = sp; });
+        var u = new URLSearchParams(window.location.search);
+        var act = u.get('action');
+        var targetShop = u.get('shop');
+        if (act && targetShop) {
+            handleWhatsAppDirectAction(act, targetShop);
+        }
     }
 });
 
@@ -192,7 +286,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
                     <span style="font-weight:800; color:#854d0e; font-size:11.5px;">🔐 ID:</span>
                     <input type="text" name="new_admin_user" value="manshvi" title="સુપર એડમિન ID" style="width:68px; padding:3px 5px; font-weight:bold;">
                     <span style="font-weight:800; color:#15803d; font-size:11.5px;">૧. એપ્રુવલ PIN:</span>
-                    <input type="text" name="new_admin_pin" value="1986" title="મોબાઈલ 2FA એપ્રુવલ PIN (1986)" style="width:55px; padding:3px 5px; font-weight:bold; border:1.5px solid #16a34a;">
+                    <input type="text" name="new_admin_pin" value="" placeholder="નવો PIN" title="મોબાઈલ 2FA એપ્રુવલ PIN" style="width:55px; padding:3px 5px; font-weight:bold; border:1.5px solid #16a34a;">
                     <span style="font-weight:800; color:#6b21a8; font-size:11.5px;">૨. ગુપ્ત પાસવર્ડ (ફોન બંધ હોય ત્યારે):</span>
                     <input type="text" name="new_master_passphrase" value="Jaymin#HQ@972572" title="ફોન બંધ કે ખરાબ હોય ત્યારે ખોલવાનો તમારો ગુપ્ત પાસવર્ડ" placeholder="ગુપ્ત પાસવર્ડ" style="width:135px; padding:3px 6px; font-weight:bold; color:#6b21a8; border:1.5px solid #9333ea;">
                     <button type="submit" style="background:#ca8a04; color:white; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">💾 સાચવો</button>
@@ -405,10 +499,10 @@ async function handleWhatsAppDirectAction(act, shopId) {
             <div style="background:linear-gradient(135deg,#fff1f2,#ffe4e6); border:2.5px solid #dc2626; padding:12px; border-radius:8px; box-shadow:0 4px 12px rgba(220,38,38,0.18);">
                 <h4 style="margin:0 0 6px 0; color:#991b1b; font-size:14px;">🧹 ૧-ક્લિક તમામ જૂના ડેમો (DEMO-001, 002, 003) ચારેય જગ્યાએથી સાફ કરો (Fresh Start from DEMO-001)</h4>
                 <div style="font-size:11.5px; color:#7f1d1d; margin-bottom:8px; line-height:1.45;">
-                    પિન <b>1986</b> નાખી આ લાલ બટન દબાવતાં જ: <b>(૧) તમારા લેપટોપ</b>, <b>(૨) દુકાનદારના કમ્પ્યુટર/મોબાઈલ</b>, <b>(૩) સુપર એડમિન પેજ</b> અને <b>(૪) ગિટહબ ક્લાઉડ</b> — ચારેય જગ્યાએથી તમામ જૂના ડેમો ૧ સેકન્ડમાં સાફ થઈ જશે અને કાઉન્ટર ફરીથી <b>DEMO-001</b> પર રીસેટ થશે! (તમારા <b>DEVANSHI</b> અને <b>MANSHVI</b> ૧૦૦% અકબંધ રહેશે).
+                    માસ્ટર પિન નાખી આ લાલ બટન દબાવતાં જ: <b>(૧) તમારા લેપટોપ</b>, <b>(૨) દુકાનદારના કમ્પ્યુટર/મોબાઈલ</b>, <b>(૩) સુપર એડમિન પેજ</b> અને <b>(૪) ગિટહબ ક્લાઉડ</b> — ચારેય જગ્યાએથી તમામ જૂના ડેમો ૧ સેકન્ડમાં સાફ થઈ જશે અને કાઉન્ટર ફરીથી <b>DEMO-001</b> પર રીસેટ થશે! (તમારા <b>DEVANSHI</b> અને <b>MANSHVI</b> ૧૦૦% અકબંધ રહેશે).
                 </div>
                 <form action="/api/master-wipe-all-demos" method="post" onsubmit="return confirm('🚨 શું તમે ખરેખર ચારેય જગ્યાએથી તમામ જૂના ડેમો (DEMO-001, 002, 003...) કાયમ માટે સાફ કરી ફરીથી DEMO-001 થી શરૂ કરવા માંગો છો?');" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                    <input type="password" name="pin" value="1986" placeholder="માસ્ટર PIN (1986)" required style="width:125px; padding:8px; border:2px solid #dc2626; border-radius:5px; font-weight:900; font-size:13px; text-align:center;">
+                    <input type="password" name="pin" value="" placeholder="માસ્ટર PIN" required style="width:125px; padding:8px; border:2px solid #dc2626; border-radius:5px; font-weight:900; font-size:13px; text-align:center;">
                     <button type="submit" style="flex:1; background:linear-gradient(135deg,#dc2626,#991b1b); color:white; border:2px solid #fef08a; padding:9px 14px; border-radius:6px; font-weight:900; font-size:12.5px; cursor:pointer; box-shadow:0 4px 10px rgba(220,38,38,0.4);">
                         🧹 [૧-ક્લિક: તમામ જૂના ડેમો ચારેય જગ્યાએથી કાયમ માટે સાફ કરો]
                     </button>
@@ -452,7 +546,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
                 <form action="/master-direct-open-shop" method="post" style="display:flex; gap:6px; flex-wrap:wrap;">
                     <input type="text" name="target_shop_id" id="direct_live_shop_inp" placeholder="Shop ID (દા.ત. DEMO-001) અથવા મોબાઈલ નંબર નાખો..." required style="flex:1; padding:8px; border:2px solid #0284c7; border-radius:4px; font-weight:bold;">
                     <button type="submit" style="background:#16a34a; color:white; border:none; padding:8px 14px; border-radius:4px; font-weight:bold; cursor:pointer;">🚀 લાઈવ પેજ અહીં ખોલો</button>
-                    <button type="button" onclick="var v=document.getElementById('direct_live_shop_inp').value.trim(); if(!v){alert('Shop ID કે મોબાઈલ નાખો!'); return;} window.location.href='index.html?shop=MANSHVI&pin=1986'+encodeURIComponent(v)+'?pin=1986';" style="background:#dc2626; color:white; border:none; padding:8px 14px; border-radius:4px; font-weight:bold; cursor:pointer;">🖥️ લાઈવ સ્ક્રીન મિરર</button>
+                    <button type="button" onclick="var v=document.getElementById('direct_live_shop_inp').value.trim(); if(!v){alert('Shop ID કે મોબાઈલ નાખો!'); return;} window.location.href='index.html?shop=MANSHVI'+encodeURIComponent(v)+'';" style="background:#dc2626; color:white; border:none; padding:8px 14px; border-radius:4px; font-weight:bold; cursor:pointer;">🖥️ લાઈવ સ્ક્રીન મિરર</button>
                 </form>
             </div>
         </div>
@@ -578,10 +672,10 @@ async function handleWhatsAppDirectAction(act, shopId) {
                     <div style="font-size:11px; color:#64748b; margin-top:2px;">સ્ટાફ કે પાર્ટનર પાસવર્ડ ભૂલી જાય ત્યારે અહીંથી સીધો નવો પાસવર્ડ આપી શકાય છે:</div>
                 </div>
                 <form method="get" action="/super-admin" style="display:flex; gap:6px;">
-                    <input type="hidden" name="pin" value="1986">
+                    <input type="hidden" name="pin" value="">
                     <input type="text" name="lookup_shop" value="" placeholder="Shop ID કે મોબાઈલથી ફિલ્ટર કરો..." style="padding:4px 8px; border:1px solid #9333ea; border-radius:4px;">
                     <button type="submit" style="background:#7c3aed; color:white; border:none; padding:4px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">સર્ચ કરો</button>
-                    <a href="/super-admin?pin=1986" style="background:#475569; color:white; padding:4px 10px; border-radius:4px; text-decoration:none; font-weight:bold;">બધા બતાવો</a>
+                    <a href="/super-admin" style="background:#475569; color:white; padding:4px 10px; border-radius:4px; text-decoration:none; font-weight:bold;">બધા બતાવો</a>
                 </form>
             </div>
             <table>
@@ -602,7 +696,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
                         <button type="submit" style="background:#16a34a; color:white; border:none; padding:3px 7px; border-radius:3px; cursor:pointer; font-weight:bold;">રીસેટ</button>
                     </form>
                     <a href="/toggle-user-login-status?uid=2&cur=ACTIVE&shop_id=MANSHVI&return_to=SUPER_ADMIN" style="background:#d97706; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="૧-ક્લિક કિલ-સ્વિચ: મોબાઈલમાંથી તાત્કાલિક બ્લોક / અનબ્લોક કરો">[🚫 બ્લોક]</a>
-                    <a href="index.html?shop=MANSHVI&pin=1986" style="background:#0284c7; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="આ સ્ટાફ કે દુકાનનું લાઈવ પેજ અહીં ખોલો">🖥️ લાઈવ પેજ</a>
+                    <a href="index.html?shop=MANSHVI" style="background:#0284c7; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="આ સ્ટાફ કે દુકાનનું લાઈવ પેજ અહીં ખોલો">🖥️ લાઈવ પેજ</a>
                 </div>
             </td>
         </tr>
@@ -610,7 +704,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
         <tr>
             <td><b>DEVANSHI</b></td><td><b>જયમીનભાઈ પટેલ</b><br><span style="font-size:10.5px; color:#6b21a8; font-weight:bold;">(OWNER)</span></td><td>9725721215</td>
             <td style="color:#0284c7; font-weight:bold;">devanshi</td>
-            <td style="color:#15803d; font-weight:bold;">1986</td>
+            <td style="color:#15803d; font-weight:bold;">••••</td>
             <td><span style="background:#16a34a; color:white; padding:2px 6px; border-radius:4px; font-size:10.5px; font-weight:bold;">ACTIVE</span></td>
             <td style="font-size:10.5px; text-align:left;">🟢 શરૂ: -<br>📱 ડિવાઈસ: -<br>🔴 છેલ્લે બંધ: ચાલુ</td>
             <td>
@@ -618,11 +712,11 @@ async function handleWhatsAppDirectAction(act, shopId) {
                     <form action="/master-reset-staff-password" method="post" style="display:flex; gap:3px; margin:0;">
                         <input type="hidden" name="staff_row_id" value="1">
                         <input type="hidden" name="lookup_shop" value="">
-                        <input type="text" name="new_password" value="1986" style="width:80px; padding:3px; font-weight:bold;">
+                        <input type="text" name="new_password" value="" placeholder="નવો પાસવર્ડ" style="width:80px; padding:3px; font-weight:bold;">
                         <button type="submit" style="background:#16a34a; color:white; border:none; padding:3px 7px; border-radius:3px; cursor:pointer; font-weight:bold;">રીસેટ</button>
                     </form>
                     <a href="/toggle-user-login-status?uid=1&cur=ACTIVE&shop_id=DEVANSHI&return_to=SUPER_ADMIN" style="background:#d97706; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="૧-ક્લિક કિલ-સ્વિચ: મોબાઈલમાંથી તાત્કાલિક બ્લોક / અનબ્લોક કરો">[🚫 બ્લોક]</a>
-                    <a href="index.html?shop=DEVANSHI&pin=1986" style="background:#0284c7; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="આ સ્ટાફ કે દુકાનનું લાઈવ પેજ અહીં ખોલો">🖥️ લાઈવ પેજ</a>
+                    <a href="index.html?shop=DEVANSHI" style="background:#0284c7; color:white; padding:3px 7px; border-radius:3px; text-decoration:none; font-size:10.5px; font-weight:bold;" title="આ સ્ટાફ કે દુકાનનું લાઈવ પેજ અહીં ખોલો">🖥️ લાઈવ પેજ</a>
                 </div>
             </td>
         </tr>
@@ -722,9 +816,9 @@ async function handleWhatsAppDirectAction(act, shopId) {
                     <button type="submit" style="background:#16a34a; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-weight:bold;">સેવ</button>
                 </form>
             </td>
-            <td style="font-size:10.5px;">F1,F2,F3,F4,F5,F6,F7,F8<br><a href="/super-admin?pin=1986&lookup_shop=MANSHVI" style="color:#7c3aed; font-weight:bold;">[🔑 સ્ટાફ PW જુઓ]</a></td>
+            <td style="font-size:10.5px;">F1,F2,F3,F4,F5,F6,F7,F8<br><a href="/super-admin?lookup_shop=MANSHVI" style="color:#7c3aed; font-weight:bold;">[🔑 સ્ટાફ PW જુઓ]</a></td>
             <td>
-                <a href="index.html?shop=MANSHVI&pin=1986" style="display:block; margin-bottom:4px; background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; padding:6px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:11px; box-shadow:0 2px 6px rgba(220,38,38,0.4);" title="દુકાનદાર કે સ્ટાફનું ચાલુ લાઈવ પેજ આપણી ફૂલ કલરફુલ થીમમાં સીધું જ અહીં ખોલો">🖥️ ૧-ક્લિક: લાઈવ પેજ અહીં ખોલો</a><a href="index.html?sheet=STORE_SETUP&shop=MANSHVI" style="display:block; margin-bottom:4px; background:#7c3aed; color:white; padding:5px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:10.5px;">⚙️ સ્ટાફ પરમિશન / સુવિધા સેટ કરો</a><button type="button" onclick="openEditStoreModal('MANSHVI', 'મનસ્વી સોફ્ટવેર (રિટેલ સ્ટોર મોડ - લાઇફટાઇમ)', '9725721215', 'manshvi', 'J@ymin86', 'RETAIL_STANDALONE', 'LIFETIME', 'LIFETIME', '2026-11-06', '2099-12-31')" style="display:block; width:100%; margin-bottom:4px; background:#eab308; color:#0f172a; padding:5px 8px; border-radius:4px; font-weight:900; border:none; text-align:center; font-size:10.5px; cursor:pointer;" title="દુકાનનું નામ, માલિક, મોબાઈલ, પાસવર્ડ અને મોડ સુધારો">✏️ વિગતો સુધારો (Edit)</button>
+                <a href="index.html?shop=MANSHVI" style="display:block; margin-bottom:4px; background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; padding:6px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:11px; box-shadow:0 2px 6px rgba(220,38,38,0.4);" title="દુકાનદાર કે સ્ટાફનું ચાલુ લાઈવ પેજ આપણી ફૂલ કલરફુલ થીમમાં સીધું જ અહીં ખોલો">🖥️ ૧-ક્લિક: લાઈવ પેજ અહીં ખોલો</a><a href="index.html?sheet=STORE_SETUP&shop=MANSHVI" style="display:block; margin-bottom:4px; background:#7c3aed; color:white; padding:5px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:10.5px;">⚙️ સ્ટાફ પરમિશન / સુવિધા સેટ કરો</a><button type="button" onclick="openEditStoreModal('MANSHVI', 'મનસ્વી સોફ્ટવેર (રિટેલ સ્ટોર મોડ - લાઇફટાઇમ)', '9725721215', 'manshvi', 'J@ymin86', 'RETAIL_STANDALONE', 'LIFETIME', 'LIFETIME', '2026-11-06', '2099-12-31')" style="display:block; width:100%; margin-bottom:4px; background:#eab308; color:#0f172a; padding:5px 8px; border-radius:4px; font-weight:900; border:none; text-align:center; font-size:10.5px; cursor:pointer;" title="દુકાનનું નામ, માલિક, મોબાઈલ, પાસવર્ડ અને મોડ સુધારો">✏️ વિગતો સુધારો (Edit)</button>
                 <form action="/api/master-ota-publish" method="post" style="margin-bottom:5px;">
                     <input type="hidden" name="target_shops" value="MANSHVI">
                     <input type="hidden" name="target_mode" value="ALL">
@@ -746,7 +840,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
             <td><b>DEVANSHI</b><br><span style="font-size:10px; color:#64748b;">FRANCHISE_HO</span><br><span style="background:#dcfce7; color:#166534; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:800; border:1px solid #16a34a;">📌 2026.11.14_FINAL ✅ લેટેસ્ટ</span><br><span style="background:#dcfce7; color:#15803d; padding:2px 7px; border-radius:4px; font-weight:800; font-size:10px; border:1px solid #16a34a; display:inline-block; margin-top:3px;" title="લાઇવ કનેક્ટેડ: 2026-11-06 14:15:41 | ડિવાઇસ: Desktop/Laptop">🟢 લાઈવ (SMART_TERMINAL (F2))</span></td>
             <td><b>દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)</b><div style="font-size:10px; text-align:left; background:#f8fafc; padding:3px 5px; border-radius:4px; border:1px solid #cbd5e1; margin-top:3px; line-height:1.35;"><b>🚀 સાઇન-અપ:</b> Desktop/Mobile ()<br><b>🟢 છેલ્લે ચાલુ:</b> Desktop/Laptop (2026-11-06 14:15:41)<br><b>🔴 છેલ્લે બંધ:</b> હાલ ચાલુ</div></td>
             <td style="color:#0284c7; font-weight:bold;">9725721215</td>
-            <td>devanshi<br><span style="color:#16a34a; font-weight:bold;">PW: 1986</span></td>
+            <td>devanshi<br><span style="color:#16a34a; font-weight:bold;">PW: ••••</span></td>
             <td>
                 <!-- બોક્સ ૭: DEMO/RENT, તારીખ-થી-તારીખ વેલિડિટી (૧૦ દિવસ / ૧-૩-૬-૧૨ મહિના / કસ્ટમ તારીખ) અને ACTIVE/BLOCK -->
                 <form action="/master-quick-row-update" method="post" style="display:flex; gap:4px; align-items:center; justify-content:center; flex-wrap:wrap;">
@@ -781,9 +875,9 @@ async function handleWhatsAppDirectAction(act, shopId) {
                     <button type="submit" style="background:#16a34a; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-weight:bold;">સેવ</button>
                 </form>
             </td>
-            <td style="font-size:10.5px;">F1,F2,F3,F4,F5,F6,F7,F8<br><a href="/super-admin?pin=1986&lookup_shop=DEVANSHI" style="color:#7c3aed; font-weight:bold;">[🔑 સ્ટાફ PW જુઓ]</a></td>
+            <td style="font-size:10.5px;">F1,F2,F3,F4,F5,F6,F7,F8<br><a href="/super-admin?lookup_shop=DEVANSHI" style="color:#7c3aed; font-weight:bold;">[🔑 સ્ટાફ PW જુઓ]</a></td>
             <td>
-                <a href="index.html?shop=DEVANSHI&pin=1986" style="display:block; margin-bottom:4px; background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; padding:6px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:11px; box-shadow:0 2px 6px rgba(220,38,38,0.4);" title="દુકાનદાર કે સ્ટાફનું ચાલુ લાઈવ પેજ આપણી ફૂલ કલરફુલ થીમમાં સીધું જ અહીં ખોલો">🖥️ ૧-ક્લિક: લાઈવ પેજ અહીં ખોલો</a><a href="index.html?sheet=STORE_SETUP&shop=DEVANSHI" style="display:block; margin-bottom:4px; background:#7c3aed; color:white; padding:5px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:10.5px;">⚙️ સ્ટાફ પરમિશન / સુવિધા સેટ કરો</a><button type="button" onclick="openEditStoreModal('DEVANSHI', 'દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)', '9725721215', 'devanshi', '1986', 'FRANCHISE_HO', 'LIFETIME', 'LIFETIME', '2026-11-06', '2099-12-31')" style="display:block; width:100%; margin-bottom:4px; background:#eab308; color:#0f172a; padding:5px 8px; border-radius:4px; font-weight:900; border:none; text-align:center; font-size:10.5px; cursor:pointer;" title="દુકાનનું નામ, માલિક, મોબાઈલ, પાસવર્ડ અને મોડ સુધારો">✏️ વિગતો સુધારો (Edit)</button>
+                <a href="index.html?shop=DEVANSHI" style="display:block; margin-bottom:4px; background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; padding:6px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:11px; box-shadow:0 2px 6px rgba(220,38,38,0.4);" title="દુકાનદાર કે સ્ટાફનું ચાલુ લાઈવ પેજ આપણી ફૂલ કલરફુલ થીમમાં સીધું જ અહીં ખોલો">🖥️ ૧-ક્લિક: લાઈવ પેજ અહીં ખોલો</a><a href="index.html?sheet=STORE_SETUP&shop=DEVANSHI" style="display:block; margin-bottom:4px; background:#7c3aed; color:white; padding:5px 8px; border-radius:4px; font-weight:bold; text-decoration:none; text-align:center; font-size:10.5px;">⚙️ સ્ટાફ પરમિશન / સુવિધા સેટ કરો</a><button type="button" onclick="openEditStoreModal('DEVANSHI', 'દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)', '9725721215', 'devanshi', '', 'FRANCHISE_HO', 'LIFETIME', 'LIFETIME', '2026-11-06', '2099-12-31')" style="display:block; width:100%; margin-bottom:4px; background:#eab308; color:#0f172a; padding:5px 8px; border-radius:4px; font-weight:900; border:none; text-align:center; font-size:10.5px; cursor:pointer;" title="દુકાનનું નામ, માલિક, મોબાઈલ, પાસવર્ડ અને મોડ સુધારો">✏️ વિગતો સુધારો (Edit)</button>
                 <form action="/api/master-ota-publish" method="post" style="margin-bottom:5px;">
                     <input type="hidden" name="target_shops" value="DEVANSHI">
                     <input type="hidden" name="target_mode" value="ALL">
@@ -970,7 +1064,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
         });
 
         function togglePublicDemoSignup() {
-            var p = prompt('👑 જયમીનભાઈ, જાહેર ડેમો સાઇન-અપ સ્થિતિ બદલવા માસ્ટર સિક્યુરિટી PIN (1986) દાખલ કરો:', '1986');
+            var p = prompt('👑 જયમીનભાઈ, જાહેર ડેમો સાઇન-અપ સ્થિતિ બદલવા માસ્ટર સિક્યુરિટી PIN દાખલ કરો:', '');
             if (!p) return;
             var fd = new FormData();
             fd.append('pin', p);
@@ -995,7 +1089,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
             var fd = new FormData();
             fd.append('shop_id', sid);
             fd.append('days', days);
-            fd.append('pin', '1986');
+            fd.append('pin', window.getAdminSessionPin() || prompt('માસ્ટર PIN દાખલ કરો:') || '');
             fetch('/api/extend-shop-demo', { method: 'POST', body: fd })
                 .then(function(r) { return r.json(); })
                 .then(function(d) {
