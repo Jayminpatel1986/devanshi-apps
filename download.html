@@ -20,8 +20,14 @@
     .btn-green { background:linear-gradient(135deg,#16a34a,#15803d); color:white; border:1.5px solid #86efac; }
     .btn-gold { background:linear-gradient(135deg,#eab308,#ca8a04); color:#0f172a; border:1.5px solid #fef08a; }
     .btn-blue { background:linear-gradient(135deg,#0284c7,#0369a1); color:white; border:1.5px solid #7dd3fc; }
+    .btn-signup { background:linear-gradient(135deg,#e11d48,#be123c); color:white; border:2px solid #fecdd3; font-size:16px; animation: pulseGlow 2s infinite; }
     .btn-demo { background:#1e293b; color:#38bdf8; border:1.5px solid #0284c7; font-size:14px; }
     .banner-wa { display:none; background:#854d0e; color:#fef08a; padding:10px 14px; border-radius:10px; font-weight:800; font-size:12.5px; margin-bottom:14px; border:1.5px dashed #fde047; text-align:left; line-height:1.5; }
+    @keyframes pulseGlow {
+        0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(225, 29, 72, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+    }
 </style>
 <script>
     var deferredPrompt = null;
@@ -50,15 +56,11 @@
 
     window.addEventListener('DOMContentLoaded', function() {
         var ua = (navigator.userAgent || '').toLowerCase();
-        var host = (window.location.hostname || '').toLowerCase();
-        var isGithubPages = (host.indexOf('github.io') !== -1 || window.location.protocol === 'file:');
-        var ghBase = 'https://github.com/Jayminpatel1986/devanshi-apps/releases/latest/download/';
-        var localBase = '/download-file/';
-        var base = isGithubPages ? ghBase : localBase;
 
-        var apkUrl = base + 'Devanshi_ERP.apk';
-        var iosUrl = base + 'Devanshi_iOS_App.mobileconfig';
-        var exeUrl = base + 'Devanshi_Mansvi_ERP.exe';
+        // Direct verified download paths
+        var apkUrl = './Devanshi_ERP.apk';
+        var iosUrl = './Devanshi_iOS_App.mobileconfig';
+        var exeUrl = 'https://github.com/Jayminpatel1986/devanshi-apps/releases/download/v2026.11.23_V9_FINAL/Devanshi_Mansvi_ERP.exe';
 
         var btnApk = document.getElementById('btn_dl_apk');
         var btnIos = document.getElementById('btn_dl_ios');
@@ -103,25 +105,45 @@
         ⚡ તમારું ડિવાઇસ ઓળખાઈ રહ્યું છે...
     </div>
 
+    <!-- 🔥 NEW DEMO SIGN-UP PROMINENT ACTION -->
+    <a href="index.html?v=24.11.2026.001&action=signup" class="btn btn-signup">
+        🚀 ૧. નવો ૧૦-દિવસ ફ્રી ડેમો સાઇન-અપ કરો (નવું ખાતું ખોલો)
+    </a>
+
+    <!-- 1. PWA ONE CLICK INSTALL -->
     <button type="button" id="btn_pwa_install" onclick="triggerPWAInstall()" class="btn btn-pwa" style="display:none; width:100%;">
-        📲 ૧. Play Store ની જેમ ઍપ ઇન્સ્ટોલ કરો (Zero Security Warning)
+        📲 ૨. Play Store ની જેમ ઍપ ઇન્સ્ટોલ કરો (Zero Warning)
     </button>
 
+    <!-- 2. ANDROID APK -->
     <a id="btn_dl_apk" href="./Devanshi_ERP.apk" download="Devanshi_ERP.apk" class="btn btn-green">
-        📥 ૨. Android .APK ફાઇલ સીધી ડાઉનલોડ કરો
+        📥 ૩. Android .APK ફાઇલ સીધી ડાઉનલોડ કરો (RSA સહી કરેલી)
     </a>
 
-    <a id="btn_dl_ios" href="/download-file/Devanshi_iOS_App.mobileconfig" class="btn btn-gold">
-        🍎 ૩. Apple iPhone (iOS) સત્તાવાર એપ પ્રોફાઇલ
+    <!-- 3. IPHONE PROFILE -->
+    <a id="btn_dl_ios" href="./Devanshi_iOS_App.mobileconfig" download="Devanshi_iOS_App.mobileconfig" class="btn btn-gold">
+        🍎 ૪. Apple iPhone (iOS) સત્તાવાર એપ પ્રોફાઇલ
     </a>
 
-    <a id="btn_dl_exe" href="/download-file/Devanshi_Mansvi_ERP.exe" class="btn btn-blue">
-        💻 ૪. Windows કમ્પ્યુટર / લેપટોપ (.EXE સોફ્ટવેર)
+    <!-- 4. WINDOWS PC EXE -->
+    <a id="btn_dl_exe" href="https://github.com/Jayminpatel1986/devanshi-apps/releases/download/v2026.11.23_V9_FINAL/Devanshi_Mansvi_ERP.exe" target="_blank" class="btn btn-blue">
+        💻 ૫. Windows કમ્પ્યુટર / લેપટોપ (.EXE સોફ્ટવેર)
     </a>
 
-    <a href="index.html" class="btn btn-demo">
-        🚀 ૫. ઇન્સ્ટોલ વગર સીધું જ લૉગિન કરો / ૧૦-દિવસ ફ્રી ડેમો ખોલો
+    <!-- 5. WEB TERMINAL LOGIN -->
+    <a href="index.html?v=24.11.2026.001&action=login" class="btn btn-demo">
+        🔑 ૬. જૂના દુકાનદાર લૉગિન કરો (ઇન્સ્ટોલ વગર સીધું વેબ પર)
     </a>
+
+    <!-- JAYMINBHAI SUPER ADMIN QUICK LINK -->
+    <div style="margin-top:16px; padding:10px 12px; background:rgba(30,41,59,0.7); border:1.5px dashed #ca8a04; border-radius:10px; font-size:12.5px;">
+        <span style="color:#fde047; font-weight:bold;">👑 સંચાલક કંટ્રોલ (જયમીનભાઈ પટેલ):</span><br>
+        <div style="margin-top:6px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+            <a href="admin.html?v=24.11.2026.001" style="background:#ca8a04; color:#0f172a; padding:5px 12px; border-radius:6px; font-weight:900; text-decoration:none; font-size:12px;">🛡️ સુપર એડમિન હબ</a>
+            <a href="./Jaymin_Super_Admin.apk" download="Jaymin_Super_Admin.apk" style="background:#475569; color:#f8fafc; padding:5px 10px; border-radius:6px; font-weight:bold; text-decoration:none; font-size:11px;">📱 એડમિન APK</a>
+            <a href="./Devanshi_Sample_ERP.apk" download="Devanshi_Sample_ERP.apk" style="background:#475569; color:#f8fafc; padding:5px 10px; border-radius:6px; font-weight:bold; text-decoration:none; font-size:11px;">🏪 સેમ્પલ APK</a>
+        </div>
+    </div>
 
     <div style="margin-top:14px; font-size:11.5px; color:#94a3b8; line-height:1.5; text-align:left; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;">
         🔒 <b>સુરક્ષા બાંહેધરી:</b> આ ૧૦૦% સત્તાવાર ડિજિટલ સહી કરેલી એપ છે. ૧૦ દિવસ સુધી કોઈપણ ચાર્જ વગર સંપૂર્ણ સુવિધાઓ સાથે વાપરી શકશો.
@@ -139,57 +161,6 @@
             }
         }
     }).catch(function(){});
-
-    // F1-F15 Surface Fast Counter Dispatcher (maps F1-F15 directly to full desks without losing any old F1-F8 fields/formulas!)
-    window.openFastCounterF15 = function(fCode) {
-        var map = {
-            'F1':  { mode: 'F1', sub: 'PURCHASE' },
-            'F2':  { mode: 'F2', sub: 'CASH' },
-            'F3':  { mode: 'F2', sub: 'FINANCE' },
-            'F4':  { mode: 'F2', sub: 'DUE' },
-            'F5':  { mode: 'F3', sub: 'RECEIVE' },
-            'F6':  { mode: 'F5', sub: 'EXCHANGE' },
-            'F7':  { mode: 'F5', sub: 'DIRECT_BB' },
-            'F8':  { mode: 'F3', sub: 'PARTNER' },
-            'F9':  { mode: 'F3', sub: 'EXPENSE' },
-            'F10': { mode: 'F3', sub: 'PAYOUT' },
-            'F11': { mode: 'F4', sub: 'BANK' },
-            'F12': { mode: 'F7', sub: 'TRANSFER' },
-            'F13': { mode: 'F3', sub: 'ACCESSORIES' },
-            'F14': { mode: 'F3', sub: 'RECHARGE' },
-            'F15': { mode: 'F8', sub: 'EOD' }
-        };
-        var cfg = map[fCode] || { mode: 'F1' };
-        if (typeof navigateSpa === 'function') {
-            navigateSpa('/?sheet=SMART_TERMINAL&mode=' + cfg.mode + '&fast=' + fCode);
-        }
-    };
-
-    // Inject F9-F15 fast pills alongside existing F1-F8 buttons in sleek_bar_f_buttons once logged in
-    setInterval(function() {
-        var bar = document.getElementById('sleek_bar_f_buttons');
-        if (bar && !bar.dataset.f15Injected) {
-            bar.dataset.f15Injected = '1';
-            var extra = [
-                ['F9',  'F9 ખર્ચ',      '#b45309'],
-                ['F10', 'F10 વેપારી',   '#991b1b'],
-                ['F11', 'F11 બેંક',     '#0369a1'],
-                ['F12', 'F12 ગલ્લા',    '#4338ca'],
-                ['F13', 'F13 એક્સે.',   '#0f766e'],
-                ['F14', 'F14 રિચાર્જ',  '#6d28d9'],
-                ['F15', 'F15 EOD',      '#1e293b']
-            ];
-            extra.forEach(function(item) {
-                var btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'tally-sub-btn';
-                btn.style.cssText = 'background:' + item[2] + '; color:white; margin:1px; font-size:10.5px;';
-                btn.textContent = item[1];
-                btn.onclick = function() { window.openFastCounterF15(item[0]); };
-                bar.appendChild(btn);
-            });
-        }
-    }, 600);
 })();
 </script></body>
 </html>
