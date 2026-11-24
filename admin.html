@@ -275,7 +275,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
                     try {
                         localStorage.setItem('JAYMIN_PERMANENT_ADMIN_DEVICE', 'JAYMIN_9725721215_MASTER');
                         if ('serviceWorker' in navigator) {
-                            navigator.serviceWorker.register('/sw.js').catch(function(){});
+                            navigator.serviceWorker.register('sw.js').catch(function(){});
                         }
                     } catch(e) {}
                 </script>
