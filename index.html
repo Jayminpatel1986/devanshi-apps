@@ -49,7 +49,7 @@ window.restoreTemporaryFormDraft = function(urlKey) {
 <meta name="apple-mobile-web-app-title" content="દેવાંશી ERP">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f2043">
-<title>દેવાંશી મોબાઈલ - MASTER ERP (2026.11.22_FIXED_V8_FINAL)</title>
+<title>દેવાંશી મોબાઈલ - MASTER ERP (24/11/2026.001)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 
@@ -886,7 +886,7 @@ function populateAllActiveDropdowns() {
 <!-- ૩. અન્ય અસલ પેજ (Register Store, Store Setup, AI Commander, EOD Report, Mobile Scan) -->
 <div id="spa_aux_view" style="display:none; min-height:100vh; background:#0f2043; padding:10px;">
     <div style="max-width:1420px; margin:0 auto 8px auto; display:flex; justify-content:space-between; align-items:center; background:#0b1528; padding:6px 12px; border-radius:6px; border:1px solid #38bdf8;">
-        <span style="color:#fde047; font-weight:800; font-size:13px;">👑 દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર (2026.11.20_FINAL)</span>
+        <span style="color:#fde047; font-weight:800; font-size:13px;">👑 દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર (<span class="live-erp-version">24/11/2026.001</span>)</span>
         <div style="display:flex; gap:8px;">
             <button type="button" onclick="navigateSpa(window.__LAST_ERP_URL__ || '/?sheet=SMART_TERMINAL&mode=F2')" style="background:#0284c7; color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:800; cursor:pointer; font-size:12px;">⬅️ મુખ્ય ERP ટર્મિનલ પર પાછા જાઓ</button>
             <button type="button" onclick="navigateSpa('/login')" style="background:#dc2626; color:white; border:none; padding:5px 12px; border-radius:4px; font-weight:800; cursor:pointer; font-size:12px;">🚪 લૉગિન પેજ</button>
@@ -3119,7 +3119,7 @@ function initSmartEnterNavigation() {
 
 <script>
 // =================================================================================================
-// 🚀 UNIVERSAL MASTER ROUTER & GATEWAY ENGINE (2026.11.20_FINAL)
+// 🚀 UNIVERSAL MASTER ROUTER & GATEWAY ENGINE (<span class="live-erp-version">24/11/2026.001</span>)
 // =================================================================================================
 function fixEmbeddedImages(rootEl) {
     if (!rootEl) return;
@@ -4143,7 +4143,7 @@ function selectF5Part(part) {
 
 // ૩. યુનિવર્સલ ડાયનેમિક MOP vs કેશ ગલ્લો એન્જિન (F1, F2, F3, F5, F7 સર્વત્ર)
 // =========================================================================
-// 💼 UNIVERSAL DYNAMIC PAYMENT MODE VS GALLA / BANKING SWITCHER (2026.11.20_FINAL)
+// 💼 UNIVERSAL DYNAMIC PAYMENT MODE VS GALLA / BANKING SWITCHER (<span class="live-erp-version">24/11/2026.001</span>)
 // વેપારી રોકડ પસંદ કરે -> ૪-ગલ્લા સિલેક્શન (બેંક કેશ, એક્સેસરીઝ, રિચાર્જ, તિજોરી)
 // વેપારી UPI પસંદ કરે -> બેંક UPI ખાતું (HDFC / SBI / ICICI / BOB) + UTR / Ref #
 // વેપારી બેંક ટ્રાન્સફર પસંદ કરે -> બેંક કરન્ટ એકાઉન્ટ (NEFT/RTGS) + ચેક / ટ્રાન્ઝેક્શન #
@@ -4262,7 +4262,7 @@ function switchUniSearchTab(tabKey) {
 
 <script>
 // =========================================================================
-// 🚀 UNIVERSAL SUB-SECTION SWITCHERS & CARD SWIPE ENGINE (2026.11.20_FINAL)
+// 🚀 UNIVERSAL SUB-SECTION SWITCHERS & CARD SWIPE ENGINE (<span class="live-erp-version">24/11/2026.001</span>)
 // =========================================================================
 
 // ૧. F1 ખરીદી પેટા વિભાગ સ્વિચિંગ એન્જિન
@@ -4308,7 +4308,7 @@ function selectF2BillType(mode) {
 // ૩. યુનિવર્સલ ડાયનેમિક MOP vs કેશ ગલ્લો એન્જિન (F1, F2, F3, F5 સર્વત્ર)
 
 // =========================================================================
-// 🚀 ALL MISSING UTILITY & ACTION JAVASCRIPT FUNCTIONS (2026.11.20_FINAL)
+// 🚀 ALL MISSING UTILITY & ACTION JAVASCRIPT FUNCTIONS (<span class="live-erp-version">24/11/2026.001</span>)
 // =========================================================================
 
 // ૧. માસ્ટર અનડૂ (Undo Last Transaction with Master PIN)
@@ -4947,5 +4947,69 @@ document.addEventListener('submit', function(e) {
 })();
 </script>
 
-</body>
+
+<script id="v10_dynamic_version_and_f15">
+(function() {
+    var apiB = (window.ERP_API_BASE || window.DEFAULT_RENDER_URL || 'https://devanshi-mansvi-software.onrender.com').replace(/\/+$/, '');
+    fetch(apiB + '/api/version').then(function(r){ return r.json(); }).then(function(d){
+        if (d && d.version) {
+            document.querySelectorAll('.live-erp-version').forEach(function(el){ el.textContent = d.version; });
+            if (document.title && document.title.indexOf('MASTER ERP') !== -1) {
+                document.title = 'દેવાંશી મોબાઈલ - MASTER ERP (' + d.version + ')';
+            }
+        }
+    }).catch(function(){});
+
+    // F1-F15 Surface Fast Counter Dispatcher (maps F1-F15 directly to full desks without losing any old F1-F8 fields/formulas!)
+    window.openFastCounterF15 = function(fCode) {
+        var map = {
+            'F1':  { mode: 'F1', sub: 'PURCHASE' },
+            'F2':  { mode: 'F2', sub: 'CASH' },
+            'F3':  { mode: 'F2', sub: 'FINANCE' },
+            'F4':  { mode: 'F2', sub: 'DUE' },
+            'F5':  { mode: 'F3', sub: 'RECEIVE' },
+            'F6':  { mode: 'F5', sub: 'EXCHANGE' },
+            'F7':  { mode: 'F5', sub: 'DIRECT_BB' },
+            'F8':  { mode: 'F3', sub: 'PARTNER' },
+            'F9':  { mode: 'F3', sub: 'EXPENSE' },
+            'F10': { mode: 'F3', sub: 'PAYOUT' },
+            'F11': { mode: 'F4', sub: 'BANK' },
+            'F12': { mode: 'F7', sub: 'TRANSFER' },
+            'F13': { mode: 'F3', sub: 'ACCESSORIES' },
+            'F14': { mode: 'F3', sub: 'RECHARGE' },
+            'F15': { mode: 'F8', sub: 'EOD' }
+        };
+        var cfg = map[fCode] || { mode: 'F1' };
+        if (typeof navigateSpa === 'function') {
+            navigateSpa('/?sheet=SMART_TERMINAL&mode=' + cfg.mode + '&fast=' + fCode);
+        }
+    };
+
+    // Inject F9-F15 fast pills alongside existing F1-F8 buttons in sleek_bar_f_buttons once logged in
+    setInterval(function() {
+        var bar = document.getElementById('sleek_bar_f_buttons');
+        if (bar && !bar.dataset.f15Injected) {
+            bar.dataset.f15Injected = '1';
+            var extra = [
+                ['F9',  'F9 ખર્ચ',      '#b45309'],
+                ['F10', 'F10 વેપારી',   '#991b1b'],
+                ['F11', 'F11 બેંક',     '#0369a1'],
+                ['F12', 'F12 ગલ્લા',    '#4338ca'],
+                ['F13', 'F13 એક્સે.',   '#0f766e'],
+                ['F14', 'F14 રિચાર્જ',  '#6d28d9'],
+                ['F15', 'F15 EOD',      '#1e293b']
+            ];
+            extra.forEach(function(item) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'tally-sub-btn';
+                btn.style.cssText = 'background:' + item[2] + '; color:white; margin:1px; font-size:10.5px;';
+                btn.textContent = item[1];
+                btn.onclick = function() { window.openFastCounterF15(item[0]); };
+                bar.appendChild(btn);
+            });
+        }
+    }, 600);
+})();
+</script></body>
 </html>

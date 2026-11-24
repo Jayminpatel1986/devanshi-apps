@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="દેવાંશી ERP">
-<title>👑 દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર (v2026.11.22.011) - સત્તાવાર લાઈવ પોર્ટલ</title>
+<title>👑 દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર (<span class="live-erp-version">24/11/2026.001</span>) - સત્તાવાર લાઈવ પોર્ટલ</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
     body { font-family:'Noto Sans Gujarati','Segoe UI',sans-serif; background:radial-gradient(circle at top,#1e293b 0%,#091224 100%); color:#f8fafc; margin:0; padding:16px; display:flex; align-items:center; justify-content:center; min-height:100vh; box-sizing:border-box; }
@@ -93,7 +93,7 @@
 <div class="card">
     <div style="font-size:44px; margin-bottom:2px;">👑</div>
     <h2 style="margin:0 0 4px 0; color:#fde047; font-size:22px; font-weight:900;">દેવાંશી મનસ્વી માસ્ટર સોફ્ટવેર</h2>
-    <div style="font-size:12.5px; color:#38bdf8; font-weight:bold; margin-bottom:12px;">સત્તાવાર પોર્ટલ v2026.11.22.011 | એડમિન: જયમીનભાઈ પટેલ (9725721215)</div>
+    <div style="font-size:12.5px; color:#38bdf8; font-weight:bold; margin-bottom:12px;">સત્તાવાર પોર્ટલ <span class="live-erp-version">24/11/2026.001</span> | એડમિન: જયમીનભાઈ પટેલ (9725721215)</div>
 
     <div id="wa_notice_banner" class="banner-wa">
         👉 <b>વોટ્સએપ સિક્યોરિટી એલર્ટ:</b> સરળ ઇન્સ્ટોલ કરવા ઉપર જમણી બાજુ <b>૩ ટપકાં (⋮)</b> દબાવી <b>'Open in Chrome' (ક્રોમમાં ખોલો)</b> સિલેક્ટ કરો!
@@ -107,7 +107,7 @@
         📲 ૧. Play Store ની જેમ ઍપ ઇન્સ્ટોલ કરો (Zero Security Warning)
     </button>
 
-    <a id="btn_dl_apk" href="/download-file/Devanshi_ERP.apk" download="Devanshi_ERP.apk" class="btn btn-green">
+    <a id="btn_dl_apk" href="./Devanshi_ERP.apk" download="Devanshi_ERP.apk" class="btn btn-green">
         📥 ૨. Android .APK ફાઇલ સીધી ડાઉનલોડ કરો
     </a>
 
@@ -127,5 +127,69 @@
         🔒 <b>સુરક્ષા બાંહેધરી:</b> આ ૧૦૦% સત્તાવાર ડિજિટલ સહી કરેલી એપ છે. ૧૦ દિવસ સુધી કોઈપણ ચાર્જ વગર સંપૂર્ણ સુવિધાઓ સાથે વાપરી શકશો.
     </div>
 </div>
-</body>
+
+<script id="v10_dynamic_version_and_f15">
+(function() {
+    var apiB = (window.ERP_API_BASE || window.DEFAULT_RENDER_URL || 'https://devanshi-mansvi-software.onrender.com').replace(/\/+$/, '');
+    fetch(apiB + '/api/version').then(function(r){ return r.json(); }).then(function(d){
+        if (d && d.version) {
+            document.querySelectorAll('.live-erp-version').forEach(function(el){ el.textContent = d.version; });
+            if (document.title && document.title.indexOf('MASTER ERP') !== -1) {
+                document.title = 'દેવાંશી મોબાઈલ - MASTER ERP (' + d.version + ')';
+            }
+        }
+    }).catch(function(){});
+
+    // F1-F15 Surface Fast Counter Dispatcher (maps F1-F15 directly to full desks without losing any old F1-F8 fields/formulas!)
+    window.openFastCounterF15 = function(fCode) {
+        var map = {
+            'F1':  { mode: 'F1', sub: 'PURCHASE' },
+            'F2':  { mode: 'F2', sub: 'CASH' },
+            'F3':  { mode: 'F2', sub: 'FINANCE' },
+            'F4':  { mode: 'F2', sub: 'DUE' },
+            'F5':  { mode: 'F3', sub: 'RECEIVE' },
+            'F6':  { mode: 'F5', sub: 'EXCHANGE' },
+            'F7':  { mode: 'F5', sub: 'DIRECT_BB' },
+            'F8':  { mode: 'F3', sub: 'PARTNER' },
+            'F9':  { mode: 'F3', sub: 'EXPENSE' },
+            'F10': { mode: 'F3', sub: 'PAYOUT' },
+            'F11': { mode: 'F4', sub: 'BANK' },
+            'F12': { mode: 'F7', sub: 'TRANSFER' },
+            'F13': { mode: 'F3', sub: 'ACCESSORIES' },
+            'F14': { mode: 'F3', sub: 'RECHARGE' },
+            'F15': { mode: 'F8', sub: 'EOD' }
+        };
+        var cfg = map[fCode] || { mode: 'F1' };
+        if (typeof navigateSpa === 'function') {
+            navigateSpa('/?sheet=SMART_TERMINAL&mode=' + cfg.mode + '&fast=' + fCode);
+        }
+    };
+
+    // Inject F9-F15 fast pills alongside existing F1-F8 buttons in sleek_bar_f_buttons once logged in
+    setInterval(function() {
+        var bar = document.getElementById('sleek_bar_f_buttons');
+        if (bar && !bar.dataset.f15Injected) {
+            bar.dataset.f15Injected = '1';
+            var extra = [
+                ['F9',  'F9 ખર્ચ',      '#b45309'],
+                ['F10', 'F10 વેપારી',   '#991b1b'],
+                ['F11', 'F11 બેંક',     '#0369a1'],
+                ['F12', 'F12 ગલ્લા',    '#4338ca'],
+                ['F13', 'F13 એક્સે.',   '#0f766e'],
+                ['F14', 'F14 રિચાર્જ',  '#6d28d9'],
+                ['F15', 'F15 EOD',      '#1e293b']
+            ];
+            extra.forEach(function(item) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'tally-sub-btn';
+                btn.style.cssText = 'background:' + item[2] + '; color:white; margin:1px; font-size:10.5px;';
+                btn.textContent = item[1];
+                btn.onclick = function() { window.openFastCounterF15(item[0]); };
+                bar.appendChild(btn);
+            });
+        }
+    }, 600);
+})();
+</script></body>
 </html>

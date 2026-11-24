@@ -43,7 +43,7 @@
     <script id="v9_admin_render_bridge">
     window.ADMIN_API_BASE = (localStorage.getItem('erp_cloud_api_base') || 'https://devanshi-mansvi-software.onrender.com').replace(/\/+$/, '');
     window.getAdminSessionPin = function() {
-        return sessionStorage.getItem('dm_admin_session_pin') || '';
+        return localStorage.getItem('dm_trusted_master_pin_v10') || sessionStorage.getItem('dm_admin_session_pin') || '';
     };
     // Auto-route all relative fetch('/...') calls to Render when hosted on GitHub Pages or APK file://
     (function() {
@@ -136,6 +136,8 @@ async function verifyAdminMasterPin() {
         });
         var d = await r.json();
         if (d && d.ok) {
+            localStorage.setItem('dm_trusted_master_device_v10', 'JAYMIN_TRUSTED_ACTIVE');
+            localStorage.setItem('dm_trusted_master_pin_v10', p);
             sessionStorage.setItem('dm_admin_unlocked', '1');
             sessionStorage.setItem('dm_admin_session_pin', p);
             document.getElementById('jaymin_pin_lock_screen').style.display = 'none';
@@ -150,19 +152,22 @@ async function verifyAdminMasterPin() {
     }
 }
 window.addEventListener('DOMContentLoaded', async function() {
-    // V9 Security: Strictly NO ?pin= URL bypass! Only active verified session unlocks the hub.
-    if (sessionStorage.getItem('dm_admin_unlocked') === '1' && sessionStorage.getItem('dm_admin_session_pin')) {
+    var isTrusted = (localStorage.getItem('dm_trusted_master_device_v10') === 'JAYMIN_TRUSTED_ACTIVE');
+    var savedPin = localStorage.getItem('dm_trusted_master_pin_v10') || sessionStorage.getItem('dm_admin_session_pin') || '';
+    if ((isTrusted || sessionStorage.getItem('dm_admin_unlocked') === '1') && savedPin) {
         var ls = document.getElementById('jaymin_pin_lock_screen');
         if (ls) ls.style.display = 'none';
-        var sp = sessionStorage.getItem('dm_admin_session_pin');
-        document.querySelectorAll('input[type="hidden"][name="pin"]').forEach(function(el) { el.value = sp; });
+        document.querySelectorAll('input[type="hidden"][name="pin"]').forEach(function(el) { el.value = savedPin; });
         var u = new URLSearchParams(window.location.search);
         var act = u.get('action');
         var targetShop = u.get('shop');
-        if (act && targetShop) {
-            handleWhatsAppDirectAction(act, targetShop);
-        }
+        if (act && targetShop) handleWhatsAppDirectAction(act, targetShop);
     }
+    try {
+        fetch(window.ADMIN_API_BASE + '/api/version').then(function(r){ return r.json(); }).then(function(d){
+            if (d && d.version) document.querySelectorAll('.live-erp-version').forEach(function(el){ el.textContent = d.version; });
+        }).catch(function(){});
+    } catch(e) {}
 });
 
 async function handleWhatsAppDirectAction(act, shopId) {
@@ -174,7 +179,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
         document.body.insertBefore(actionBox, document.body.firstChild.nextSibling);
     }
     
-    var token = localStorage.getItem('dm_admin_token') || prompt('સુરક્ષિત સુપર એડમિન એક્સેસ ટોકન દાખલ કરો:') || '';
+    var token = localStorage.getItem('dm_admin_token') || '';
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
     
     actionBox.innerHTML = '<div style="font-size:20px; font-weight:bold; color:#38bdf8;">⏳ ૧-ક્લિક WhatsApp એક્શન પ્રોસેસ થઈ રહી છે... (દુકાન: ' + shopId + ')</div>';
@@ -265,7 +270,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
         <!-- હેડર બાર -->
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #dc2626; padding-bottom:10px; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
             <div>
-                <h2 style="margin:0; color:#991b1b;">👑 દેવાંશી મનસ્વી સોફ્ટવેર - સુપર એડમિન કંટ્રોલ હબ (જયમીનભાઈ: 9725721215) <span style="background:#16a34a; color:white; padding:3px 9px; border-radius:5px; font-size:12px; vertical-align:middle;">📌 વર્ઝન: 2026.11.14_FINAL (કાયમી એક્ટિવ)</span></h2>
+                <h2 style="margin:0; color:#991b1b;">👑 દેવાંશી મનસ્વી સોફ્ટવેર - સુપર એડમિન કંટ્રોલ હબ (જયમીનભાઈ: 9725721215) <span style="background:#16a34a; color:white; padding:3px 9px; border-radius:5px; font-size:12px; vertical-align:middle;">📌 વર્ઝન: <span class="live-erp-version">24/11/2026.001</span> (કાયમી એક્ટિવ)</span></h2>
                 <script>
                     try {
                         localStorage.setItem('JAYMIN_PERMANENT_ADMIN_DEVICE', 'JAYMIN_9725721215_MASTER');
@@ -375,7 +380,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
                     </div>
                 </div>
                 <span style="background:#16a34a; color:white; padding:5px 12px; border-radius:4px; font-weight:900; font-size:12.5px; border:2px solid #fde047;">
-                    📌 હાલનું માસ્ટર લાઈવ વર્ઝન: 2026.11.14_FINAL
+                    📌 હાલનું માસ્ટર લાઈવ વર્ઝન: <span class="live-erp-version">24/11/2026.001</span>
                 </span>
             </div>
 
@@ -472,27 +477,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
 
         </div>
 <div id="adm_tab_backup" style="display:none;">
-<!-- 💾 બોક્સ ૨: જયમીનભાઈ લેપટોપ D: ડ્રાઇવ ૧-ક્લિક ૭-દિવસ ઓટો-બેકઅપ સિંક & વાર્ષિક માસ્ટર ફાઇલ મર્જ -->
-        <div style="background:#f0fdf4; border:2px solid #15803d; padding:12px; border-radius:8px; margin-bottom:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-                <h4 style="margin:0; color:#166534;">💾 બોક્સ ૨: જયમીનભાઈ લેપટોપ D: ડ્રાઇવ ૧-ક્લિક ૭-દિવસ ઓટો-બેકઅપ સિંક & વાર્ષિક માસ્ટર ફાઇલ મર્જ (GitHub ખોલ્યા વગર)</h4>
-                <span style="background:#15803d; color:white; padding:3px 10px; border-radius:4px; font-weight:bold; font-size:11.5px;">Private GitHub: devanshi-mansvi-software | 90-Day FIFO + 12-Month + Yearly Master</span>
-            </div>
-            <form action="/api/master-sync-all-stores-backup" method="post" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:white; padding:10px; border:1px solid #86efac; border-radius:6px;">
-                <input type="hidden" name="return_to" value="SUPER_ADMIN">
-                <label style="font-weight:bold; color:#0f2043; display:flex; align-items:center; gap:5px; cursor:pointer;">
-                    <input type="checkbox" name="auto_7day_enabled" value="1" checked>
-                    <span>✅ દર ૭ દિવસે ઓટોમેટિક બેકઅપ Master_All_Stores_Backup/{Shop_ID}/ (BASE_DIR) માં સેવ અને વાર્ષિક ફાઇલમાં મર્જ કરો</span>
-                </label>
-                <input type="text" name="target_shop_id" value="ALL" placeholder="ALL અથવા ચોક્કસ Shop ID લખો..." style="padding:6px 10px; width:210px; font-weight:bold; border:2px solid #15803d; border-radius:4px;">
-                <button type="submit" name="sync_action" value="MERGE_7DAY" style="background:#15803d; color:white; border:none; padding:8px 14px; border-radius:5px; font-weight:800; cursor:pointer;">
-                    🔄 [૧-ક્લિક: બધી / પસંદ કરેલ દુકાનનો બેકઅપ D: ડ્રાઇવમાં લાવો & વાર્ષિક ફાઇલમાં મર્જ કરો]
-                </button>
-                <button type="submit" name="sync_action" value="RESTORE" onclick="return confirm('શું આ દુકાનનો ડેટા વાર્ષિક માસ્ટર ફાઇલ / GitHub પરથી પાછો રિકવર (Restore) કરવો છે?')" style="background:#b45309; color:white; border:none; padding:8px 12px; border-radius:5px; font-weight:800; cursor:pointer;">
-                    ♻️ [દુકાનદારનું લેપટોપ બગડે ત્યારે: ૧-ક્લિક ડેટા રિકવર / રીસ્ટોર]
-                </button>
-            </form>
-        </div>
+<!-- V10: Legacy D: drive Box 2 removed (Neon PostgreSQL handles automatic cloud backup) -->
 
         <!-- 🧹 નિયમ ૨૩૮: ૧-ક્લિક તમામ જૂના ડેમો (DEMO-001, 002, 003) ચારેય જગ્યાએથી કાયમ માટે સાફ કરો + ૧૩ SaaS મોડ્યુલ સ્વિચ બોર્ડ -->
         <div style="display:grid; grid-template-columns:1fr 1.45fr; gap:12px; margin-bottom:14px;">
@@ -778,7 +763,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
                 </tr>
                 
         <tr>
-            <td><b>MANSHVI</b><br><span style="font-size:10px; color:#64748b;">RETAIL_STANDALONE</span><br><span style="background:#dcfce7; color:#166534; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:800; border:1px solid #16a34a;">📌 2026.11.14_FINAL ✅ લેટેસ્ટ</span><br><span style="background:#dcfce7; color:#15803d; padding:2px 7px; border-radius:4px; font-weight:800; font-size:10px; border:1px solid #16a34a; display:inline-block; margin-top:3px;" title="લાઇવ કનેક્ટેડ: 2026-11-06 14:41:14 | ડિવાઇસ: Desktop/Laptop">🟢 લાઈવ (SMART_TERMINAL (F2))</span></td>
+            <td><b>MANSHVI</b><br><span style="font-size:10px; color:#64748b;">RETAIL_STANDALONE</span><br><span style="background:#dcfce7; color:#166534; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:800; border:1px solid #16a34a;">📌 <span class="live-erp-version">24/11/2026.001</span> ✅ લેટેસ્ટ</span><br><span style="background:#dcfce7; color:#15803d; padding:2px 7px; border-radius:4px; font-weight:800; font-size:10px; border:1px solid #16a34a; display:inline-block; margin-top:3px;" title="લાઇવ કનેક્ટેડ: 2026-11-06 14:41:14 | ડિવાઇસ: Desktop/Laptop">🟢 લાઈવ (SMART_TERMINAL (F2))</span></td>
             <td><b>મનસ્વી સોફ્ટવેર (રિટેલ સ્ટોર મોડ - લાઇફટાઇમ)</b><div style="font-size:10px; text-align:left; background:#f8fafc; padding:3px 5px; border-radius:4px; border:1px solid #cbd5e1; margin-top:3px; line-height:1.35;"><b>🚀 સાઇન-અપ:</b> Desktop/Mobile ()<br><b>🟢 છેલ્લે ચાલુ:</b> Desktop/Laptop (2026-11-06 14:41:14)<br><b>🔴 છેલ્લે બંધ:</b> હાલ ચાલુ</div></td>
             <td style="color:#0284c7; font-weight:bold;">9725721215</td>
             <td>manshvi<br><span style="color:#16a34a; font-weight:bold;">PW: J@ymin86</span></td>
@@ -837,7 +822,7 @@ async function handleWhatsAppDirectAction(act, shopId) {
         </tr>
         
         <tr>
-            <td><b>DEVANSHI</b><br><span style="font-size:10px; color:#64748b;">FRANCHISE_HO</span><br><span style="background:#dcfce7; color:#166534; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:800; border:1px solid #16a34a;">📌 2026.11.14_FINAL ✅ લેટેસ્ટ</span><br><span style="background:#dcfce7; color:#15803d; padding:2px 7px; border-radius:4px; font-weight:800; font-size:10px; border:1px solid #16a34a; display:inline-block; margin-top:3px;" title="લાઇવ કનેક્ટેડ: 2026-11-06 14:15:41 | ડિવાઇસ: Desktop/Laptop">🟢 લાઈવ (SMART_TERMINAL (F2))</span></td>
+            <td><b>DEVANSHI</b><br><span style="font-size:10px; color:#64748b;">FRANCHISE_HO</span><br><span style="background:#dcfce7; color:#166534; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:800; border:1px solid #16a34a;">📌 <span class="live-erp-version">24/11/2026.001</span> ✅ લેટેસ્ટ</span><br><span style="background:#dcfce7; color:#15803d; padding:2px 7px; border-radius:4px; font-weight:800; font-size:10px; border:1px solid #16a34a; display:inline-block; margin-top:3px;" title="લાઇવ કનેક્ટેડ: 2026-11-06 14:15:41 | ડિવાઇસ: Desktop/Laptop">🟢 લાઈવ (SMART_TERMINAL (F2))</span></td>
             <td><b>દેવાંશી સોફ્ટવેર (ફ્રેન્ચાઇઝી મોડ - લાઇફટાઇમ)</b><div style="font-size:10px; text-align:left; background:#f8fafc; padding:3px 5px; border-radius:4px; border:1px solid #cbd5e1; margin-top:3px; line-height:1.35;"><b>🚀 સાઇન-અપ:</b> Desktop/Mobile ()<br><b>🟢 છેલ્લે ચાલુ:</b> Desktop/Laptop (2026-11-06 14:15:41)<br><b>🔴 છેલ્લે બંધ:</b> હાલ ચાલુ</div></td>
             <td style="color:#0284c7; font-weight:bold;">9725721215</td>
             <td>devanshi<br><span style="color:#16a34a; font-weight:bold;">PW: ••••</span></td>
@@ -1433,7 +1418,7 @@ async function loadPendingAdminSignups(isUserRefresh) {
     
     box.innerHTML = '<div style="text-align:center; padding:15px; color:#38bdf8;">🔄 પેન્ડિંગ સાઇન-અપ અરજીઓ ચેક થઈ રહી છે...</div>';
 
-    var token = localStorage.getItem('dm_admin_token') || prompt('સુરક્ષિત સુપર એડમિન એક્સેસ ટોકન દાખલ કરો:') || '';
+    var token = localStorage.getItem('dm_admin_token') || '';
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
     
     var allSignups = [];
@@ -1534,7 +1519,7 @@ async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userI
     var sName = decodeURIComponent(encStoreName);
     if (!confirm('શું તમે આ દુકાન (' + sName + ') ને ૧૦ દિવસનો ફ્રી ડેમો મંજૂર (Approve) કરવા માંગો છો?')) return;
     
-    var token = localStorage.getItem('dm_admin_token') || prompt('સુરક્ષિત સુપર એડમિન એક્સેસ ટોકન દાખલ કરો:') || '';
+    var token = localStorage.getItem('dm_admin_token') || '';
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
     
     var now = new Date();
@@ -1599,7 +1584,7 @@ async function approveShopDemo(shopId, encStoreName, mobile, encOwnerName, userI
     } catch(e) {}
 
     // 2. Delete from GitHub if sha exists
-    var token = localStorage.getItem('dm_admin_token') || prompt('સુરક્ષિત સુપર એડમિન એક્સેસ ટોકન દાખલ કરો:') || '';
+    var token = localStorage.getItem('dm_admin_token') || '';
     var headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
     
     try {
@@ -1632,4 +1617,26 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-</body></html>
+<script>
+
+async function rejectShopDemo(shopId, encName, sha) {
+    var name = decodeURIComponent(encName || shopId);
+    if (!confirm('❌ શું તમે ખરેખર "' + name + '" (' + shopId + ') ની ડેમો અરજી રદ (Reject) કરવા માંગો છો?')) return;
+    var pin = window.getAdminSessionPin();
+    try {
+        var fd = new FormData();
+        fd.append('shop_id', shopId);
+        fd.append('pin', pin);
+        var r = await fetch(window.ADMIN_API_BASE + '/master-delete-shop', { method: 'POST', body: fd });
+        if (r.ok) {
+            alert('✅ અરજી રદ કરી દેવામાં આવી છે: ' + shopId);
+            if (typeof loadPendingAdminSignups === 'function') loadPendingAdminSignups(true);
+        } else {
+            alert('⚠️ રદ કરવામાં એરર: HTTP ' + r.status);
+        }
+    } catch(e) {
+        alert('⚠️ Render સર્વર સાથે કનેક્ટ થઈ શક્યું નથી: ' + e.message);
+    }
+}
+
+</script></body></html>
